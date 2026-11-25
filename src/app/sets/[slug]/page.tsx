@@ -84,7 +84,7 @@ export default async function SetPage({ params }: Props) {
   const { slug } = await params
   const details = await resolveSet(slug)
   const canonical = setPath(details)
-  if (decodeURIComponent(`/sets/${slug}`) !== canonical) permanentRedirect(canonical)
+  if (`/sets/${slug}` !== canonical) permanentRedirect(canonical)
 
   const theme = details.theme_path.at(-1) ?? null
   const [offersResult, inventory, related] = await Promise.all([
@@ -92,6 +92,7 @@ export default async function SetPage({ params }: Props) {
     safe(getInventory(details.id)),
     theme ? safe(findRetailSets({ theme_id: theme.id, sort: 'year_desc', limit: 6 })) : Promise.resolve(null),
   ])
+  const offersFailed = offersResult === null
   const offers = offersResult ?? []
   const summary = summarizeOffers(offers)
   const best = bestOffer(offers)
@@ -191,6 +192,13 @@ export default async function SetPage({ params }: Props) {
         </p>
       </>
     )
+  } else if (offersFailed) {
+    priceBlock = (
+      <>
+        <p className="buy__label">Де купити</p>
+        <p className="buy__none">Не вдалося перевірити ціни. Оновіть сторінку за хвилину.</p>
+      </>
+    )
   } else {
     priceBlock = (
       <>
@@ -279,7 +287,7 @@ export default async function SetPage({ params }: Props) {
 
         {offersCount ? (
           <div className="set__offers">
-            <Offers setNumber={details.official_number_display} offers={offers} bestShopId={best?.shop_id ?? null} now={now} />
+            <Offers setNumber={details.official_number_display} offers={offers} best={best} now={now} />
           </div>
         ) : null}
       </div>

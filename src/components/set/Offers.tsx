@@ -19,12 +19,12 @@ function sellerLine(offer: ShopOffer): string | null {
 interface OffersProps {
   setNumber: string | null
   offers: ShopOffer[]
-  bestShopId: string | null
+  best: ShopOffer | null
   now: Date
 }
 
 /** «Де купити»: таблиця на комп'ютері, шторка за посиланням #offers на телефоні. */
-export function Offers({ setNumber, offers, bestShopId, now }: OffersProps) {
+export function Offers({ setNumber, offers, best, now }: OffersProps) {
   const groups = groupOffers(offers)
   return (
     <section id="offers" className="offers" aria-labelledby="offers-title">
@@ -51,7 +51,7 @@ export function Offers({ setNumber, offers, bestShopId, now }: OffersProps) {
               const discount = discountPercent(offer)
               const seller = sellerLine(offer)
               const link = isWebUrl(offer.product_url)
-              const primary = offer.shop_id === bestShopId && offer.availability === 'in_stock'
+              const primary = best !== null && offer.shop_id === best.shop_id && offer.product_url === best.product_url && offer.seller_name === best.seller_name
               return (
                 <div key={`${offer.shop_id}-${offer.product_url}`} className={`otable__row${link ? '' : ' is-dim'}`} role="row">
                   <span className="ocell ocell--shop" role="cell">

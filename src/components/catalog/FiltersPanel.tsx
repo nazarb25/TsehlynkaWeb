@@ -201,16 +201,22 @@ export function FiltersPanel({ filters, section, themes, shops, variant, onDone 
       {sale ? (
         <Group title="Наявність">
           <Check checked={effectiveInStock(current)} label="У наявності" onChange={(value) => apply(value ? { inStock: null, preorder: false } : { inStock: false })} />
-          <Check checked={current.preorder} label="Передзамовлення" onChange={(value) => apply({ preorder: value })} />
+          {section.onSale ? null : (
+            <Check
+              checked={current.preorder}
+              label="Передзамовлення"
+              onChange={(value) => apply(value ? { preorder: true, onSale: false, official: false } : { preorder: false })}
+            />
+          )}
         </Group>
       ) : null}
 
       {sale ? (
         <Group title="Пропозиції">
           {section.onSale ? null : (
-            <Check checked={current.onSale} label="Зі знижкою" onChange={(value) => apply({ onSale: value })} />
+            <Check checked={current.onSale} label="Зі знижкою" onChange={(value) => apply(value ? { onSale: true, preorder: false } : { onSale: false })} />
           )}
-          <Check checked={current.official} label="Офіційний продавець" onChange={(value) => apply({ official: value })} />
+          <Check checked={current.official} label="Офіційний продавець" onChange={(value) => apply(value ? { official: true, preorder: false } : { official: false })} />
         </Group>
       ) : null}
 

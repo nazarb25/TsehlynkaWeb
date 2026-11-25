@@ -17,6 +17,7 @@ import {
   type CatalogMode,
   catalogHref,
   effectiveSort,
+  filterIds,
   filtersCount,
   isNewest,
   isSale,
@@ -64,13 +65,15 @@ export async function loadCatalog(sectionKey: SectionKey, filters: CatalogFilter
   const section = SECTIONS[sectionKey]
   const sale = isSale(filters)
   const [themes, shops] = await Promise.all([safe(listThemes()), sale ? safe(listShops()) : Promise.resolve([])])
-  const themeId = themes?.find((theme) => theme.slug === filters.theme)?.id ?? null
-  const shopId = shops?.find((shop) => shop.slug === filters.shop)?.id ?? null
+  const ids = filterIds(filters, themes, shops)
   const offset = (filters.page - 1) * PAGE_SIZE
+  const empty = { items: [], total: 0, limit: PAGE_SIZE, offset }
   const page =
-    offset > API_MAX_OFFSET
-      ? { items: [], total: 0, limit: PAGE_SIZE, offset }
-      : await safe(findSets(apiQuery(filters, section, { themeId, shopId }), sale))
+    ids === 'failed'
+      ? null
+      : ids === 'missing' || offset > API_MAX_OFFSET
+        ? empty
+        : await safe(findSets(apiQuery(filters, section, ids), sale))
   return { page, themes: themes ?? [], shops: shops ?? [] }
 }
 

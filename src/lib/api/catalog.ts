@@ -50,9 +50,8 @@ export const getInventory = cache(async (id: string): Promise<Inventory | null> 
 
 export const getOffers = cache(async (id: string): Promise<ShopOffer[]> => apiGet<ShopOffer[]>(`retail/sets/${id}/offers`, undefined, 120))
 
-/** Ідентифікатор набору за номером: точний збіг номера, спершу стандартний каталог. */
+/** Ідентифікатор набору лише за точним збігом номера. */
 export const findSetIdByNumber = cache(async (number: string): Promise<string | null> => {
   const page = await apiGet<Page<CatalogSetItem>>('sets', { number, include_specialized: true, limit: 5 }, 900)
-  const exact = page.items.find((item) => item.official_number_display === number)
-  return (exact ?? page.items[0])?.id ?? null
+  return page.items.find((item) => item.official_number_display === number)?.id ?? null
 })

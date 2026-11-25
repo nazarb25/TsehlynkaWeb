@@ -1,3 +1,4 @@
+import type { RetailShop, Theme } from '@/lib/api/types'
 import { isoDateDaysAgo } from '@/lib/format'
 
 export type CatalogMode = 'all' | 'sale'
@@ -156,7 +157,7 @@ export function defaultSort(filters: Pick<CatalogFilters, 'mode' | 'newest'>, se
 }
 
 export function effectiveSort(filters: CatalogFilters, section: CatalogSection): SetSort {
-  if (filters.sort && filters.sort in sortOptions(filters)) return filters.sort
+  if (filters.sort && Object.hasOwn(sortOptions(filters), filters.sort)) return filters.sort
   return defaultSort(filters, section)
 }
 
@@ -181,6 +182,8 @@ export function parseFilters(params: Params, section: CatalogSection): CatalogFi
   const view = read(params, 'view')
   const sort = read(params, 'sort') as SetSort | null
   const inStock = read(params, 'in_stock')
+  // `on_sale` і `official` вимагають пропозиції в наявності, тому з передзамовленням не поєднуються.
+  const preorder = !section.onSale && readFlag(params, 'preorder')
   return {
     mode,
     q: read(params, 'q')?.slice(0, 100) ?? null,
@@ -193,9 +196,9 @@ export function parseFilters(params: Params, section: CatalogSection): CatalogFi
     piecesMin,
     piecesMax,
     inStock: inStock === 'false' ? false : null,
-    preorder: readFlag(params, 'preorder'),
-    onSale: section.onSale ?? readFlag(params, 'on_sale'),
-    official: readFlag(params, 'official'),
+    preorder,
+    onSale: section.onSale ?? (!preorder && readFlag(params, 'on_sale')),
+    official: !preorder && readFlag(params, 'official'),
     newest: section.newest ?? readFlag(params, 'newest'),
     specialized: readFlag(params, 'specialized'),
     view: view === 'grid' || view === 'list' ? view : null,
@@ -209,7 +212,7 @@ export function queryParams(filters: CatalogFilters, section: CatalogSection, ch
   const sale = next.mode === 'sale'
   const newest = next.newest && !sale
   const sortDefault = defaultSort({ mode: next.mode, newest }, section)
-  const sort = next.sort && next.sort in sortOptions({ mode: next.mode, newest }) && next.sort !== sortDefault ? next.sort : null
+  const sort = next.sort && Object.hasOwn(sortOptions({ mode: next.mode, newest }), next.sort) && next.sort !== sortDefault ? next.sort : null
   const entries: [string, string | number | null | false][] = [
     ['q', next.q],
     ['mode', section.mode || next.mode === (section.defaultMode ?? 'sale') ? null : next.mode],
@@ -358,4 +361,19 @@ export type SectionKey = keyof typeof SECTIONS
 /** Кількість застосованих фільтрів для кнопки на телефоні. */
 export function filtersCount(filters: CatalogFilters, section: CatalogSection): number {
   return activeFilters(filters, section, {}).length
+}
+
+export type FilterIds = { themeId: string | null; shopId: string | null }
+
+/**
+ * Ідентифікатори теми й магазину з адреси. `missing` — такої теми чи магазину немає (порожній список),
+ * `failed` — довідник не завантажився, тож запит без фільтра показав би чужі набори.
+ */
+export function filterIds(filters: CatalogFilters, themes: Theme[] | null, shops: RetailShop[] | null): FilterIds | 'missing' | 'failed' {
+  const shop = isSale(filters) ? filters.shop : null
+  if ((filters.theme && !themes) || (shop && !shops)) return 'failed'
+  const themeId = filters.theme ? (themes?.find((theme) => theme.slug === filters.theme)?.id ?? null) : null
+  const shopId = shop ? (shops?.find((item) => item.slug === shop)?.id ?? null) : null
+  if ((filters.theme && !themeId) || (shop && !shopId)) return 'missing'
+  return { themeId, shopId }
 }

@@ -8,11 +8,12 @@ const TRANSLIT: Record<string, string> = {
 export function slugify(text: string): string {
   return text
     .toLowerCase()
-    .normalize('NFKD')
-    .replace(/[̀-ͯ]/g, '')
+    .normalize('NFC')
     .split('')
     .map((char) => TRANSLIT[char] ?? char)
     .join('')
+    .normalize('NFKD')
+    .replace(/[̀-ͯ]/g, '')
     .replace(/['’ʼ`]/g, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')

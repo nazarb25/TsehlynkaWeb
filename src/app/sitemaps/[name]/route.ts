@@ -14,7 +14,7 @@ const MAX_OFFSET = 10_000
 async function themeSets(themeId: string): Promise<CatalogSetItem[]> {
   const items: CatalogSetItem[] = []
   for (let offset = 0; offset <= MAX_OFFSET; offset += PAGE_LIMIT) {
-    const page = await findCatalogSets({ theme_id: themeId, sort: 'year_desc', limit: PAGE_LIMIT, offset })
+    const page = await findCatalogSets({ theme_id: themeId, include_specialized: true, sort: 'year_desc', limit: PAGE_LIMIT, offset })
     items.push(...page.items)
     if (offset + PAGE_LIMIT >= page.total) break
   }
