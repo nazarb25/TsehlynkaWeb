@@ -200,7 +200,7 @@ export function FiltersPanel({ filters, section, themes, shops, variant, onDone 
 
       {sale ? (
         <Group title="Наявність">
-          <Check checked={effectiveInStock(current)} label="У наявності" onChange={(value) => apply({ inStock: value ? null : false })} />
+          <Check checked={effectiveInStock(current)} label="У наявності" onChange={(value) => apply(value ? { inStock: null, preorder: false } : { inStock: false })} />
           <Check checked={current.preorder} label="Передзамовлення" onChange={(value) => apply({ preorder: value })} />
         </Group>
       ) : null}

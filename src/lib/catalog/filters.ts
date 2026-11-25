@@ -160,9 +160,12 @@ export function effectiveSort(filters: CatalogFilters, section: CatalogSection):
   return defaultSort(filters, section)
 }
 
-/** У режимі продажу без явного вибору — лише в наявності. */
+/**
+ * У режимі продажу без явного вибору — лише в наявності. API поєднує `in_stock` і `preorder`
+ * через «і», тому передзамовлення замінює фільтр наявності.
+ */
 export function effectiveInStock(filters: CatalogFilters): boolean {
-  return isSale(filters) && filters.inStock !== false
+  return isSale(filters) && filters.inStock !== false && !filters.preorder
 }
 
 export function parseFilters(params: Params, section: CatalogSection): CatalogFilters {

@@ -210,7 +210,6 @@ function filterSets(query, retail) {
     if (query.get('in_stock') === 'true') list = list.filter((set) => set.has_in_stock_offer)
     if (query.get('preorder') === 'true') list = list.filter((set) => set.has_preorder_offer)
     if (query.get('on_sale') === 'true') list = list.filter((set) => set.best_deal)
-    if (query.get('in_stock') === 'true' && query.get('preorder') === 'true') list = sets.filter((set) => set.has_in_stock_offer || set.has_preorder_offer)
   }
   const sort = query.get('sort') ?? 'year_desc'
   const price = (set) => Number(set.min_in_stock_price ?? set.min_preorder_price ?? Infinity)
