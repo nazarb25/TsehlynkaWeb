@@ -154,6 +154,12 @@ function Lightbox({ images, name, index, onShow, onClose }: LightboxProps) {
     }
   }, [])
 
+  useEffect(() => {
+    for (const near of [images[index - 1], images[index + 1]]) {
+      if (near) new Image().src = near.src
+    }
+  }, [images, index])
+
   if (!image) return null
   return (
     <dialog
@@ -178,7 +184,9 @@ function Lightbox({ images, name, index, onShow, onClose }: LightboxProps) {
         onShow(end < start ? index + 1 : index - 1)
       }}
     >
-      <img src={image.src} alt={image.alt || `${name}, фото ${index + 1}`} className="lightbox__image" draggable={false} />
+      <span className="lightbox__stage">
+        <img src={image.src} alt={image.alt || `${name}, фото ${index + 1}`} draggable={false} />
+      </span>
       <button type="button" className="lightbox__close" aria-label="Закрити" onClick={onClose} autoFocus>
         <CloseIcon size={22} />
       </button>
