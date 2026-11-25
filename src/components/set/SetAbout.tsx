@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 import { ChevronRight, FileIcon } from '@/components/icons'
+import { SetDescription } from '@/components/set/SetDescription'
 import { SectionHead } from '@/components/ui/SectionHead'
 import type { SetDetails } from '@/lib/api/types'
 import {
@@ -67,7 +68,7 @@ export function SetAbout({ details, figureCount, edition, now }: SetAboutProps) 
     <div className={`set__info${instructions.length ? '' : ' set__info--single'}`}>
       <section aria-labelledby="about-title">
         <SectionHead id="about-title" title="Про набір" />
-        {details.description ? <p className="set__desc">{details.description}</p> : null}
+        {details.description ? <SetDescription text={details.description} /> : null}
         <dl className="facts">
           {facts.map(([label, value]) => (
             <div key={label}>

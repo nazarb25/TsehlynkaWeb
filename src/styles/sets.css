@@ -434,9 +434,10 @@
   .tiles--list .tile__shop {
     display: flex;
     grid-area: shop;
-    align-items: flex-start;
+    align-items: center;
+    align-self: start;
     gap: 8px;
-    padding-top: 6px;
+    padding-top: 0;
     font-size: 14px;
   }
 

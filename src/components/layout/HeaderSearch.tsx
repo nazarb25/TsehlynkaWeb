@@ -27,6 +27,8 @@ export function HeaderSearch() {
   if (openedAt !== pathname) {
     setOpenedAt(pathname)
     setOpen(false)
+    setText('')
+    setActive(-1)
   }
 
   useEffect(() => {
@@ -129,10 +131,16 @@ export function HeaderSearch() {
           onFocus={() => setOpen(true)}
           onKeyDown={onKeyDown}
         />
-        {loading ? <span className="spinner" aria-hidden="true" /> : <kbd aria-hidden="true">/</kbd>}
+        {loading ? <span className="spinner" aria-hidden="true" /> : null}
       </label>
       {showDrop ? (
-        <div className="hsearch__drop" id={listId} role="listbox" aria-label="Підказки">
+        <div
+          className="hsearch__drop"
+          id={listId}
+          role="listbox"
+          aria-label="Підказки"
+          onMouseDown={(event) => event.preventDefault()}
+        >
           {result.theme ? (
             <Link
               href={result.theme.href}

@@ -37,4 +37,4 @@ just deploy
 | `POSTHOG_HOST`, `NEXT_PUBLIC_POSTHOG_UI_HOST` | variable | лише якщо PostHog не EU |
 | `NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE` | variable | за замовчуванням 0.2 |
 
-Рантайм-змінні в `.env` поруч із `docker-compose.yml`: `SITE_URL` (обов'язкова), `SITE_INDEXABLE`, `TELEGRAM_BOT_USERNAME`, `GOOGLE_SITE_VERIFICATION`, `API_BASE_URL`, `WEB_PORT` (за замовчуванням 3001).
+Рантайм-змінні в `.env` поруч із `docker-compose.yml`: `SITE_URL` (обов'язкова), `SITE_INDEXABLE`, `TELEGRAM_BOT_USERNAME`, `GOOGLE_SITE_VERIFICATION`, `WEB_PORT` (за замовчуванням 3001). `API_BASE_URL` на сервері не задавайте: типове `http://tsehlynka-api:8000/api/v1` веде до API через мережу `tsehlynka`, а `localhost` усередині контейнера — це сам сайт.

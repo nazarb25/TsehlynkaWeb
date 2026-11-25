@@ -109,15 +109,12 @@ export default async function SetPage({ params }: Props) {
           now={now}
         />
 
-        {offers.length ? (
-          <div className="set__offers">
-            <Offers setNumber={details.official_number_display} offers={offers} best={bestOffer(offers)} now={now} />
-          </div>
-        ) : null}
+        <div className="set__main">
+          {offers.length ? <Offers setNumber={details.official_number_display} offers={offers} best={bestOffer(offers)} now={now} /> : null}
+          <SetFigures figures={figures} />
+          <SetAbout details={details} figureCount={figureCount} edition={edition} now={now} />
+        </div>
       </div>
-
-      <SetFigures figures={figures} />
-      <SetAbout details={details} figureCount={figureCount} edition={edition} now={now} />
 
       {theme ? (
         <Suspense fallback={<RelatedSetsSkeleton />}>
