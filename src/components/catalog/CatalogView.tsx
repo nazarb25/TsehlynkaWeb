@@ -11,6 +11,7 @@ import { findSets, listShops, listThemes } from '@/lib/api/catalog'
 import type { Page, RetailShop, SetItem, Theme } from '@/lib/api/types'
 import {
   activeFilters,
+  API_MAX_OFFSET,
   apiQuery,
   type CatalogFilters,
   type CatalogMode,
@@ -19,6 +20,7 @@ import {
   filtersCount,
   isNewest,
   isSale,
+  MAX_PAGE,
   MODE_LABELS,
   PAGE_SIZE,
   queryParams,
@@ -41,8 +43,6 @@ import { Pagination } from './Pagination'
 import type { TileContext } from './SetTile'
 import { SetTiles } from './SetTiles'
 import { SortSelect } from './SortSelect'
-
-const API_MAX_OFFSET = 10_000
 
 interface CatalogViewProps {
   sectionKey: SectionKey
@@ -101,7 +101,7 @@ export async function CatalogView({ sectionKey, filters, title, hint, crumbs, mo
   const context: TileContext = sale ? 'sale' : isNewest(filters) ? 'newest' : 'all'
   const sort = effectiveSort(filters, section)
   const total = page?.total ?? 0
-  const pages = Math.min(Math.ceil(total / PAGE_SIZE), Math.floor(API_MAX_OFFSET / PAGE_SIZE) + 1)
+  const pages = Math.min(Math.ceil(total / PAGE_SIZE), MAX_PAGE)
   const view = filters.view ?? 'auto'
   const themeOpts = themeOptions(themes)
   const shopOpts = shopOptions(shops)

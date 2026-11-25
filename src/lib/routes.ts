@@ -40,14 +40,15 @@ export function setPath(set: SetLike): string {
   return slug ? `/sets/${number}-${slug}` : `/sets/${number}`
 }
 
-/** Номер набору з адреси: `75192-millennium-falcon` → `75192`, `10497-1-galaxy` → `10497-1`. */
-export function numberFromSetSlug(slug: string): string | null {
+/**
+ * Можливі номери набору з адреси, від найточнішого: `10497-1-galaxy` → `10497-1`, `10497`.
+ * Назва може починатися з числа (`75968-4-privet-drive`), тому варіант лише ймовірний.
+ */
+export function numbersFromSetSlug(slug: string): string[] {
   const match = /^([0-9]{3,7})(?:-([0-9]{1,2}))?(?=-|$)/.exec(slug)
-  if (!match) return null
-  const [, base, variant] = match
-  const rest = slug.slice(match[0].length)
-  if (variant && rest && !rest.startsWith('-')) return base ?? null
-  return variant ? `${base}-${variant}` : (base ?? null)
+  if (!match) return []
+  const [, base = '', variant] = match
+  return variant ? [`${base}-${variant}`, base] : [base]
 }
 
 export function themePath(theme: { slug: string }): string {

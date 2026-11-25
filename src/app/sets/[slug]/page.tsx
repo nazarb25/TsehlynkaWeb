@@ -31,7 +31,7 @@ import {
   packagingType,
 } from '@/lib/catalog/set'
 import { ageMark, figuresCount, piecesCount, plural, price, release, releaseUpcoming, thousands } from '@/lib/format'
-import { isUuid, numberFromSetSlug, setPath, themePath } from '@/lib/routes'
+import { isUuid, numbersFromSetSlug, setPath, themePath } from '@/lib/routes'
 import { safe } from '@/lib/safe'
 import { pageMetadata, productSchema, themeCrumbs } from '@/lib/seo'
 import { botSetUrl } from '@/lib/site'
@@ -41,11 +41,16 @@ type Props = { params: Promise<{ slug: string }> }
 const resolveSet = cache(async (slug: string): Promise<SetDetails> => {
   try {
     if (isUuid(slug)) return await getSet(slug)
-    const number = numberFromSetSlug(slug)
-    if (!number) notFound()
-    const id = await findSetIdByNumber(number)
-    if (!id) notFound()
-    return await getSet(id)
+    let fallback: SetDetails | null = null
+    for (const number of numbersFromSetSlug(slug)) {
+      const id = await findSetIdByNumber(number)
+      if (!id) continue
+      const details = await getSet(id)
+      if (setPath(details) === `/sets/${slug}`) return details
+      fallback ??= details
+    }
+    if (fallback) return fallback
+    notFound()
   } catch (error) {
     if (error instanceof NotFoundError) notFound()
     throw error

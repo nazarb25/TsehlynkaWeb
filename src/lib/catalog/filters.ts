@@ -90,6 +90,11 @@ export const MODE_HINTS: Record<CatalogMode, string> = {
 }
 export const NEWEST_HINT = 'Вийшли за останні пів року або скоро вийдуть'
 export const PAGE_SIZE = 20
+
+/** API віддає записи лише до зсуву 10 000. */
+export const API_MAX_OFFSET = 10_000
+
+export const MAX_PAGE = Math.floor(API_MAX_OFFSET / PAGE_SIZE) + 1
 const NEWEST_WINDOW_DAYS = 183
 const MIN_YEAR = 1949
 const MAX_YEAR = 2100
@@ -191,7 +196,7 @@ export function parseFilters(params: Params, section: CatalogSection): CatalogFi
     newest: section.newest ?? readFlag(params, 'newest'),
     specialized: readFlag(params, 'specialized'),
     view: view === 'grid' || view === 'list' ? view : null,
-    page: readInt(params, 'page', 1, 500) ?? 1,
+    page: readInt(params, 'page', 1, MAX_PAGE) ?? 1,
   }
 }
 
