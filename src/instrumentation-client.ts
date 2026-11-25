@@ -13,13 +13,10 @@ Sentry.init({
   tracesSampleRate: tracesSampleRate(process.env.NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE),
   profileSessionSampleRate: 1,
   profileLifecycle: 'trace',
-  replaysSessionSampleRate: 0.1,
-  replaysOnErrorSampleRate: 1,
   ignoreErrors: IGNORED_ERRORS,
   denyUrls: [/^chrome-extension:\/\//, /^moz-extension:\/\//, /^safari-web-extension:\/\//],
   integrations: [
     Sentry.browserProfilingIntegration(),
-    Sentry.replayIntegration({ maskAllText: false, blockAllMedia: false }),
     Sentry.feedbackIntegration({
       autoInject: false,
       colorScheme: 'system',
@@ -53,7 +50,7 @@ if (posthogKey) {
     capture_pageview: 'history_change',
     capture_pageleave: true,
     person_profiles: 'identified_only',
-    disable_session_recording: true,
+    session_recording: { maskAllInputs: true },
     capture_exceptions: false,
   })
   posthog.register({ platform: 'web' })

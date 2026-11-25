@@ -7,8 +7,8 @@
 - Усі запити до API йдуть лише з сервера (`src/lib/api`, `server-only`). Браузер бачить тільки власні маршрути сайту (`/api/suggest`, `/api/count`, `/api/sets`), справжня адреса API в Network не з'являється.
 - SEO: canonical, Open Graph, JSON-LD (WebSite, Organization, BreadcrumbList, ItemList, Product з AggregateOffer без продавця), sitemap-індекс по кореневих темах. Посилання на магазини мають `rel="sponsored nofollow"`. Поки `SITE_INDEXABLE` не `true`, сайт віддає `noindex` і `Disallow: /`.
 - Telegram: відкритий у Telegram, сайт вмикає режим Mini App (`data-platform="telegram"`), ховає веб-елементи й тегує Sentry і PostHog. URL Web App бота ще не перемкнено.
-- Sentry: помилки, трейси, логи, метрики, Session Replay, профілювання в браузері й на сервері, тунель через сайт.
-- PostHog: перегляди сторінок і події (пошук, фільтри, перегляд набору, перехід у магазин) через проксі `/ingest`.
+- Sentry: помилки, трейси, логи, метрики, профілювання в браузері й на сервері, тунель через сайт.
+- PostHog: перегляди сторінок, події (пошук, фільтри, перегляд набору, перехід у магазин) і записи сесій через проксі `/ingest`. Запис вмикається в налаштуваннях проєкту PostHog; поля вводу маскуються.
 
 ## Локально
 
