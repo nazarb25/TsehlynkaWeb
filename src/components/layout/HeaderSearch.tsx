@@ -20,7 +20,7 @@ export function HeaderSearch() {
   const [text, setText] = useState('')
   const [open, setOpen] = useState(false)
   const [pending, setLoading] = useState(false)
-  const [found, setResult] = useState<Suggestions | null>(null)
+  const [found, setFound] = useState<{ query: string; data: Suggestions | null } | null>(null)
   const [active, setActive] = useState(-1)
 
   const [openedAt, setOpenedAt] = useState(pathname)
@@ -48,9 +48,9 @@ export function HeaderSearch() {
       setLoading(true)
       try {
         const response = await fetch(`/api/suggest?q=${encodeURIComponent(query)}`, { signal: controller.signal })
-        if (response.ok) setResult((await response.json()) as Suggestions)
+        setFound({ query, data: response.ok ? ((await response.json()) as Suggestions) : null })
       } catch {
-        if (!controller.signal.aborted) setResult(null)
+        if (!controller.signal.aborted) setFound({ query, data: null })
       } finally {
         if (!controller.signal.aborted) setLoading(false)
       }
@@ -62,7 +62,7 @@ export function HeaderSearch() {
   }, [text])
 
   const searchable = text.trim().length >= MIN_LENGTH
-  const result = searchable ? found : null
+  const result = searchable && found?.query === text.trim() ? found.data : null
   const loading = searchable && pending
 
   const links = [

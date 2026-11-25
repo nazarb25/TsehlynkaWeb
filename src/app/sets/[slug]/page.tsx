@@ -148,14 +148,16 @@ export default async function SetPage({ params }: Props) {
   ]
 
   let priceBlock: React.ReactNode
-  if (summary.state === 'in_stock' && summary.leadPrice !== null) {
+  if (summary.state === 'in_stock') {
     priceBlock = (
       <>
-        <p className="buy__label">Найнижча ціна серед наявних</p>
-        <p className="buy__price num">
-          {summary.leadShopsCount > 1 && !best ? 'від ' : ''}
-          {price(summary.leadPrice)}
-        </p>
+        <p className="buy__label">{summary.leadPrice !== null ? 'Найнижча ціна серед наявних' : 'Ціну уточнюйте в магазині'}</p>
+        {summary.leadPrice !== null ? (
+          <p className="buy__price num">
+            {summary.leadShopsCount > 1 && !best ? 'від ' : ''}
+            {price(summary.leadPrice)}
+          </p>
+        ) : null}
         {best && bestDiscount ? (
           <p className="buy__was num">
             <s>{price(best.old_price)}</s> <em>−{bestDiscount}%</em>
