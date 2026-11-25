@@ -1,0 +1,35 @@
+{
+  "name": "tsehlynka-web",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "node .next/standalone/server.js",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "api:types": "npx --yes openapi-typescript@7.13.0 ./openapi.json -o src/lib/api/schema.d.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@sentry/nextjs": "11.18.0",
+    "@sentry/profiling-node": "11.18.0",
+    "next": "16.4.6",
+    "posthog-js": "1.447.10",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "server-only": "0.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "@types/react": "19.3.3",
+    "@types/react-dom": "19.3.0",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.4.6",
+    "typescript": "6.0.3",
+    "vitest": "5.1.2"
+  }
+}

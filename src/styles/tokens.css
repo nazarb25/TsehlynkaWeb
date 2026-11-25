@@ -1,0 +1,84 @@
+/*
+ * Спільні токени сайту й Mini App. У Telegram кольори беруться з теми клієнта (--tg-theme-*),
+ * значення після коми — затверджена палітра. light-dark() обирає значення за color-scheme:
+ * у браузері — за системою, у Telegram — за темою клієнта через data-color-scheme.
+ */
+:root {
+  color-scheme: light dark;
+
+  --color-bg: var(--tg-theme-secondary-bg-color, light-dark(#f2f2f7, #1c1c1e));
+  --color-section: var(--tg-theme-section-bg-color, var(--tg-theme-bg-color, light-dark(#ffffff, #2c2c2e)));
+  --color-section-hover: light-dark(#ffffff, #333336);
+  --color-text: var(--tg-theme-text-color, light-dark(#1d2025, #ffffff));
+  --color-hint: var(--tg-theme-hint-color, light-dark(#676d77, #98989f));
+  --color-link: var(--tg-theme-link-color, light-dark(#2481cc, #5aa7ff));
+  --color-separator: var(--tg-theme-section-separator-color, light-dark(#e5e5ea, #3d3d41));
+  --color-fill: light-dark(#efeff1, #3a3a3c);
+  --color-field: light-dark(#f2f2f4, #3a3a3c);
+  --color-outline: light-dark(#d8d8de, #4a4a4e);
+  --color-success: light-dark(#15803d, #74c69d);
+  --color-success-dot: light-dark(#34c759, #74c69d);
+  --color-warning: light-dark(#8a5a00, #f3bd63);
+  --color-info: var(--color-link);
+  --color-danger: light-dark(#d93025, #ff6b61);
+  --color-photo-stage: light-dark(#f4f4f6, #ececef);
+  --color-photo-stage-text: light-dark(#8e8e93, #6d6d72);
+  --color-photo-white: #ffffff;
+  --color-backdrop: light-dark(rgb(0 0 0 / 35%), rgb(0 0 0 / 60%));
+  --color-sheet: light-dark(var(--color-bg), color-mix(in srgb, var(--color-bg) 90%, #ffffff));
+  --color-overlay-pill: rgb(28 28 30 / 72%);
+
+  --color-honey: #f2c65b;
+  --color-on-honey: #1c1c1e;
+  --color-honey-text: light-dark(#9a6a00, #f2c65b);
+  --color-chip-selected-bg: light-dark(rgb(242 198 91 / 30%), rgb(242 198 91 / 16%));
+  --color-chip-selected: light-dark(#7a5400, #f2c65b);
+  --color-segment-track: light-dark(#e4e4e9, #2c2c2e);
+  --color-tab-active-bg: light-dark(rgb(242 198 91 / 35%), rgb(255 255 255 / 8%));
+  --color-tab-active: light-dark(var(--color-text), var(--color-honey));
+  --color-glass: light-dark(rgb(255 255 255 / 88%), rgb(44 44 46 / 86%));
+  --color-glass-edge: light-dark(rgb(0 0 0 / 6%), rgb(255 255 255 / 8%));
+  --shadow-float: 0 8px 24px light-dark(rgb(0 0 0 / 10%), rgb(0 0 0 / 35%));
+  --shadow-hover: 0 6px 20px light-dark(rgb(0 0 0 / 8%), transparent);
+  --shadow-field: 0 2px 10px light-dark(rgb(0 0 0 / 5%), transparent);
+
+  --color-on-tint: #ffffff;
+  --tint-0: #5b7fd6;
+  --tint-1: #34a853;
+  --tint-2: #9b5de5;
+  --tint-3: #f29d38;
+  --tint-4: #e5534b;
+  --tint-5: #3aa6b9;
+
+  --radius-s: 8px;
+  --radius-m: 12px;
+  --radius-l: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+
+  --font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, system-ui, sans-serif;
+
+  --page-max: 1376px;
+  --gutter: 16px;
+  --header-height: 56px;
+  --dock-height: 64px;
+  --dock-gap: 16px;
+  --safe-area-bottom: max(var(--tg-safe-area-inset-bottom, 0px), env(safe-area-inset-bottom, 0px));
+  --dock-space: calc(var(--dock-height) + var(--dock-gap) * 2 + var(--safe-area-bottom));
+  --ease-sheet-open: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+:root[data-color-scheme='light'] {
+  color-scheme: light;
+}
+
+:root[data-color-scheme='dark'] {
+  color-scheme: dark;
+}
+
+@media (min-width: 1000px) {
+  :root {
+    --gutter: 32px;
+    --header-height: 72px;
+  }
+}

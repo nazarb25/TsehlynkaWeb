@@ -1,0 +1,376 @@
+/* Головна: заголовок, пошук і швидкі переходи. */
+.hero__in {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 56px;
+  padding-bottom: 8px;
+  text-align: center;
+}
+
+.hero h1 {
+  max-width: 760px;
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: -0.9px;
+  line-height: 1.12;
+}
+
+.hero p {
+  margin-top: 12px;
+  color: var(--color-hint);
+  font-size: 17px;
+}
+
+.hero__search {
+  width: 100%;
+  max-width: 760px;
+  height: 60px;
+  margin-top: 32px;
+}
+
+.quick {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 28px;
+  margin-top: 22px;
+}
+
+.quick a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.quick svg {
+  color: var(--color-honey-text);
+}
+
+.quick a:hover span {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 999.98px) {
+  .hero__in {
+    padding-top: 4px;
+  }
+
+  .hero__search {
+    height: 50px;
+    margin-top: 0;
+    padding-right: 14px;
+  }
+
+  .hero__search .button {
+    display: none;
+  }
+
+  .quick {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+    margin-top: 12px;
+  }
+
+  .quick a {
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    height: 72px;
+    border-radius: var(--radius-l);
+    background: var(--color-section);
+    font-size: 12px;
+  }
+}
+
+/* Карти тем. */
+.theme {
+  display: flex;
+  min-width: 0;
+}
+
+.theme__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.theme__text b {
+  overflow: hidden;
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.theme__text small {
+  color: var(--color-hint);
+  font-size: 13px;
+}
+
+.theme__text .theme__note {
+  margin-top: 4px;
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+.theme--card {
+  flex-direction: column;
+  padding: 8px;
+  border-radius: var(--radius-l);
+  background: var(--color-section);
+  transition: box-shadow 0.15s;
+}
+
+.theme--card:hover {
+  box-shadow: var(--shadow-hover), 0 0 0 1px var(--color-separator);
+}
+
+.theme--card .theme__photo {
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-m);
+}
+
+.theme--card .theme__text {
+  gap: 2px;
+  padding: 10px 6px 4px;
+}
+
+.theme--row {
+  align-items: center;
+  gap: 14px;
+  padding: 8px 14px 8px 8px;
+  border-radius: var(--radius-l);
+  background: var(--color-section);
+}
+
+.theme--row .theme__photo {
+  width: 84px;
+  height: 64px;
+  flex: 0 0 auto;
+  border-radius: 10px;
+}
+
+.themes-strip {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.themes-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.subthemes {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.themes-body {
+  margin-top: 28px;
+}
+
+.themes-search {
+  width: 360px;
+  max-width: 100%;
+  height: 42px;
+  background: var(--color-section);
+}
+
+@media (max-width: 1199.98px) {
+  .themes-strip {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .themes-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .subthemes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 999.98px) {
+  .themes-strip,
+  .themes-grid,
+  .subthemes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .themes-strip .theme:nth-child(n + 7) {
+    display: none;
+  }
+
+  .themes-strip .theme,
+  .themes-grid .theme {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 6px;
+  }
+
+  .themes-strip .theme__photo,
+  .themes-grid .theme__photo {
+    width: 56px;
+    height: 44px;
+    flex: 0 0 auto;
+    aspect-ratio: auto;
+    border-radius: 10px;
+  }
+
+  .themes-strip .theme__text,
+  .themes-grid .theme__text {
+    padding: 0;
+  }
+
+  .themes-strip .theme__text b,
+  .themes-grid .theme__text b {
+    font-size: 15px;
+  }
+
+  .themes-grid .theme__note {
+    margin-top: 0;
+    font-size: 12px;
+  }
+
+  .theme--row .theme__photo {
+    width: 56px;
+    height: 44px;
+  }
+
+  .themes-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .themes-search {
+    width: 100%;
+  }
+
+  .themes-body {
+    margin-top: 16px;
+  }
+
+  .home-row .tile:nth-child(n + 4) {
+    display: none;
+  }
+}
+
+/* Сторінка теми. */
+.theme-hero {
+  display: grid;
+  grid-template-columns: 420px minmax(0, 1fr);
+  align-items: center;
+  gap: 40px;
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: var(--radius-xl);
+  background: var(--color-section);
+}
+
+.theme-hero__photo {
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-l);
+}
+
+.theme-hero h1 {
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: -0.8px;
+}
+
+.theme-hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin: 12px 0 24px;
+  color: var(--color-hint);
+  font-size: 17px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-chip-selected-bg);
+  color: var(--color-chip-selected);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.badge--muted {
+  background: var(--color-fill);
+  color: var(--color-hint);
+}
+
+@media (max-width: 999.98px) {
+  .theme-hero {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-top: 8px;
+    padding: 12px;
+  }
+
+  .theme-hero h1 {
+    font-size: 28px;
+  }
+
+  .theme-hero__meta {
+    margin: 8px 0 16px;
+    font-size: 15px;
+  }
+
+  .theme-hero .button {
+    width: 100%;
+  }
+}
+
+/* 404 і помилки. */
+.notfound {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-width: 640px;
+  margin: 64px auto 0;
+  text-align: center;
+}
+
+.notfound__code {
+  color: var(--color-honey-text);
+  font-size: 64px;
+  font-weight: 800;
+  letter-spacing: -2px;
+  line-height: 1;
+}
+
+.notfound h1 {
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.notfound p {
+  color: var(--color-hint);
+}
+
+.notfound__search {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.error-page {
+  margin-top: 48px;
+}

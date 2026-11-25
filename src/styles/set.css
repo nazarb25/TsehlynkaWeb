@@ -1,0 +1,699 @@
+.set__top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 460px;
+  grid-template-areas:
+    'gallery buy'
+    'offers buy';
+  grid-template-rows: auto 1fr;
+  column-gap: 48px;
+  margin-top: 20px;
+}
+
+.set__gallery {
+  grid-area: gallery;
+}
+
+.set__buy {
+  grid-area: buy;
+}
+
+.set__offers {
+  grid-area: offers;
+}
+
+.buy {
+  position: sticky;
+  top: calc(var(--header-height) + 20px);
+  padding: 24px;
+  border-radius: var(--radius-xl);
+  background: var(--color-section);
+}
+
+.buy__theme {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--color-link);
+  font-size: 14px;
+}
+
+.buy h1 {
+  margin-top: 6px;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1.15;
+}
+
+.buy__sub {
+  margin-top: 6px;
+  color: var(--color-hint);
+  font-size: 15px;
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+}
+
+.pills li {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pills svg {
+  color: var(--color-hint);
+}
+
+.buy__offer {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-separator);
+}
+
+.buy__label {
+  color: var(--color-hint);
+  font-size: 13px;
+}
+
+.buy__price {
+  margin-top: 4px;
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+}
+
+.buy__was {
+  color: var(--color-hint);
+  font-size: 14px;
+}
+
+.buy__was em,
+.ocell--price em {
+  color: var(--color-success);
+  font-style: normal;
+  font-weight: 600;
+}
+
+.buy__state {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+.buy__state b {
+  font-weight: 500;
+}
+
+.buy__state i,
+.ocell--state i {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--color-hint);
+}
+
+.is-ok i {
+  background: var(--color-success-dot);
+}
+
+.buy__state.is-ok b {
+  color: var(--color-success);
+}
+
+.is-pre i {
+  background: var(--color-info);
+}
+
+.is-unknown i {
+  background: var(--color-warning);
+}
+
+.buy__none {
+  margin-top: 6px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.buy__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.buy__actions .button {
+  width: 100%;
+}
+
+.button--outline {
+  border-color: var(--color-outline);
+  background: transparent;
+}
+
+.button--ghost {
+  height: 40px;
+  border-color: transparent;
+  background: transparent;
+  color: var(--color-link);
+  font-size: 14px;
+}
+
+/* Галерея. */
+.gallery__main {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  background: var(--color-photo-white);
+}
+
+.gallery__track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.gallery__track::-webkit-scrollbar {
+  display: none;
+}
+
+.gallery__slide {
+  flex: 0 0 100%;
+  aspect-ratio: 3 / 2;
+  scroll-snap-align: start;
+}
+
+.gallery__slide img {
+  padding: 6%;
+}
+
+.gallery__empty {
+  flex-direction: column;
+  gap: 10px;
+  aspect-ratio: 3 / 2;
+  border-radius: var(--radius-xl);
+  font-size: 14px;
+  grid-auto-flow: row;
+}
+
+.gallery__nav {
+  position: absolute;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--color-overlay-pill);
+  color: #ffffff;
+  opacity: 0;
+  transform: translateY(-50%);
+  transition: opacity 0.15s;
+}
+
+.gallery__main:hover .gallery__nav:not(:disabled) {
+  opacity: 1;
+}
+
+.gallery__nav--prev {
+  left: 12px;
+}
+
+.gallery__nav--next {
+  right: 12px;
+}
+
+.gallery__counter {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  background: var(--color-overlay-pill);
+  color: #ffffff;
+  font-size: 12px;
+}
+
+.gallery__kinds {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  display: flex;
+  padding: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--color-overlay-pill);
+}
+
+.gallery__kinds button {
+  height: 28px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: none;
+  color: #ffffff;
+  font-size: 13px;
+}
+
+.gallery__kinds button[aria-pressed='true'] {
+  background: #ffffff;
+  color: #1c1c1e;
+  font-weight: 600;
+}
+
+.gallery__thumbs {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.gallery__thumbs button {
+  aspect-ratio: 4 / 3;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: var(--radius-m);
+}
+
+.gallery__thumbs button[aria-current='true'] {
+  border-color: var(--color-honey);
+}
+
+/* «Де купити». */
+.offers__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 40px 0 16px;
+}
+
+.offers__head h2 {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.otable {
+  overflow: hidden;
+  border-radius: var(--radius-l);
+  background: var(--color-section);
+}
+
+.otable__row {
+  display: grid;
+  grid-template-columns: 2.5fr 1.7fr 1fr 1.2fr 136px;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+}
+
+.otable__row + .otable__row {
+  border-top: 1px solid var(--color-separator);
+}
+
+.otable__row--head {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  color: var(--color-hint);
+  font-size: 12px;
+}
+
+.otable__row.is-dim .ocell--shop,
+.otable__row.is-dim .ocell--price {
+  opacity: 0.6;
+}
+
+.ocell {
+  min-width: 0;
+  font-size: 14px;
+}
+
+.ocell--shop {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ocell--shop > span:last-child {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ocell--shop b {
+  overflow: hidden;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ocell--shop small,
+.ocell--checked {
+  color: var(--color-hint);
+  font-size: 12px;
+}
+
+.ocell--state {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ocell--price {
+  display: flex;
+  flex-direction: column;
+}
+
+.ocell--price b {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.ocell--price span {
+  color: var(--color-hint);
+  font-size: 12px;
+}
+
+.ocell--go {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ocell--go .button {
+  width: 100%;
+  padding: 0 10px;
+}
+
+.ocell__none {
+  color: var(--color-hint);
+  font-size: 12px;
+  text-align: center;
+}
+
+.offers__note {
+  margin-top: 10px;
+  color: var(--color-hint);
+  font-size: 12px;
+}
+
+/* Фігурки, про набір, інструкції. */
+.figs {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: 16px 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.figs__title {
+  margin: 24px 0 12px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.fig {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.fig__photo {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--radius-m);
+}
+
+.fig__qty {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  background: var(--color-overlay-pill);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.set__info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  gap: 32px;
+}
+
+.set__info--single {
+  grid-template-columns: minmax(0, 720px);
+}
+
+.set__desc {
+  margin-bottom: 16px;
+  color: var(--color-text);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.facts {
+  margin: 0;
+  padding: 4px 16px;
+  border-radius: var(--radius-l);
+  background: var(--color-section);
+}
+
+.facts div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  font-size: 14px;
+}
+
+.facts div + div {
+  border-top: 1px solid var(--color-separator);
+}
+
+.facts dt {
+  color: var(--color-hint);
+}
+
+.facts dd {
+  margin: 0;
+  text-align: right;
+}
+
+.instr {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.instr a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radius-l);
+  background: var(--color-section);
+}
+
+.instr a > span {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.instr b {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.instr small {
+  color: var(--color-hint);
+  font-size: 12px;
+}
+
+.instr svg {
+  flex: 0 0 auto;
+  color: var(--color-hint);
+}
+
+@media (max-width: 1199.98px) and (min-width: 1000px) {
+  .set__top {
+    grid-template-columns: minmax(0, 1fr) 380px;
+    column-gap: 32px;
+  }
+
+  .figs {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .otable__row {
+    grid-template-columns: 2.2fr 1.6fr 1fr 1.2fr 128px;
+  }
+
+  .ocell--checked {
+    display: none;
+  }
+
+  .otable__row {
+    grid-template-columns: 2.2fr 1.6fr 1.2fr 128px;
+  }
+
+  .otable__row--head span:nth-child(3) {
+    display: none;
+  }
+}
+
+/* Телефон: фото на всю ширину, ціна під назвою, пропозиції — шторкою. */
+@media (max-width: 999.98px) {
+  .set__top {
+    display: block;
+    margin-top: 0;
+  }
+
+  .set__gallery {
+    margin: 0 calc(var(--gutter) * -1);
+  }
+
+  .gallery__main {
+    border-radius: 0;
+  }
+
+  .buy {
+    position: static;
+    margin-top: 16px;
+    padding: 0;
+    background: none;
+  }
+
+  .buy h1 {
+    font-size: 26px;
+  }
+
+  .buy__offer {
+    margin-top: 16px;
+    padding: 16px;
+    border: 0;
+    border-radius: var(--radius-l);
+    background: var(--color-section);
+  }
+
+  .buy__price {
+    font-size: 30px;
+  }
+
+  .offers {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: none;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  .offers:target {
+    display: flex;
+  }
+
+  .offers__backdrop {
+    position: absolute;
+    inset: 0;
+    background: var(--color-backdrop);
+    animation: fade 0.2s;
+  }
+
+  .offers__panel {
+    position: relative;
+    max-height: 88vh;
+    overflow: auto;
+    padding: 0 16px calc(16px + var(--safe-area-bottom));
+    border-radius: 20px 20px 0 0;
+    background: var(--color-sheet);
+    animation: rise 0.32s var(--ease-sheet-open);
+  }
+
+  .offers__head {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    margin: 0 -16px 8px;
+    padding: 18px 16px 10px;
+    background: var(--color-sheet);
+  }
+
+  .offers__head h2 {
+    font-size: 20px;
+  }
+
+  .offers__close {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--color-fill);
+    color: var(--color-hint);
+  }
+
+  .otable__row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'shop price'
+      'state go'
+      'checked go';
+    row-gap: 4px;
+  }
+
+  .ocell--shop {
+    grid-area: shop;
+  }
+
+  .ocell--price {
+    grid-area: price;
+    align-items: flex-end;
+  }
+
+  .ocell--state {
+    grid-area: state;
+    font-size: 13px;
+  }
+
+  .ocell--checked {
+    grid-area: checked;
+  }
+
+  .ocell--go {
+    grid-area: go;
+    align-self: center;
+  }
+
+  .ocell--go .button {
+    width: auto;
+  }
+
+  .figs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px 10px;
+  }
+
+  .set__info,
+  .set__info--single {
+    display: block;
+  }
+}
