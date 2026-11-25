@@ -571,12 +571,6 @@
   transition: transform 0.15s;
 }
 
-a.section-head:hover h2 {
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 4px;
-}
-
 a.section-head:hover svg {
   color: var(--color-text);
   transform: translateX(3px);
