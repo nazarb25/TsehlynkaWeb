@@ -85,7 +85,7 @@ export function SetTile({ set, context, eager }: SetTileProps) {
         <div className="tile__shop">
           {deal ? (
             <>
-              <ShopLogo shopId={deal.shop_id} name={deal.shop_name} logo={deal.shop_logo} logoUrl={deal.shop_logo_url} size={20} />
+              <ShopLogo shopId={deal.shop_id} name={deal.shop_name} logo={deal.shop_logo} logoUrl={deal.shop_logo_url} size={28} />
               <span>{deal.shop_name}</span>
             </>
           ) : shops ? (

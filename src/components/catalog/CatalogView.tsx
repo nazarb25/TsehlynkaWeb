@@ -77,7 +77,15 @@ export async function loadCatalog(sectionKey: SectionKey, filters: CatalogFilter
   return { page, themes: themes ?? [], shops: shops ?? [] }
 }
 
+/** Теми для фільтра; однакові назви розрізняє назва батьківської теми. */
 function themeOptions(themes: Theme[]): FilterOption[] {
+  const byId = new Map(themes.map((theme) => [theme.id, theme]))
+  const named = new Map<string, number>()
+  for (const theme of themes) if (theme.set_count > 0) named.set(theme.name, (named.get(theme.name) ?? 0) + 1)
+  const label = (theme: Theme) => {
+    const parent = theme.parent_id ? byId.get(theme.parent_id) : undefined
+    return (named.get(theme.name) ?? 0) > 1 && parent ? `${theme.name} · ${parent.name}` : theme.name
+  }
   return themes
     .filter((theme) => theme.set_count > 0)
     .sort(
@@ -86,7 +94,7 @@ function themeOptions(themes: Theme[]): FilterOption[] {
         Number(b.is_current) - Number(a.is_current) ||
         b.set_count - a.set_count,
     )
-    .map((theme) => ({ slug: theme.slug, name: theme.name, count: theme.set_count }))
+    .map((theme) => ({ slug: theme.slug, name: label(theme), count: theme.set_count }))
 }
 
 function shopOptions(shops: RetailShop[]): FilterOption[] {
@@ -115,6 +123,7 @@ export async function CatalogView({ sectionKey, filters, title, hint, crumbs, mo
   const chips = activeFilters(filters, section, names)
   const suggestedTheme = sectionKey === 'search' && filters.q && filters.page === 1 ? matchTheme(themes, filters.q) : null
   const query = queryParams(filters, section, { page: filters.page }).toString()
+  const olderHref = isNewest(filters) ? catalogHref(filters, SECTIONS.catalog, { newest: false, page: 1 }) : null
 
   return (
     <div className="wrap">
@@ -228,7 +237,26 @@ export async function CatalogView({ sectionKey, filters, title, hint, crumbs, mo
           ) : page.items.length ? (
             <>
               <SetTiles sets={page.items} context={context} view={view} eagerCount={4} />
-              <LoadMore key={`${sectionKey}?${query}#${filters.page}`} sectionKey={sectionKey} query={query} page={filters.page} pages={pages} context={context} view={view} />
+              <LoadMore
+                key={`${sectionKey}?${query}#${filters.page}`}
+                sectionKey={sectionKey}
+                query={query}
+                page={filters.page}
+                pages={pages}
+                context={context}
+                view={view}
+                end={
+                  olderHref ? (
+                    <p className="list-end">
+                      {chips.length ? 'Це всі новинки з цими фільтрами.' : 'Це всі новинки.'}{' '}
+                      <Link className="link" href={olderHref}>
+                        Переглянути старіші набори
+                        <ChevronRight size={14} />
+                      </Link>
+                    </p>
+                  ) : null
+                }
+              />
               <Pagination page={filters.page} pages={pages} href={(value) => catalogHref(filters, section, { page: value })} />
               <JsonLd data={itemListSchema(page.items, page.offset)} />
             </>
@@ -253,6 +281,12 @@ export async function CatalogView({ sectionKey, filters, title, hint, crumbs, mo
               <Link className="button button--primary" href={resetHref(filters, section)} scroll={false}>
                 Скинути всі фільтри
               </Link>
+              {olderHref ? (
+                <Link className="link list-end__link" href={olderHref}>
+                  Шукати серед старіших наборів
+                  <ChevronRight size={14} />
+                </Link>
+              ) : null}
             </EmptyState>
           ) : filters.q ? (
             <EmptyState

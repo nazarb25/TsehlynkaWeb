@@ -24,8 +24,7 @@ export function SiteFooter({ themes, botUrl }: SiteFooterProps) {
           </Link>
           <p>{TRADEMARK_NOTICE}</p>
           <p className="footer__small">
-            Зображення наборів і фігурок та інструкції захищені авторським правом групи компаній LEGO. Дані каталогу — з
-            Rebrickable.
+            Зображення наборів і фігурок та інструкції захищені авторським правом групи компаній LEGO.
           </p>
         </div>
         <nav className="hide-mobile" aria-label="Каталог">

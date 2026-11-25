@@ -14,6 +14,13 @@ const MEDIA = `https://localhost:${MEDIA_PORT}`
 const uuid = (n, kind = 1) => `${String(kind).padStart(8, '0')}-0000-4000-8000-${String(n).padStart(12, '0')}`
 const image = (key) => ({ large: `${MEDIA}/img/${key}.svg?s=l`, medium: `${MEDIA}/img/${key}.svg?s=m`, thumb: `${MEDIA}/img/${key}.svg?s=t` })
 
+const TALL = new Set(['75313', '75375'])
+const DESCRIPTION = [
+  'Величезна колекційна модель крокохода AT-AT з рухомими ногами, відсіком для десанту й 9 фігурками. Модель стоїть на чотирьох ногах із шарнірами, голова повертається, а з боків відкриваються люки.',
+  'Набір створено для дорослих фанатів: детальна збірка займе кілька вечорів.',
+  '• КОЛЕКЦІЙНА МОДЕЛЬ — понад 6700 деталей і висота 62 см\n• 9 ФІГУРОК — генерал Вірс, Люк Скайвокер і снігові штурмовики\n• РУХОМІ ДЕТАЛІ — ноги, голова й гармати',
+].join('\n\n')
+
 const THEME_ROWS = [
   ['star-wars', 'Star Wars', null, 128, 14, 1999, 2026, true],
   ['city', 'City', null, 211, 38, 2005, 2026, true],
@@ -73,7 +80,7 @@ const shops = SHOP_ROWS.map(([slug, name, official, count], index) => ({
   slug,
   name,
   logo_url: null,
-  logo: null,
+  logo: slug === 'kubyk' ? image('logo-kubyk') : null,
   is_official: official,
   in_stock_sets_count: count,
   max_discount_percent: 42,
@@ -137,7 +144,7 @@ const sets = SET_ROWS.map((row, index) => {
     age_max_months: null,
     age_label: null,
     declared_piece_count: pieces,
-    image: image(`set-${number}`),
+    image: image(TALL.has(number) ? `set-${number}-tall` : `set-${number}`),
     release_date: released ?? `${year}-03-01`,
     release_date_precision: 'day',
     has_in_stock_offer: inStock,
@@ -156,7 +163,7 @@ const sets = SET_ROWS.map((row, index) => {
           shop_id: deal.id,
           shop_name: deal.name,
           shop_logo_url: null,
-          shop_logo: null,
+          shop_logo: deal.logo,
         }
       : null,
     _themePath: [themes.find((t) => t.id === theme.parent_id), theme].filter(Boolean),
@@ -233,7 +240,7 @@ function details(set) {
   const roles = ['primary', 'gallery', 'gallery', 'detail', 'figures', 'packaging']
   return {
     ...catalogItem(set),
-    description: number === '75313' ? 'Величезна колекційна модель крокохода AT-AT з рухомими ногами, відсіком для десанту й 9 фігурками.' : null,
+    description: number === '75313' ? DESCRIPTION : null,
     theme_path: set._themePath.map(({ id, name, slug }) => ({ id, name, slug })),
     declared_figure_count: number === '75313' ? 9 : null,
     lifecycle_status: set.intro_year >= 2025 ? 'active' : 'retired',
@@ -255,7 +262,7 @@ function details(set) {
       height: 800,
       alt: null,
       role,
-      variants: image(`set-${number}-${index}`),
+      variants: image(TALL.has(number) && index === 1 ? `set-${number}-${index}-tall` : `set-${number}-${index}`),
     })),
     instructions:
       number === '75313'
@@ -326,7 +333,7 @@ function offers(set) {
       shop_id: row.shop.id,
       shop_name: row.shop.name,
       logo_url: null,
-      logo: null,
+      logo: row.shop.logo,
       is_official: row.shop.is_official,
       is_sold_by_shop: !row.seller,
       seller_name: row.seller ?? null,
@@ -365,6 +372,12 @@ api.listen(API_PORT, () => console.log(`mock API http://localhost:${API_PORT}/ap
 const PALETTE = ['#e3000b', '#006cb7', '#ffcf00', '#00852b', '#f57d20', '#a0a19f', '#69c3e2', '#9b5de5']
 
 function brickSvg(key) {
+  if (key.startsWith('logo-')) {
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="#fff"/><text x="32" y="30" font-family="Arial" font-weight="700" font-size="18" text-anchor="middle" fill="#1c1c1e">KУ</text><text x="32" y="50" font-family="Arial" font-weight="700" font-size="18" text-anchor="middle" fill="#2f6fd6">БИ</text></svg>'
+  }
+  if (key.endsWith('-tall')) {
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 640"><rect width="300" height="640" fill="#fff"/><rect x="110" y="40" width="80" height="80" rx="10" fill="#ffcf00"/><rect x="70" y="130" width="160" height="300" rx="12" fill="#2f6fd6"/><rect x="80" y="440" width="60" height="170" fill="#c62828"/><rect x="160" y="440" width="60" height="170" fill="#c62828"/></svg>'
+  }
   let hash = 0
   for (const char of key) hash = (hash * 31 + char.charCodeAt(0)) >>> 0
   const color = (n) => PALETTE[(hash >>> n) % PALETTE.length]

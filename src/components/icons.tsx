@@ -196,11 +196,21 @@ export const CheckIcon = (props: IconProps) => (
   </Svg>
 )
 
-/** Логотип Цеглинки: цеглинка на медовій плитці. */
+/** Логотип Цеглинки: лупа з медовою цеглинкою, як у боті. */
 export function Logo({ size = 32 }: { size?: number }) {
   return (
-    <span className="logo" style={{ width: size, height: size }} aria-hidden="true">
-      <BrickIcon size={Math.round(size * 0.62)} strokeWidth={2.2} />
-    </span>
+    <svg className="logo" width={size} height={size} viewBox="13 9 76 76" aria-hidden="true" focusable="false">
+      <g fill="none" strokeLinecap="round">
+        <circle cx="49.4" cy="52.2" r="22.7" stroke="currentColor" strokeWidth="5.6" />
+        <path d="M33.5 70 23.5 80.5" stroke="currentColor" strokeWidth="6.5" />
+        <path d="M64.8 15.2 61.6 23.5M75 19.9l-6.8 8M81.3 29.9l-7.5 4" stroke="var(--color-honey)" strokeWidth="5.5" />
+      </g>
+      <g fill="var(--color-honey)">
+        <rect x="33.3" y="47" width="32.9" height="12.2" rx="2" />
+        <rect x="36.9" y="42.9" width="6.8" height="5.4" rx="1.2" />
+        <rect x="46.5" y="42.9" width="6.8" height="5.4" rx="1.2" />
+        <rect x="56.1" y="42.9" width="6.8" height="5.4" rx="1.2" />
+      </g>
+    </svg>
   )
 }

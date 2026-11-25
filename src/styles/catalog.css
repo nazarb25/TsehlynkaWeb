@@ -552,3 +552,17 @@
 .ffield input {
   width: 100%;
 }
+
+.list-end {
+  margin-top: 24px;
+  color: var(--color-hint);
+  font-size: 15px;
+  text-align: center;
+}
+
+.list-end .link,
+.list-end__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}

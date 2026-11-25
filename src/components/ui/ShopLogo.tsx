@@ -21,7 +21,7 @@ interface ShopLogoProps {
 export function ShopLogo({ shopId, name, logo, logoUrl, size = 26, className }: ShopLogoProps) {
   const src = logo?.thumb ?? logoUrl ?? null
   const tint = shopTint(shopId)
-  const classes = ['shop-logo', tint ? `shop-logo--t${tint}` : null, className].filter(Boolean).join(' ')
+  const classes = ['shop-logo', src ? 'shop-logo--image' : tint ? `shop-logo--t${tint}` : null, className].filter(Boolean).join(' ')
   return (
     <span
       className={classes}

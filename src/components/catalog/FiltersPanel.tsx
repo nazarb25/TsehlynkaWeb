@@ -142,7 +142,6 @@ export function FiltersPanel({ filters, section, themes, shops, variant, onDone 
 
   const visibleShops = allShops ? shops : shops.slice(0, SHOWN_SHOPS)
   const hiddenShops = shops.length - SHOWN_SHOPS
-  const piecesOpen = current.piecesMin !== null || current.piecesMax !== null
 
   const commitYears = () => {
     let from = parseYear(yearFrom)
@@ -338,7 +337,7 @@ export function FiltersPanel({ filters, section, themes, shops, variant, onDone 
         </div>
       </Group>
 
-      <Group title="Кількість деталей" open={piecesOpen}>
+      <Group title="Кількість деталей">
         <Radio
           name={`${variant}-pieces`}
           checked={current.piecesMin === null && current.piecesMax === null}
@@ -356,7 +355,7 @@ export function FiltersPanel({ filters, section, themes, shops, variant, onDone 
         ))}
       </Group>
 
-      <Group title="Інше" open={current.specialized}>
+      <Group title="Інше">
         <Check
           checked={current.specialized}
           label="Спеціальні набори"

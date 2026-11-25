@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 
-import { BrickIcon, ChevronLeft, ChevronRight } from '@/components/icons'
+import { BrickIcon, ChevronLeft, ChevronRight, CloseIcon } from '@/components/icons'
 
 export interface GalleryImage {
   src: string
@@ -14,6 +14,7 @@ export interface GalleryImage {
 /** Фото набору: велике фото 3:2 і мініатюри; на телефоні — гортання пальцем. */
 export function Gallery({ images, name }: { images: GalleryImage[]; name: string }) {
   const [index, setIndex] = useState(0)
+  const [zoomed, setZoomed] = useState(false)
   const track = useRef<HTMLDivElement>(null)
   const firstPackaging = images.findIndex((image) => image.packaging)
   const hasBoth = firstPackaging > 0
@@ -49,11 +50,18 @@ export function Gallery({ images, name }: { images: GalleryImage[]; name: string
 
   const current = images[index]
   return (
+    <>
     <div className="gallery">
       <div className="gallery__main">
         <div className="gallery__track" ref={track}>
           {images.map((image, position) => (
-            <div key={image.src} className="gallery__slide stage stage--white">
+            <button
+              key={image.src}
+              type="button"
+              className="gallery__slide stage stage--white"
+              aria-label={`Відкрити фото ${position + 1} на весь екран`}
+              onClick={() => setZoomed(true)}
+            >
               <img
                 src={image.src}
                 alt={image.alt || `${name}, фото ${position + 1}`}
@@ -62,7 +70,7 @@ export function Gallery({ images, name }: { images: GalleryImage[]; name: string
                 decoding="async"
                 draggable={false}
               />
-            </div>
+            </button>
           ))}
         </div>
         {images.length > 1 ? (
@@ -106,5 +114,87 @@ export function Gallery({ images, name }: { images: GalleryImage[]; name: string
         </div>
       ) : null}
     </div>
+    {zoomed ? <Lightbox images={images} name={name} index={index} onShow={show} onClose={() => setZoomed(false)} /> : null}
+    </>
+  )
+}
+
+interface LightboxProps {
+  images: GalleryImage[]
+  name: string
+  index: number
+  onShow: (index: number) => void
+  onClose: () => void
+}
+
+/** Фото на весь екран у модальному `dialog`: решта сторінки недоступна, фокус лишається всередині. */
+function Lightbox({ images, name, index, onShow, onClose }: LightboxProps) {
+  const touchX = useRef<number | null>(null)
+  const dialogRef = useRef<HTMLDialogElement>(null)
+  const image = images[index]
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowLeft') onShow(index - 1)
+      else if (event.key === 'ArrowRight') onShow(index + 1)
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [index, onShow])
+
+  useEffect(() => {
+    const dialog = dialogRef.current
+    if (!dialog) return
+    const overflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    dialog.showModal()
+    return () => {
+      document.body.style.overflow = overflow
+      if (dialog.open) dialog.close()
+    }
+  }, [])
+
+  if (!image) return null
+  return (
+    <dialog
+      ref={dialogRef}
+      className="lightbox"
+      aria-label={`${name}: фото ${index + 1} з ${images.length}`}
+      onCancel={(event) => {
+        event.preventDefault()
+        onClose()
+      }}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose()
+      }}
+      onTouchStart={(event) => {
+        touchX.current = event.touches[0]?.clientX ?? null
+      }}
+      onTouchEnd={(event) => {
+        const start = touchX.current
+        const end = event.changedTouches[0]?.clientX
+        touchX.current = null
+        if (start === null || end === undefined || Math.abs(end - start) < 40) return
+        onShow(end < start ? index + 1 : index - 1)
+      }}
+    >
+      <img src={image.src} alt={image.alt || `${name}, фото ${index + 1}`} className="lightbox__image" draggable={false} />
+      <button type="button" className="lightbox__close" aria-label="Закрити" onClick={onClose} autoFocus>
+        <CloseIcon size={22} />
+      </button>
+      {images.length > 1 ? (
+        <>
+          <button type="button" className="lightbox__nav lightbox__nav--prev" aria-label="Попереднє фото" onClick={() => onShow(index - 1)} disabled={index === 0}>
+            <ChevronLeft size={24} />
+          </button>
+          <button type="button" className="lightbox__nav lightbox__nav--next" aria-label="Наступне фото" onClick={() => onShow(index + 1)} disabled={index === images.length - 1}>
+            <ChevronRight size={24} />
+          </button>
+          <span className="lightbox__counter num">
+            {index + 1} / {images.length}
+          </span>
+        </>
+      ) : null}
+    </dialog>
   )
 }
