@@ -477,8 +477,11 @@
   margin-top: 0;
 }
 
-.desc__item {
+.desc__line {
   display: block;
+}
+
+.desc__item {
   position: relative;
   padding-left: 16px;
 }
@@ -745,14 +748,24 @@
 }
 
 .lightbox {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 56px 72px;
+  border: 0;
+  background: transparent;
+  touch-action: pan-y;
+}
+
+.lightbox[open] {
   display: grid;
   place-items: center;
-  padding: 56px 72px;
+}
+
+.lightbox::backdrop {
   background: rgb(0 0 0 / 92%);
-  touch-action: pan-y;
 }
 
 .lightbox__image {

@@ -39,7 +39,7 @@ export function SetDescription({ text }: { text: string }) {
         {descriptionParagraphs(text).map((lines, index) => (
           <p key={index}>
             {lines.map((line, position) => (
-              <span key={position} className={line.startsWith('•') ? 'desc__item' : undefined}>
+              <span key={position} className={line.startsWith('•') ? 'desc__line desc__item' : 'desc__line'}>
                 {line.replace(/^•\s*/, '')}
               </span>
             ))}

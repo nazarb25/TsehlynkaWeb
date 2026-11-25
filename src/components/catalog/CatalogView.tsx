@@ -237,17 +237,27 @@ export async function CatalogView({ sectionKey, filters, title, hint, crumbs, mo
           ) : page.items.length ? (
             <>
               <SetTiles sets={page.items} context={context} view={view} eagerCount={4} />
-              <LoadMore key={`${sectionKey}?${query}#${filters.page}`} sectionKey={sectionKey} query={query} page={filters.page} pages={pages} context={context} view={view} />
+              <LoadMore
+                key={`${sectionKey}?${query}#${filters.page}`}
+                sectionKey={sectionKey}
+                query={query}
+                page={filters.page}
+                pages={pages}
+                context={context}
+                view={view}
+                end={
+                  olderHref ? (
+                    <p className="list-end">
+                      {chips.length ? 'Це всі новинки з цими фільтрами.' : 'Це всі новинки.'}{' '}
+                      <Link className="link" href={olderHref}>
+                        Переглянути старіші набори
+                        <ChevronRight size={14} />
+                      </Link>
+                    </p>
+                  ) : null
+                }
+              />
               <Pagination page={filters.page} pages={pages} href={(value) => catalogHref(filters, section, { page: value })} />
-              {olderHref && filters.page >= pages ? (
-                <p className="list-end">
-                  {chips.length ? 'Це всі новинки з цими фільтрами.' : 'Це всі новинки.'}{' '}
-                  <Link className="link" href={olderHref}>
-                    Переглянути старіші набори
-                    <ChevronRight size={14} />
-                  </Link>
-                </p>
-              ) : null}
               <JsonLd data={itemListSchema(page.items, page.offset)} />
             </>
           ) : filters.page > 1 && total > 0 ? (

@@ -127,40 +127,43 @@ interface LightboxProps {
   onClose: () => void
 }
 
-/** Фото на весь екран: стрілки, клавіші ← → і Esc, гортання пальцем. */
+/** Фото на весь екран у модальному `dialog`: решта сторінки недоступна, фокус лишається всередині. */
 function Lightbox({ images, name, index, onShow, onClose }: LightboxProps) {
   const touchX = useRef<number | null>(null)
-  const closeRef = useRef<HTMLButtonElement>(null)
+  const dialogRef = useRef<HTMLDialogElement>(null)
   const image = images[index]
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose()
-      else if (event.key === 'ArrowLeft') onShow(index - 1)
+      if (event.key === 'ArrowLeft') onShow(index - 1)
       else if (event.key === 'ArrowRight') onShow(index + 1)
     }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
-  }, [index, onShow, onClose])
+  }, [index, onShow])
 
   useEffect(() => {
-    const previous = document.activeElement as HTMLElement | null
+    const dialog = dialogRef.current
+    if (!dialog) return
     const overflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-    closeRef.current?.focus()
+    dialog.showModal()
     return () => {
       document.body.style.overflow = overflow
-      previous?.focus()
+      if (dialog.open) dialog.close()
     }
   }, [])
 
   if (!image) return null
   return (
-    <div
+    <dialog
+      ref={dialogRef}
       className="lightbox"
-      role="dialog"
-      aria-modal="true"
       aria-label={`${name}: фото ${index + 1} з ${images.length}`}
+      onCancel={(event) => {
+        event.preventDefault()
+        onClose()
+      }}
       onClick={(event) => {
         if (event.target === event.currentTarget) onClose()
       }}
@@ -176,7 +179,7 @@ function Lightbox({ images, name, index, onShow, onClose }: LightboxProps) {
       }}
     >
       <img src={image.src} alt={image.alt || `${name}, фото ${index + 1}`} className="lightbox__image" draggable={false} />
-      <button ref={closeRef} type="button" className="lightbox__close" aria-label="Закрити" onClick={onClose}>
+      <button type="button" className="lightbox__close" aria-label="Закрити" onClick={onClose} autoFocus>
         <CloseIcon size={22} />
       </button>
       {images.length > 1 ? (
@@ -192,6 +195,6 @@ function Lightbox({ images, name, index, onShow, onClose }: LightboxProps) {
           </span>
         </>
       ) : null}
-    </div>
+    </dialog>
   )
 }

@@ -14,15 +14,16 @@ interface LoadMoreProps {
   pages: number
   context: TileContext
   view: 'grid' | 'list' | 'auto'
+  end?: React.ReactNode
 }
 
-/** «Показати ще»: наступні сторінки дописуються під поточною, адреса не змінюється. */
-export function LoadMore({ sectionKey, query, page, pages, context, view }: LoadMoreProps) {
+/** «Показати ще»: наступні сторінки дописуються під поточною, адреса не змінюється; `end` — під останньою сторінкою. */
+export function LoadMore({ sectionKey, query, page, pages, context, view, end }: LoadMoreProps) {
   const [items, setItems] = useState<SetItem[]>([])
   const [next, setNext] = useState(page + 1)
   const [state, setState] = useState<'idle' | 'loading' | 'error'>('idle')
 
-  if (next > pages && !items.length) return null
+  if (next > pages && !items.length) return end ?? null
 
   const load = async () => {
     setState('loading')
@@ -56,7 +57,9 @@ export function LoadMore({ sectionKey, query, page, pages, context, view }: Load
             {state === 'loading' ? 'Завантажуємо…' : state === 'error' ? 'Не вдалося. Спробувати ще' : 'Показати ще'}
           </button>
         </div>
-      ) : null}
+      ) : (
+        end
+      )}
     </>
   )
 }
