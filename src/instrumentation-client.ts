@@ -8,7 +8,7 @@ const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN
 Sentry.init({
   dsn,
   enabled: Boolean(dsn),
-  environment: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT ?? process.env.NODE_ENV,
+  environment: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT || process.env.NODE_ENV,
   tunnel: true,
   tracesSampleRate: tracesSampleRate(process.env.NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE),
   profileSessionSampleRate: 1,
@@ -48,7 +48,7 @@ const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY
 if (posthogKey) {
   posthog.init(posthogKey, {
     api_host: '/ingest',
-    ui_host: process.env.NEXT_PUBLIC_POSTHOG_UI_HOST ?? 'https://eu.posthog.com',
+    ui_host: process.env.NEXT_PUBLIC_POSTHOG_UI_HOST || 'https://eu.posthog.com',
     defaults: '2026-08-30',
     capture_pageview: 'history_change',
     capture_pageleave: true,

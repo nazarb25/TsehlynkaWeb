@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next'
 import { withSentryConfig } from '@sentry/nextjs/config'
 
-const posthogHost = (process.env.POSTHOG_HOST ?? 'https://eu.i.posthog.com').replace(/\/+$/, '')
+const posthogHost = (process.env.POSTHOG_HOST || 'https://eu.i.posthog.com').replace(/\/+$/, '')
 const posthogAssets = posthogHost.replace('.i.posthog.com', '-assets.i.posthog.com')
 
 const nextConfig: NextConfig = {

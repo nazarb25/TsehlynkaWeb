@@ -5,7 +5,7 @@ export const SITE_DESCRIPTION =
 
 /** Публічна адреса сайту без скісної риски в кінці; для canonical, sitemap і OG. */
 export function siteUrl(): string {
-  return (process.env.SITE_URL ?? 'http://localhost:3000').replace(/\/+$/, '')
+  return (process.env.SITE_URL || 'http://localhost:3000').replace(/\/+$/, '')
 }
 
 export function absoluteUrl(path: string): string {

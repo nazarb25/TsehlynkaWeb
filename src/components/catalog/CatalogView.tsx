@@ -225,7 +225,7 @@ export async function CatalogView({ sectionKey, filters, title, hint, crumbs, mo
           ) : page.items.length ? (
             <>
               <SetTiles sets={page.items} context={context} view={view} eagerCount={4} />
-              <LoadMore sectionKey={sectionKey} query={query} page={filters.page} pages={pages} context={context} view={view} />
+              <LoadMore key={`${sectionKey}?${query}#${filters.page}`} sectionKey={sectionKey} query={query} page={filters.page} pages={pages} context={context} view={view} />
               <Pagination page={filters.page} pages={pages} href={(value) => catalogHref(filters, section, { page: value })} />
               <JsonLd data={itemListSchema(page.items, page.offset)} />
             </>
