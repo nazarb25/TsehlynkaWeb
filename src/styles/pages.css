@@ -131,6 +131,14 @@
   box-shadow: var(--shadow-hover), 0 0 0 1px var(--color-separator);
 }
 
+/* Зображення теми — банер із логотипом: заповнює плитку повністю, без полів сцени. */
+.theme__photo > img,
+.theme-hero__photo > img {
+  padding: 0;
+  object-fit: cover;
+  mix-blend-mode: normal;
+}
+
 .theme--card .theme__photo {
   aspect-ratio: 4 / 3;
   border-radius: var(--radius-m);
