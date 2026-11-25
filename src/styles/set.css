@@ -291,6 +291,10 @@
 }
 
 /* «Де купити». */
+.offers {
+  scroll-margin-top: calc(var(--header-height) + 20px);
+}
+
 .offers__head {
   display: flex;
   align-items: center;
