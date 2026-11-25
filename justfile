@@ -52,6 +52,11 @@ lint:
 typecheck:
     npm run typecheck
 
+# Запустити тести
+[group('check')]
+test:
+    npm test
+
 # Оновити типи API з openapi.json
 [group('check')]
 api-types:
@@ -59,4 +64,4 @@ api-types:
 
 # Усі перевірки перед комітом
 [group('check')]
-check: lint typecheck
+check: lint typecheck test

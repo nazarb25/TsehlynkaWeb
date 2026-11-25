@@ -189,3 +189,111 @@ p {
   opacity: 0.55;
   pointer-events: none;
 }
+
+/* Скелет завантаження. */
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 24px;
+  animation: skeleton-in 0.2s 0.3s both;
+}
+
+.skeleton__line,
+.skeleton__card {
+  display: block;
+  border-radius: var(--radius-l);
+  background: var(--color-fill);
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+.skeleton__line {
+  width: min(320px, 70%);
+  height: 16px;
+}
+
+.skeleton__line--title {
+  width: min(420px, 85%);
+  height: 32px;
+}
+
+.skeleton__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.skeleton__grid .skeleton__card {
+  aspect-ratio: 3 / 4;
+}
+
+.skeleton__set {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 460px;
+  gap: 48px;
+}
+
+.skeleton__card--photo {
+  aspect-ratio: 3 / 2;
+}
+
+.skeleton__card--buy {
+  height: 360px;
+}
+
+@media (max-width: 999.98px) {
+  .skeleton {
+    padding-top: 12px;
+  }
+
+  .skeleton__grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .skeleton__grid .skeleton__card {
+    aspect-ratio: auto;
+    height: 96px;
+  }
+
+  .skeleton__set {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+@keyframes skeleton-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes skeleton-pulse {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton,
+  .skeleton__line,
+  .skeleton__card {
+    animation: none;
+  }
+}
+
+.skeleton--inline {
+  padding-top: 32px;
+  animation-delay: 0s;
+}
+
+.skeleton__grid--5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+@media (max-width: 999.98px) {
+  .skeleton__grid--5 {
+    grid-template-columns: 1fr;
+  }
+}

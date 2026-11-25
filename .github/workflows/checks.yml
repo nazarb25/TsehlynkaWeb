@@ -30,6 +30,8 @@ jobs:
 
       - run: npm run typecheck
 
+      - run: npm test
+
       - run: npx next build
         env:
           NEXT_TELEMETRY_DISABLED: 1
