@@ -1,0 +1,446 @@
+/* Параметри набору з іконками. */
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+  color: var(--color-hint);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.meta > span {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.meta svg {
+  flex: 0 0 auto;
+}
+
+/* Плитка набору: одна розмітка, вигляд задає контейнер. */
+.tiles {
+  display: grid;
+}
+
+.tile {
+  position: relative;
+  min-width: 0;
+}
+
+.tile__link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+.tile__link:focus-visible {
+  outline: 0;
+}
+
+.tile__link:focus-visible::after {
+  outline: 2px solid var(--color-link);
+  outline-offset: 2px;
+}
+
+.tile__photo {
+  position: relative;
+}
+
+.tile__badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.tile__body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tile__name {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.3;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.tile__price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 6px;
+  color: var(--color-hint);
+  font-size: 14px;
+}
+
+.tile__price b {
+  color: var(--color-text);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.tile__was {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.tile__was s {
+  font-size: 13px;
+}
+
+.tile__was em {
+  color: var(--color-success);
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 600;
+}
+
+.tile__soon {
+  color: var(--color-honey-text);
+  font-weight: 500;
+}
+
+.tile__pre {
+  color: var(--color-info);
+}
+
+.tile__shop {
+  display: none;
+}
+
+.tile:hover .tile__name {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Сітка карток. */
+@media (min-width: 1000px) {
+  .tiles--auto,
+  .tiles--grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .tiles--c5.tiles--auto,
+  .tiles--c5.tiles--grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 999.98px) {
+  .tiles--grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+}
+
+@media (min-width: 1000px) {
+  .tiles--auto .tile,
+  .tiles--grid .tile {
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    border-radius: var(--radius-l);
+    background: var(--color-section);
+    transition: box-shadow 0.15s;
+  }
+
+  .tiles--auto .tile:hover,
+  .tiles--grid .tile:hover {
+    box-shadow: var(--shadow-hover), 0 0 0 1px var(--color-separator);
+  }
+
+  .tiles--auto .tile__photo,
+  .tiles--grid .tile__photo {
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-m);
+  }
+
+  .tiles--auto .tile__body,
+  .tiles--grid .tile__body {
+    flex: 1;
+    gap: 6px;
+    padding: 10px 6px 4px;
+  }
+
+  .tiles--auto .tile__price,
+  .tiles--grid .tile__price {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tiles--auto .tile__meta,
+  .tiles--grid .tile__meta {
+    margin-top: auto;
+    padding-top: 4px;
+  }
+
+  .tiles--auto .meta__age,
+  .tiles--grid .meta__age {
+    display: none;
+  }
+}
+
+@media (max-width: 999.98px) {
+  .tiles--grid .tile {
+    display: flex;
+    flex-direction: column;
+    padding: 6px;
+    border-radius: var(--radius-l);
+    background: var(--color-section);
+  }
+
+  .tiles--grid .tile__photo {
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-m);
+  }
+
+  .tiles--grid .tile__body {
+    flex: 1;
+    gap: 4px;
+    padding: 8px 4px 4px;
+  }
+
+  .tiles--grid .tile__name {
+    font-size: 15px;
+  }
+
+  .tiles--grid .tile__price {
+    flex-direction: column;
+  }
+
+  .tiles--grid .tile__badge {
+    top: 6px;
+    right: 6px;
+  }
+
+  .tiles--grid .tile__meta {
+    margin-top: auto;
+  }
+
+  .tiles--grid .meta__age {
+    display: none;
+  }
+}
+
+/* Список рядків, як у Mini App. */
+.tiles--list {
+  padding: 0 12px;
+  border-radius: var(--radius-xl);
+  background: var(--color-section);
+}
+
+.tiles--list .tile {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr) auto;
+  grid-template-rows: 1fr 1fr auto;
+  grid-template-areas:
+    'photo name badge'
+    'photo price badge'
+    'meta meta meta';
+  column-gap: 12px;
+  row-gap: 0;
+  padding: 12px 0;
+}
+
+.tiles--list .tile + .tile {
+  border-top: 1px solid var(--color-separator);
+}
+
+.tiles--list .tile__photo {
+  grid-area: photo;
+  width: 96px;
+  height: 72px;
+  border-radius: var(--radius-m);
+}
+
+.tiles--list .tile__body {
+  display: contents;
+}
+
+.tiles--list .tile__name {
+  grid-area: name;
+  align-self: end;
+  margin-bottom: 2px;
+}
+
+.tiles--list .tile__price {
+  grid-area: price;
+  align-self: start;
+  margin-top: 2px;
+}
+
+.tiles--list .tile__price b {
+  font-size: 16px;
+}
+
+.tiles--list .tile__badge {
+  position: static;
+  grid-area: badge;
+  align-self: start;
+}
+
+.tiles--list .tile__meta {
+  grid-area: meta;
+  margin-top: 8px;
+}
+
+.tiles--list .tile__shops::before {
+  content: '· ';
+}
+
+@media (max-width: 999.98px) {
+  .tiles--auto {
+    padding: 0 12px;
+    border-radius: var(--radius-xl);
+    background: var(--color-section);
+  }
+
+  .tiles--auto .tile {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr) auto;
+    grid-template-rows: 1fr 1fr auto;
+    grid-template-areas:
+      'photo name badge'
+      'photo price badge'
+      'meta meta meta';
+    column-gap: 12px;
+    row-gap: 0;
+    padding: 12px 0;
+  }
+
+  .tiles--auto .tile + .tile {
+    border-top: 1px solid var(--color-separator);
+  }
+
+  .tiles--auto .tile__photo {
+    grid-area: photo;
+    width: 96px;
+    height: 72px;
+    border-radius: var(--radius-m);
+  }
+
+  .tiles--auto .tile__body {
+    display: contents;
+  }
+
+  .tiles--auto .tile__name {
+    grid-area: name;
+    align-self: end;
+    margin-bottom: 2px;
+  }
+
+  .tiles--auto .tile__price {
+    grid-area: price;
+    align-self: start;
+    margin-top: 2px;
+  }
+
+  .tiles--auto .tile__price b {
+    font-size: 16px;
+  }
+
+  .tiles--auto .tile__badge {
+    position: static;
+    grid-area: badge;
+    align-self: start;
+  }
+
+  .tiles--auto .tile__meta {
+    grid-area: meta;
+    margin-top: 8px;
+  }
+
+  .tiles--auto .tile__shops::before {
+    content: '· ';
+  }
+}
+
+/* Список на комп'ютері: фото, назва з параметрами, магазин, ціна праворуч. */
+@media (min-width: 1000px) {
+  .tiles--list {
+    padding: 8px;
+  }
+
+  .tiles--list .tile {
+    grid-template-columns: 112px minmax(0, 1fr) 200px 160px;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      'photo name shop price'
+      'photo meta shop price';
+    column-gap: 24px;
+    row-gap: 8px;
+    padding: 12px;
+    border-radius: var(--radius-m);
+  }
+
+  .tiles--list .tile + .tile {
+    border-top: 0;
+    box-shadow: 0 -1px 0 var(--color-separator);
+  }
+
+  .tiles--list .tile:hover,
+  .tiles--list .tile:hover + .tile {
+    box-shadow: none;
+  }
+
+  .tiles--list .tile:hover {
+    background: var(--color-fill);
+  }
+
+  .tiles--list .tile__photo {
+    width: 112px;
+    height: 84px;
+  }
+
+  .tiles--list .tile__body {
+    display: contents;
+  }
+
+  .tiles--list .tile__name {
+    grid-area: name;
+    padding-top: 4px;
+  }
+
+  .tiles--list .tile__meta {
+    grid-area: meta;
+    align-self: start;
+    margin-top: 0;
+  }
+
+  .tiles--list .tile__price {
+    grid-area: price;
+    flex-direction: column;
+    align-items: flex-end;
+    padding-top: 4px;
+    text-align: right;
+  }
+
+  .tiles--list .tile__shops,
+  .tiles--list .tile__badge,
+  .tiles--list .meta__age {
+    display: none;
+  }
+
+  .tiles--list .tile__shop {
+    display: flex;
+    grid-area: shop;
+    align-items: flex-start;
+    gap: 8px;
+    padding-top: 6px;
+    font-size: 14px;
+  }
+
+  .tiles--list .tile__hint {
+    color: var(--color-hint);
+  }
+}

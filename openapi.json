@@ -1,0 +1,4092 @@
+{
+ "openapi": "3.1.0",
+ "info": {
+  "title": "Tsehlynka",
+  "version": "0.1.0"
+ },
+ "paths": {
+  "/api/v1/sets": {
+   "get": {
+    "tags": [
+     "Catalog: sets"
+    ],
+    "summary": "Набори каталогу",
+    "description": "Опубліковані набори стандартного каталогу; фільтри поєднуються.\n\n`name` — українська назва з офіційного, редакторського чи перевіреного перекладу, без\nнього — канонічна; `image` — копії основного зображення. `search` шукає в обох назвах і в\nназвах фігурок і персонажів гарантованого складу. Номер шукається серед ідентифікаторів\nнабору, тема включає підтеми, лінійка — за `SetBuildingLine`. Елемент, фігурка й персонаж\nшукаються в гарантованому складі; `include_possible` додає варіанти груп вибору.\n`age_mark_months` — точна вікова позначка коробки; межі років і деталей включні, нижня\nмежа більша за верхню — 422. `released_from` — перший вихід (найраніша дата видань) не\nраніше дати, з анонсами; `release_date` — ця дата. `sort` — за назвою, роком появи або\n`release_desc` — першим виходом від найпізнішого. Спеціальні набори (полібеги, промо,\nжурнальні, ексклюзиви заходів) з'являються з `include_specialized` або в пошуку за `search`\nчи `number`.",
+    "operationId": "get_catalog_sets_api_v1_sets_get",
+    "parameters": [
+     {
+      "name": "number",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "minLength": 1,
+         "maxLength": 128
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Номер набору; пробіли не враховуються.",
+       "examples": [
+        "60429"
+       ],
+       "title": "Number"
+      },
+      "description": "Номер набору; пробіли не враховуються."
+     },
+     {
+      "name": "search",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "minLength": 1,
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Частина назви набору, його української назви або назви фігурки чи персонажа з гарантованого складу.",
+       "examples": [
+        "rocket"
+       ],
+       "title": "Search"
+      },
+      "description": "Частина назви набору, його української назви або назви фігурки чи персонажа з гарантованого складу."
+     },
+     {
+      "name": "theme_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "uuid"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Тема разом з підтемами.",
+       "examples": [
+        "01a19868-7736-74bd-8536-7e22bc056c03"
+       ],
+       "title": "Theme Id"
+      },
+      "description": "Тема разом з підтемами."
+     },
+     {
+      "name": "building_line_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "uuid"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Набори лінійки складання.",
+       "examples": [
+        "01a19868-7736-74bd-8536-7e22bc056c07"
+       ],
+       "title": "Building Line Id"
+      },
+      "description": "Набори лінійки складання."
+     },
+     {
+      "name": "element_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "uuid"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Набори, що містять елемент.",
+       "examples": [
+        "01a19868-7736-74bd-8536-7e22bc056d04"
+       ],
+       "title": "Element Id"
+      },
+      "description": "Набори, що містять елемент."
+     },
+     {
+      "name": "figure_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "uuid"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Набори, що містять фігурку.",
+       "examples": [
+        "01a19868-7736-74bd-8536-7e22bc056d06"
+       ],
+       "title": "Figure Id"
+      },
+      "description": "Набори, що містять фігурку."
+     },
+     {
+      "name": "character_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "uuid"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Набори з фігуркою цього персонажа.",
+       "examples": [
+        "01a19868-7736-74bd-8536-7e22bc056d05"
+       ],
+       "title": "Character Id"
+      },
+      "description": "Набори з фігуркою цього персонажа."
+     },
+     {
+      "name": "include_possible",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "boolean",
+       "description": "Враховувати варіанти груп вибору.",
+       "examples": [
+        false
+       ],
+       "default": false,
+       "title": "Include Possible"
+      },
+      "description": "Враховувати варіанти груп вибору."
+     },
+     {
+      "name": "age_mark_months",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer",
+         "maximum": 1200,
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Точна вікова позначка коробки в місяцях за `age_min_months`: 48 — «4+»; верхня межа віку не враховується.",
+       "examples": [
+        48
+       ],
+       "title": "Age Mark Months"
+      },
+      "description": "Точна вікова позначка коробки в місяцях за `age_min_months`: 48 — «4+»; верхня межа віку не враховується."
+     },
+     {
+      "name": "year_from",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer",
+         "maximum": 9999,
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Рік появи набору від; включно.",
+       "examples": [
+        2020
+       ],
+       "title": "Year From"
+      },
+      "description": "Рік появи набору від; включно."
+     },
+     {
+      "name": "year_to",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer",
+         "maximum": 9999,
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Рік появи набору до; включно.",
+       "examples": [
+        2024
+       ],
+       "title": "Year To"
+      },
+      "description": "Рік появи набору до; включно."
+     },
+     {
+      "name": "pieces_min",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer",
+         "maximum": 1000000,
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Кількість деталей від; включно.",
+       "examples": [
+        100
+       ],
+       "title": "Pieces Min"
+      },
+      "description": "Кількість деталей від; включно."
+     },
+     {
+      "name": "pieces_max",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer",
+         "maximum": 1000000,
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Кількість деталей до; включно.",
+       "examples": [
+        500
+       ],
+       "title": "Pieces Max"
+      },
+      "description": "Кількість деталей до; включно."
+     },
+     {
+      "name": "released_from",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Перший вихід набору (найраніша дата видань) від; включно, з анонсами майбутніх дат. Набори без дати виходу не потрапляють.",
+       "examples": [
+        "2026-05-23"
+       ],
+       "title": "Released From"
+      },
+      "description": "Перший вихід набору (найраніша дата видань) від; включно, з анонсами майбутніх дат. Набори без дати виходу не потрапляють."
+     },
+     {
+      "name": "include_specialized",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "boolean",
+       "description": "Додати спеціальні набори: полібеги, промо, журнальні, ексклюзиви заходів. Пошук за `search` чи `number` знаходить їх і без цього.",
+       "examples": [
+        false
+       ],
+       "default": false,
+       "title": "Include Specialized"
+      },
+      "description": "Додати спеціальні набори: полібеги, промо, журнальні, ексклюзиви заходів. Пошук за `search` чи `number` знаходить їх і без цього."
+     },
+     {
+      "name": "sort",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "$ref": "#/components/schemas/CatalogSetSort",
+       "description": "Порядок списку; за рівності — за ідентифікатором, без року чи дати виходу — в кінці. `release_desc` — за першим виходом набору.",
+       "examples": [
+        "year_desc"
+       ],
+       "default": "name_asc"
+      },
+      "description": "Порядок списку; за рівності — за ідентифікатором, без року чи дати виходу — в кінці. `release_desc` — за першим виходом набору."
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 100,
+       "minimum": 1,
+       "description": "Кількість наборів на сторінці.",
+       "examples": [
+        20
+       ],
+       "default": 20,
+       "title": "Limit"
+      },
+      "description": "Кількість наборів на сторінці."
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 10000,
+       "minimum": 0,
+       "description": "Кількість пропущених наборів.",
+       "examples": [
+        0
+       ],
+       "default": 0,
+       "title": "Offset"
+      },
+      "description": "Кількість пропущених наборів."
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/SetListPageResource"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Запит не пройшов перевірку.\n\nКоди помилок:\n\n- `validation_error`: Запит не пройшов перевірку.",
+      "content": {
+       "application/json": {
+        "examples": {
+         "validation_error": {
+          "value": {
+           "error": "validation_error",
+           "message": "Запит не пройшов перевірку.",
+           "details": []
+          }
+         }
+        },
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/sets/{set_id}": {
+   "get": {
+    "tags": [
+     "Catalog: sets"
+    ],
+    "summary": "Картка набору",
+    "description": "Картка з видом продукту, шляхом теми, ідентифікаторами, виданнями, галереєю й\nопублікованими інструкціями; назва й опис — з українського перекладу, якщо він є.\n\nНеопублікована чи внутрішня картка відповідає 404.",
+    "operationId": "get_catalog_set_api_v1_sets__set_id__get",
+    "parameters": [
+     {
+      "name": "set_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Set Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/SetDetailsResource"
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Ресурсу чи маршруту немає.\n\nКоди помилок:\n\n- `set_not_found`: Набору немає.",
+      "content": {
+       "application/json": {
+        "examples": {
+         "set_not_found": {
+          "value": {
+           "error": "set_not_found",
+           "message": "Набору немає.",
+           "details": []
+          }
+         }
+        },
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Запит не пройшов перевірку.\n\nКоди помилок:\n\n- `validation_error`: Запит не пройшов перевірку.",
+      "content": {
+       "application/json": {
+        "examples": {
+         "validation_error": {
+          "value": {
+           "error": "validation_error",
+           "message": "Запит не пройшов перевірку.",
+           "details": []
+          }
+         }
+        },
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/sets/{set_id}/inventory": {
+   "get": {
+    "tags": [
+     "Catalog: sets"
+    ],
+    "summary": "Склад набору",
+    "description": "Гарантований склад окремо від груп вибору; група показується з повною конфігурацією.\n\n`guaranteed_figure_count` рахує лише фігурки, що напевно є в коробці; фігурка має адресу\nосновного зображення `image_url`.",
+    "operationId": "get_catalog_set_inventory_api_v1_sets__set_id__inventory_get",
+    "parameters": [
+     {
+      "name": "set_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Set Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/CatalogInventoryResource"
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Ресурсу чи маршруту немає.\n\nКоди помилок:\n\n- `set_inventory_not_found`: Інвентаризації немає.",
+      "content": {
+       "application/json": {
+        "examples": {
+         "set_inventory_not_found": {
+          "value": {
+           "error": "set_inventory_not_found",
+           "message": "Інвентаризації немає.",
+           "details": []
+          }
+         }
+        },
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Запит не пройшов перевірку.\n\nКоди помилок:\n\n- `validation_error`: Запит не пройшов перевірку.",
+      "content": {
+       "application/json": {
+        "examples": {
+         "validation_error": {
+          "value": {
+           "error": "validation_error",
+           "message": "Запит не пройшов перевірку.",
+           "details": []
+          }
+         }
+        },
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/themes": {
+   "get": {
+    "tags": [
+     "Catalog: themes"
+    ],
+    "summary": "Теми каталогу",
+    "description": "Теми, у яких разом з підтемами є опубліковані набори стандартного каталогу.\n\n`set_count` рахує набір в основній темі та в усіх її предках; батько теми зі списку\nтеж є у списку, тож дерево будується за `parent_id`. Роки й `recent_set_count` рахуються\nтак само, за наборами теми та її підтем. `specialized_set_count` — спеціальні набори теми\nй підтем, які стандартний каталог не показує. Порядок — `sort_order`, назва.",
+    "operationId": "get_catalog_themes_api_v1_themes_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/CatalogThemeWithCountResource"
+         },
+         "type": "array",
+         "title": "Response Get Catalog Themes Api V1 Themes Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/retail/sets": {
+   "get": {
+    "tags": [
+     "Retail: sets"
+    ],
+    "summary": "Набори в продажу",
+    "description": "Набори стандартного каталогу з роздрібними полями; фільтри каталогу діють без змін.\n\nЕфективна пропозиція — активна пропозиція активного магазину; пропозиція, не перевірена\nпротягом вікна свіжості, має наявність `unknown`. `in_stock`, `preorder` і `official`\nпоєднуються з каталоговими фільтрами; `price_*` впорядковує за `min_in_stock_price`.\n`shop_id` обмежує набори й роздрібні поля пропозиціями одного магазину; `on_sale` і\n`discount_desc` спираються на `best_deal` — свіжу пропозицію в наявності з найбільшою знижкою.\n`in_stock_offers_count` рахує свіжі ефективні пропозиції `in_stock`, а `in_stock_shops_count` —\nрізні магазини з такими пропозиціями. `set_id` обмежує список переданими наборами, а\n`min_preorder_price` — найнижча ціна серед свіжих пропозицій `preorder`. `released_from` і\n`release_desc` — за першим виходом набору (`release_date`), як у каталозі. Спеціальні\nнабори — як у каталозі: з `include_specialized`, у пошуку або серед переданих `set_id`.",
+    "operationId": "get_retail_sets_api_v1_retail_sets_get",
+    "parameters": [
+     {
+      "name": "number",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "minLength": 1,
+         "maxLength": 128
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Номер набору; пробіли не враховуються.",
+       "examples": [
+        "60429"
+       ],
+       "title": "Number"
+      },
+      "description": "Номер набору; пробіли не враховуються."
+     },
+     {
+      "name": "search",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "minLength": 1,
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Частина назви набору, його української назви або назви фігурки чи персонажа з гарантованого складу.",
+       "examples": [
+        "rocket"
+       ],
+       "title": "Search"
+      },
+      "description": "Частина назви набору, його української назви або назви фігурки чи персонажа з гарантованого складу."
+     },
+     {
+      "name": "theme_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "uuid"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Тема разом з підтемами.",
+       "examples": [
+        "01a19868-7736-74bd-8536-7e22bc056c03"
+       ],
+       "title": "Theme Id"
+      },
+      "description": "Тема разом з підтемами."
+     },
+     {
+      "name": "building_line_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "uuid"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Набори лінійки складання.",
+       "examples": [
+        "01a19868-7736-74bd-8536-7e22bc056c07"
+       ],
+       "title": "Building Line Id"
+      },
+      "description": "Набори лінійки складання."
+     },
+     {
+      "name": "element_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "uuid"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Набори, що містять елемент.",
+       "examples": [
+        "01a19868-7736-74bd-8536-7e22bc056d04"
+       ],
+       "title": "Element Id"
+      },
+      "description": "Набори, що містять елемент."
+     },
+     {
+      "name": "figure_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "uuid"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Набори, що містять фігурку.",
+       "examples": [
+        "01a19868-7736-74bd-8536-7e22bc056d06"
+       ],
+       "title": "Figure Id"
+      },
+      "description": "Набори, що містять фігурку."
+     },
+     {
+      "name": "character_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "uuid"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Набори з фігуркою цього персонажа.",
+       "examples": [
+        "01a19868-7736-74bd-8536-7e22bc056d05"
+       ],
+       "title": "Character Id"
+      },
+      "description": "Набори з фігуркою цього персонажа."
+     },
+     {
+      "name": "include_possible",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "boolean",
+       "description": "Враховувати варіанти груп вибору.",
+       "examples": [
+        false
+       ],
+       "default": false,
+       "title": "Include Possible"
+      },
+      "description": "Враховувати варіанти груп вибору."
+     },
+     {
+      "name": "age_mark_months",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer",
+         "maximum": 1200,
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Точна вікова позначка коробки в місяцях за `age_min_months`: 48 — «4+»; верхня межа віку не враховується.",
+       "examples": [
+        48
+       ],
+       "title": "Age Mark Months"
+      },
+      "description": "Точна вікова позначка коробки в місяцях за `age_min_months`: 48 — «4+»; верхня межа віку не враховується."
+     },
+     {
+      "name": "year_from",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer",
+         "maximum": 9999,
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Рік появи набору від; включно.",
+       "examples": [
+        2020
+       ],
+       "title": "Year From"
+      },
+      "description": "Рік появи набору від; включно."
+     },
+     {
+      "name": "year_to",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer",
+         "maximum": 9999,
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Рік появи набору до; включно.",
+       "examples": [
+        2024
+       ],
+       "title": "Year To"
+      },
+      "description": "Рік появи набору до; включно."
+     },
+     {
+      "name": "pieces_min",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer",
+         "maximum": 1000000,
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Кількість деталей від; включно.",
+       "examples": [
+        100
+       ],
+       "title": "Pieces Min"
+      },
+      "description": "Кількість деталей від; включно."
+     },
+     {
+      "name": "pieces_max",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer",
+         "maximum": 1000000,
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Кількість деталей до; включно.",
+       "examples": [
+        500
+       ],
+       "title": "Pieces Max"
+      },
+      "description": "Кількість деталей до; включно."
+     },
+     {
+      "name": "released_from",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Перший вихід набору (найраніша дата видань) від; включно, з анонсами майбутніх дат. Набори без дати виходу не потрапляють.",
+       "examples": [
+        "2026-05-23"
+       ],
+       "title": "Released From"
+      },
+      "description": "Перший вихід набору (найраніша дата видань) від; включно, з анонсами майбутніх дат. Набори без дати виходу не потрапляють."
+     },
+     {
+      "name": "include_specialized",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "boolean",
+       "description": "Додати спеціальні набори: полібеги, промо, журнальні, ексклюзиви заходів. Пошук за `search` чи `number` знаходить їх і без цього.",
+       "examples": [
+        false
+       ],
+       "default": false,
+       "title": "Include Specialized"
+      },
+      "description": "Додати спеціальні набори: полібеги, промо, журнальні, ексклюзиви заходів. Пошук за `search` чи `number` знаходить їх і без цього."
+     },
+     {
+      "name": "in_stock",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "boolean"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "У продажу: є свіжа ефективна пропозиція `in_stock`; `false` — немає.",
+       "examples": [
+        true
+       ],
+       "title": "In Stock"
+      },
+      "description": "У продажу: є свіжа ефективна пропозиція `in_stock`; `false` — немає."
+     },
+     {
+      "name": "preorder",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "boolean"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Є свіжа ефективна пропозиція `preorder`; `false` — немає.",
+       "examples": [
+        true
+       ],
+       "title": "Preorder"
+      },
+      "description": "Є свіжа ефективна пропозиція `preorder`; `false` — немає."
+     },
+     {
+      "name": "official",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "boolean"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Є свіжа офіційна пропозиція `in_stock`; `false` — немає.",
+       "examples": [
+        true
+       ],
+       "title": "Official"
+      },
+      "description": "Є свіжа офіційна пропозиція `in_stock`; `false` — немає."
+     },
+     {
+      "name": "on_sale",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "boolean"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Є свіжа пропозиція `in_stock` зі старою ціною вищою за поточну; `false` — немає.",
+       "examples": [
+        true
+       ],
+       "title": "On Sale"
+      },
+      "description": "Є свіжа пропозиція `in_stock` зі старою ціною вищою за поточну; `false` — немає."
+     },
+     {
+      "name": "shop_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "uuid"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Набори з ефективними пропозиціями магазину; роздрібні поля, фільтри й найбільша знижка рахуються лише за пропозиціями цього магазину.",
+       "examples": [
+        "019a5a10-7736-74bd-8536-7e22bc056c40"
+       ],
+       "title": "Shop Id"
+      },
+      "description": "Набори з ефективними пропозиціями магазину; роздрібні поля, фільтри й найбільша знижка рахуються лише за пропозиціями цього магазину."
+     },
+     {
+      "name": "set_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "type": "string",
+          "format": "uuid"
+         },
+         "maxItems": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Лише набори з цими ідентифікаторами, до 100; параметр повторюється. Так клієнт отримує роздрібні поля для власного списку наборів, наприклад обраного.",
+       "examples": [
+        [
+         "019a5a10-7736-74bd-8536-7e22bc056c40"
+        ]
+       ],
+       "title": "Set Id"
+      },
+      "description": "Лише набори з цими ідентифікаторами, до 100; параметр повторюється. Так клієнт отримує роздрібні поля для власного списку наборів, наприклад обраного."
+     },
+     {
+      "name": "sort",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "$ref": "#/components/schemas/RetailSetSort",
+       "description": "Порядок списку; без ціни, року чи знижки — в кінці, за рівності — за ідентифікатором. `discount_desc` — за найбільшою знижкою, `release_desc` — за першим виходом набору.",
+       "examples": [
+        "price_asc"
+       ],
+       "default": "name_asc"
+      },
+      "description": "Порядок списку; без ціни, року чи знижки — в кінці, за рівності — за ідентифікатором. `discount_desc` — за найбільшою знижкою, `release_desc` — за першим виходом набору."
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 100,
+       "minimum": 1,
+       "description": "Кількість наборів на сторінці.",
+       "examples": [
+        20
+       ],
+       "default": 20,
+       "title": "Limit"
+      },
+      "description": "Кількість наборів на сторінці."
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 10000,
+       "minimum": 0,
+       "description": "Кількість пропущених наборів.",
+       "examples": [
+        0
+       ],
+       "default": 0,
+       "title": "Offset"
+      },
+      "description": "Кількість пропущених наборів."
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/RetailSetListPageResource"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Запит не пройшов перевірку.\n\nКоди помилок:\n\n- `validation_error`: Запит не пройшов перевірку.",
+      "content": {
+       "application/json": {
+        "examples": {
+         "validation_error": {
+          "value": {
+           "error": "validation_error",
+           "message": "Запит не пройшов перевірку.",
+           "details": []
+          }
+         }
+        },
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/retail/sets/{set_id}/offers": {
+   "get": {
+    "tags": [
+     "Retail: sets"
+    ],
+    "summary": "Де купити",
+    "description": "Ефективні пропозиції набору: офіційні `in_stock`, інші `in_stock`, `preorder` — за\nціною; решта, зокрема застарілі, — за часом перевірки від новіших.\n\nРядок містить `shop_id` і `logo_url` магазину. Неопублікований чи внутрішній набір\nвідповідає 404.",
+    "operationId": "get_set_shop_offers_api_v1_retail_sets__set_id__offers_get",
+    "parameters": [
+     {
+      "name": "set_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Set Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/SetShopOfferResource"
+         },
+         "title": "Response Get Set Shop Offers Api V1 Retail Sets  Set Id  Offers Get"
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Ресурсу чи маршруту немає.\n\nКоди помилок:\n\n- `set_not_found`: Набору немає.",
+      "content": {
+       "application/json": {
+        "examples": {
+         "set_not_found": {
+          "value": {
+           "error": "set_not_found",
+           "message": "Набору немає.",
+           "details": []
+          }
+         }
+        },
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Запит не пройшов перевірку.\n\nКоди помилок:\n\n- `validation_error`: Запит не пройшов перевірку.",
+      "content": {
+       "application/json": {
+        "examples": {
+         "validation_error": {
+          "value": {
+           "error": "validation_error",
+           "message": "Запит не пройшов перевірку.",
+           "details": []
+          }
+         }
+        },
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/retail/shops": {
+   "get": {
+    "tags": [
+     "Retail: shops"
+    ],
+    "summary": "Підключені магазини",
+    "description": "Активні магазини з ефективними пропозиціями, за кількістю наборів у наявності від\nбільшої.",
+    "operationId": "get_retail_shops_api_v1_retail_shops_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/RetailShopResource"
+         },
+         "type": "array",
+         "title": "Response Get Retail Shops Api V1 Retail Shops Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Запит не пройшов перевірку.\n\nКоди помилок:\n\n- `validation_error`: Запит не пройшов перевірку.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        },
+        "examples": {
+         "validation_error": {
+          "value": {
+           "error": "validation_error",
+           "message": "Запит не пройшов перевірку.",
+           "details": []
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/retail/shops/{shop_id}": {
+   "get": {
+    "tags": [
+     "Retail: shops"
+    ],
+    "summary": "Підключений магазин",
+    "description": "Неактивний магазин чи магазин без ефективних пропозицій відповідає 404.",
+    "operationId": "get_retail_shop_api_v1_retail_shops__shop_id__get",
+    "parameters": [
+     {
+      "name": "shop_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Shop Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/RetailShopResource"
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Ресурсу чи маршруту немає.\n\nКоди помилок:\n\n- `shop_not_found`: Магазину немає.",
+      "content": {
+       "application/json": {
+        "examples": {
+         "shop_not_found": {
+          "value": {
+           "error": "shop_not_found",
+           "message": "Магазину немає.",
+           "details": []
+          }
+         }
+        },
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Запит не пройшов перевірку.\n\nКоди помилок:\n\n- `validation_error`: Запит не пройшов перевірку.",
+      "content": {
+       "application/json": {
+        "examples": {
+         "validation_error": {
+          "value": {
+           "error": "validation_error",
+           "message": "Запит не пройшов перевірку.",
+           "details": []
+          }
+         }
+        },
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "components": {
+  "schemas": {
+   "CatalogChoiceGroupResource": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id",
+      "description": "Ідентифікатор групи.",
+      "examples": [
+       "01a19868-7736-74bd-8536-7e22bc057004"
+      ]
+     },
+     "name": {
+      "type": "string",
+      "title": "Name",
+      "description": "Назва групи.",
+      "examples": [
+       "Колекційні портрети"
+      ]
+     },
+     "selection_type": {
+      "$ref": "#/components/schemas/InventoryChoiceSelectionType",
+      "description": "Тип вибору.",
+      "examples": [
+       "random"
+      ]
+     },
+     "selection_count_min": {
+      "type": "integer",
+      "title": "Selection Count Min",
+      "description": "Мінімум варіантів у коробці.",
+      "examples": [
+       5
+      ]
+     },
+     "selection_count_max": {
+      "type": "integer",
+      "title": "Selection Count Max",
+      "description": "Максимум варіантів у коробці.",
+      "examples": [
+       5
+      ]
+     },
+     "allow_repeat": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Allow Repeat",
+      "description": "Можливі повтори.",
+      "examples": [
+       false
+      ]
+     },
+     "probability_policy": {
+      "$ref": "#/components/schemas/ChoiceProbabilityPolicy",
+      "description": "Підтвердженість ймовірностей.",
+      "examples": [
+       "unknown"
+      ]
+     },
+     "options": {
+      "items": {
+       "$ref": "#/components/schemas/CatalogChoiceOptionResource"
+      },
+      "type": "array",
+      "title": "Options",
+      "description": "Можливі варіанти.",
+      "examples": [
+       []
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "name",
+     "selection_type",
+     "selection_count_min",
+     "selection_count_max",
+     "allow_repeat",
+     "probability_policy",
+     "options"
+    ],
+    "title": "CatalogChoiceGroupResource",
+    "description": "Група вибору: скільки варіантів потрапляє в коробку."
+   },
+   "CatalogChoiceOptionResource": {
+    "properties": {
+     "option_code": {
+      "type": "string",
+      "title": "Option Code",
+      "description": "Код варіанта.",
+      "examples": [
+       "P01"
+      ]
+     },
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name",
+      "description": "Назва варіанта.",
+      "examples": [
+       "Портрет Гаррі"
+      ]
+     },
+     "probability": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Probability",
+      "description": "Ймовірність; `null` — невідома.",
+      "examples": [
+       null
+      ]
+     },
+     "elements": {
+      "items": {
+       "$ref": "#/components/schemas/CatalogInventoryElementResource"
+      },
+      "type": "array",
+      "title": "Elements",
+      "description": "Елементи варіанта.",
+      "examples": [
+       []
+      ]
+     },
+     "figures": {
+      "items": {
+       "$ref": "#/components/schemas/CatalogInventoryFigureResource"
+      },
+      "type": "array",
+      "title": "Figures",
+      "description": "Фігурки варіанта.",
+      "examples": [
+       []
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "option_code",
+     "name",
+     "probability",
+     "elements",
+     "figures"
+    ],
+    "title": "CatalogChoiceOptionResource",
+    "description": "Можливий варіант групи вибору."
+   },
+   "CatalogEditionResource": {
+    "properties": {
+     "edition_name": {
+      "type": "string",
+      "title": "Edition Name",
+      "description": "Назва видання.",
+      "examples": [
+       "Базове"
+      ]
+     },
+     "edition_type": {
+      "$ref": "#/components/schemas/SetEditionType",
+      "description": "Тип видання.",
+      "examples": [
+       "standard"
+      ]
+     },
+     "release_date": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Release Date",
+      "description": "Дата випуску.",
+      "examples": [
+       "2024-01-01"
+      ]
+     },
+     "release_date_precision": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/DatePrecision"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Точність дати випуску.",
+      "examples": [
+       "month"
+      ]
+     },
+     "region_scope": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Region Scope",
+      "description": "Регіон випуску.",
+      "examples": [
+       "Європа"
+      ]
+     },
+     "packaging_type": {
+      "$ref": "#/components/schemas/PackagingType",
+      "description": "Тип упаковки.",
+      "examples": [
+       "box"
+      ]
+     },
+     "is_default": {
+      "type": "boolean",
+      "title": "Is Default",
+      "description": "Типове видання набору.",
+      "examples": [
+       true
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "edition_name",
+     "edition_type",
+     "release_date",
+     "release_date_precision",
+     "region_scope",
+     "packaging_type",
+     "is_default"
+    ],
+    "title": "CatalogEditionResource",
+    "description": "Видання набору."
+   },
+   "CatalogIdentifierResource": {
+    "properties": {
+     "identifier_type": {
+      "$ref": "#/components/schemas/IdentifierType",
+      "description": "Тип ідентифікатора.",
+      "examples": [
+       "official_set_number"
+      ]
+     },
+     "value": {
+      "type": "string",
+      "title": "Value",
+      "description": "Значення.",
+      "examples": [
+       "60429"
+      ]
+     },
+     "variant_suffix": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Variant Suffix",
+      "description": "Варіант значення.",
+      "examples": [
+       "1"
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "identifier_type",
+     "value",
+     "variant_suffix"
+    ],
+    "title": "CatalogIdentifierResource",
+    "description": "Ідентифікатор набору."
+   },
+   "CatalogImageResource": {
+    "properties": {
+     "url": {
+      "type": "string",
+      "title": "Url",
+      "description": "Адреса файла.",
+      "examples": [
+       "https://cdn.rebrickable.com/media/sets/60429-1.jpg"
+      ]
+     },
+     "width": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Width",
+      "description": "Ширина в пікселях.",
+      "examples": [
+       1024
+      ]
+     },
+     "height": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Height",
+      "description": "Висота в пікселях.",
+      "examples": [
+       768
+      ]
+     },
+     "alt": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Alt",
+      "description": "Текстовий опис зображення.",
+      "examples": [
+       "Ракета на пусковому майданчику"
+      ]
+     },
+     "role": {
+      "$ref": "#/components/schemas/MediaRole",
+      "description": "Роль зображення в картці.",
+      "examples": [
+       "primary"
+      ]
+     },
+     "variants": {
+      "$ref": "#/components/schemas/ImageUrlsResource",
+      "description": "Адреси WebP-копій; без копії — адреса файла `url`."
+     }
+    },
+    "type": "object",
+    "required": [
+     "url",
+     "width",
+     "height",
+     "alt",
+     "role",
+     "variants"
+    ],
+    "title": "CatalogImageResource",
+    "description": "Зображення в галереї картки."
+   },
+   "CatalogInstructionResource": {
+    "properties": {
+     "title": {
+      "type": "string",
+      "title": "Title",
+      "description": "Назва інструкції.",
+      "examples": [
+       "Інструкція, частина 1"
+      ]
+     },
+     "instruction_type": {
+      "$ref": "#/components/schemas/InstructionType",
+      "examples": [
+       "pdf"
+      ]
+     },
+     "language_code": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Language Code",
+      "description": "Мова інструкції.",
+      "examples": [
+       "uk"
+      ]
+     },
+     "part_number": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Part Number",
+      "description": "Номер частини.",
+      "examples": [
+       1
+      ]
+     },
+     "total_parts": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Total Parts",
+      "description": "Кількість частин.",
+      "examples": [
+       2
+      ]
+     },
+     "url": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Url",
+      "description": "Адреса інструкції: зовнішнє посилання або адреса файла.",
+      "examples": [
+       "https://www.lego.com/cdn/product-assets/product.bi.core.pdf/6497001.pdf"
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "title",
+     "instruction_type",
+     "language_code",
+     "part_number",
+     "total_parts",
+     "url"
+    ],
+    "title": "CatalogInstructionResource",
+    "description": "Опублікована інструкція набору."
+   },
+   "CatalogInventoryElementResource": {
+    "properties": {
+     "element_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Element Id",
+      "description": "Елемент.",
+      "examples": [
+       "01a19868-7736-74bd-8536-7e22bc056d04"
+      ]
+     },
+     "part_name": {
+      "type": "string",
+      "title": "Part Name",
+      "description": "Назва деталі.",
+      "examples": [
+       "Brick 2 x 4"
+      ]
+     },
+     "design_number": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Design Number",
+      "description": "Дизайн-номер.",
+      "examples": [
+       "3001"
+      ]
+     },
+     "color_name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Color Name",
+      "description": "Колір.",
+      "examples": [
+       "Bright Red"
+      ]
+     },
+     "element_number": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Element Number",
+      "description": "Номер елемента LEGO.",
+      "examples": [
+       "300121"
+      ]
+     },
+     "quantity": {
+      "type": "integer",
+      "title": "Quantity",
+      "description": "Кількість.",
+      "examples": [
+       4
+      ]
+     },
+     "inventory_role": {
+      "$ref": "#/components/schemas/InventoryRole",
+      "description": "Роль рядка.",
+      "examples": [
+       "regular"
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "element_id",
+     "part_name",
+     "design_number",
+     "color_name",
+     "element_number",
+     "quantity",
+     "inventory_role"
+    ],
+    "title": "CatalogInventoryElementResource",
+    "description": "Елемент у складі."
+   },
+   "CatalogInventoryFigureResource": {
+    "properties": {
+     "figure_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Figure Id",
+      "description": "Фігурка.",
+      "examples": [
+       "01a19868-7736-74bd-8536-7e22bc056d06"
+      ]
+     },
+     "name": {
+      "type": "string",
+      "title": "Name",
+      "description": "Назва фігурки.",
+      "examples": [
+       "Harry Potter"
+      ]
+     },
+     "character_name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Character Name",
+      "description": "Персонаж.",
+      "examples": [
+       "Harry Potter"
+      ]
+     },
+     "quantity": {
+      "type": "integer",
+      "title": "Quantity",
+      "description": "Кількість.",
+      "examples": [
+       1
+      ]
+     },
+     "inventory_role": {
+      "$ref": "#/components/schemas/InventoryRole",
+      "description": "Роль рядка.",
+      "examples": [
+       "regular"
+      ]
+     },
+     "image_url": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Image Url",
+      "description": "Адреса основного зображення фігурки.",
+      "examples": [
+       "https://cdn.rebrickable.com/media/sets/fig-000001.jpg"
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "figure_id",
+     "name",
+     "character_name",
+     "quantity",
+     "inventory_role",
+     "image_url"
+    ],
+    "title": "CatalogInventoryFigureResource",
+    "description": "Фігурка в складі."
+   },
+   "CatalogInventoryResource": {
+    "properties": {
+     "set_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Set Id",
+      "description": "Набір.",
+      "examples": [
+       "01a19868-7736-74bd-8536-7e22bc056c66"
+      ]
+     },
+     "edition_name": {
+      "type": "string",
+      "title": "Edition Name",
+      "description": "Видання.",
+      "examples": [
+       "Базове"
+      ]
+     },
+     "inventory_kind": {
+      "$ref": "#/components/schemas/InventoryKind",
+      "description": "Походження інвентаризації.",
+      "examples": [
+       "official"
+      ]
+     },
+     "declared_total_pieces": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Declared Total Pieces",
+      "description": "Задекларована кількість деталей.",
+      "examples": [
+       1732
+      ]
+     },
+     "revision_code": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Revision Code",
+      "description": "Код ревізії.",
+      "examples": [
+       "A"
+      ]
+     },
+     "elements": {
+      "items": {
+       "$ref": "#/components/schemas/CatalogInventoryElementResource"
+      },
+      "type": "array",
+      "title": "Elements",
+      "description": "Гарантовані елементи.",
+      "examples": [
+       []
+      ]
+     },
+     "figures": {
+      "items": {
+       "$ref": "#/components/schemas/CatalogInventoryFigureResource"
+      },
+      "type": "array",
+      "title": "Figures",
+      "description": "Гарантовані фігурки.",
+      "examples": [
+       []
+      ]
+     },
+     "spare_elements": {
+      "items": {
+       "$ref": "#/components/schemas/CatalogInventoryElementResource"
+      },
+      "type": "array",
+      "title": "Spare Elements",
+      "description": "Запасні елементи.",
+      "examples": [
+       []
+      ]
+     },
+     "guaranteed_figure_count": {
+      "type": "integer",
+      "title": "Guaranteed Figure Count",
+      "description": "Кількість фігурок, що напевно є в коробці.",
+      "examples": [
+       0
+      ]
+     },
+     "choice_groups": {
+      "items": {
+       "$ref": "#/components/schemas/CatalogChoiceGroupResource"
+      },
+      "type": "array",
+      "title": "Choice Groups",
+      "description": "Групи вибору з повною конфігурацією.",
+      "examples": [
+       []
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "set_id",
+     "edition_name",
+     "inventory_kind",
+     "declared_total_pieces",
+     "revision_code",
+     "elements",
+     "figures",
+     "spare_elements",
+     "guaranteed_figure_count",
+     "choice_groups"
+    ],
+    "title": "CatalogInventoryResource",
+    "description": "Склад набору: гарантований вміст і групи вибору."
+   },
+   "CatalogSetSort": {
+    "type": "string",
+    "enum": [
+     "name_asc",
+     "year_asc",
+     "year_desc",
+     "release_desc"
+    ],
+    "title": "CatalogSetSort",
+    "description": "Порядок списку наборів каталогу."
+   },
+   "CatalogSetTypeResource": {
+    "properties": {
+     "code": {
+      "type": "string",
+      "title": "Code",
+      "description": "Код виду продукту.",
+      "examples": [
+       "BUILDING_SET"
+      ]
+     },
+     "name": {
+      "type": "string",
+      "title": "Name",
+      "description": "Назва виду продукту.",
+      "examples": [
+       "Конструктор"
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "code",
+     "name"
+    ],
+    "title": "CatalogSetTypeResource",
+    "description": "Вид продукту."
+   },
+   "CatalogThemeGroupResource": {
+    "properties": {
+     "slug": {
+      "type": "string",
+      "title": "Slug",
+      "description": "Slug групи.",
+      "examples": [
+       "licensed"
+      ]
+     },
+     "name": {
+      "type": "string",
+      "title": "Name",
+      "description": "Назва групи.",
+      "examples": [
+       "Licensed"
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "slug",
+     "name"
+    ],
+    "title": "CatalogThemeGroupResource",
+    "description": "Група тем власної редакторської схеми."
+   },
+   "CatalogThemeResource": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id",
+      "description": "Ідентифікатор теми.",
+      "examples": [
+       "01a19868-7736-74bd-8536-7e22bc056c02"
+      ]
+     },
+     "name": {
+      "type": "string",
+      "title": "Name",
+      "description": "Назва теми.",
+      "examples": [
+       "Space"
+      ]
+     },
+     "slug": {
+      "type": "string",
+      "title": "Slug",
+      "description": "Slug теми.",
+      "examples": [
+       "space"
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "name",
+     "slug"
+    ],
+    "title": "CatalogThemeResource",
+    "description": "Тема."
+   },
+   "CatalogThemeWithCountResource": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id",
+      "description": "Ідентифікатор теми.",
+      "examples": [
+       "01a19868-7736-74bd-8536-7e22bc056c03"
+      ]
+     },
+     "parent_id": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "uuid"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Parent Id",
+      "description": "Батьківська тема; `null` — коренева.",
+      "examples": [
+       null
+      ]
+     },
+     "name": {
+      "type": "string",
+      "title": "Name",
+      "description": "Назва теми.",
+      "examples": [
+       "DUPLO"
+      ]
+     },
+     "slug": {
+      "type": "string",
+      "title": "Slug",
+      "description": "Slug теми.",
+      "examples": [
+       "duplo"
+      ]
+     },
+     "set_count": {
+      "type": "integer",
+      "title": "Set Count",
+      "description": "Кількість наборів стандартного каталогу в темі разом з підтемами.",
+      "examples": [
+       412
+      ]
+     },
+     "specialized_set_count": {
+      "type": "integer",
+      "title": "Specialized Set Count",
+      "description": "Кількість спеціальних наборів теми й підтем поза стандартним каталогом: полібеги, промо, журнальні тощо.",
+      "examples": [
+       18
+      ]
+     },
+     "recent_set_count": {
+      "type": "integer",
+      "title": "Recent Set Count",
+      "description": "Кількість наборів теми й підтем, випущених цього й минулого року.",
+      "examples": [
+       37
+      ]
+     },
+     "first_set_year": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "First Set Year",
+      "description": "Рік першого набору теми й підтем; `null` — рік невідомий.",
+      "examples": [
+       1969
+      ]
+     },
+     "last_set_year": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Set Year",
+      "description": "Рік останнього набору теми й підтем; `null` — рік невідомий.",
+      "examples": [
+       2026
+      ]
+     },
+     "is_current": {
+      "type": "boolean",
+      "title": "Is Current",
+      "description": "Тема актуальна: рік припинення теми не минув, а без нього останній набір вийшов цього чи минулого року.",
+      "examples": [
+       true
+      ]
+     },
+     "groups": {
+      "items": {
+       "$ref": "#/components/schemas/CatalogThemeGroupResource"
+      },
+      "type": "array",
+      "title": "Groups",
+      "description": "Групи власної редакторської схеми, до яких тема входить безпосередньо; дочірні теми членство не успадковують.",
+      "examples": [
+       [
+        {
+         "name": "Licensed",
+         "slug": "licensed"
+        }
+       ]
+      ]
+     },
+     "image": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/ImageUrlsResource"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Адреси WebP-копій зображення теми; відсутню копію заміняє найближча більша, без копій — файл; `null` — зображення немає."
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "parent_id",
+     "name",
+     "slug",
+     "set_count",
+     "specialized_set_count",
+     "recent_set_count",
+     "first_set_year",
+     "last_set_year",
+     "is_current",
+     "groups",
+     "image"
+    ],
+    "title": "CatalogThemeWithCountResource",
+    "description": "Тема з кількістю наборів стандартного каталогу разом з підтемами."
+   },
+   "ChoiceProbabilityPolicy": {
+    "type": "string",
+    "enum": [
+     "unknown",
+     "equal_confirmed",
+     "weighted_confirmed",
+     "not_applicable"
+    ],
+    "title": "ChoiceProbabilityPolicy",
+    "description": "Підтвердженість розподілу ймовірностей."
+   },
+   "Currency": {
+    "type": "string",
+    "enum": [
+     "UAH"
+    ],
+    "title": "Currency",
+    "description": "Валюта ціни: код ISO 4217."
+   },
+   "DatePrecision": {
+    "type": "string",
+    "enum": [
+     "day",
+     "month",
+     "year",
+     "approximate",
+     "unknown"
+    ],
+    "title": "DatePrecision",
+    "description": "Точність дат випуску, retirement, production."
+   },
+   "ErrorCode": {
+    "type": "string",
+    "enum": [
+     "validation_error",
+     "route_not_found",
+     "method_not_allowed",
+     "http_error",
+     "internal_error",
+     "authentication_required",
+     "permission_denied",
+     "application_error",
+     "not_found",
+     "conflict",
+     "duplicate_record",
+     "set_not_found",
+     "set_translation_not_found",
+     "set_alias_not_found",
+     "collection_not_found",
+     "set_collection_not_found",
+     "interest_not_found",
+     "set_interest_not_found",
+     "building_line_not_found",
+     "set_building_line_not_found",
+     "feature_not_found",
+     "set_feature_not_found",
+     "property_not_found",
+     "set_property_not_found",
+     "organization_not_found",
+     "property_organization_not_found",
+     "creator_not_found",
+     "set_creator_not_found",
+     "real_world_subject_not_found",
+     "set_subject_not_found",
+     "market_not_found",
+     "edition_market_not_found",
+     "edition_identifier_not_found",
+     "set_identifier_not_found",
+     "distribution_program_not_found",
+     "set_distribution_not_found",
+     "set_relation_not_found",
+     "set_bundle_item_not_found",
+     "tag_not_found",
+     "set_tag_not_found",
+     "set_secondary_theme_not_found",
+     "set_type_not_found",
+     "set_type_code_taken",
+     "figure_code_taken",
+     "theme_not_found",
+     "request_body_too_large",
+     "invalid_image_file",
+     "unsafe_image",
+     "not_an_image",
+     "image_processing_failed",
+     "media_storage_unavailable",
+     "set_photo_not_found",
+     "theme_image_not_found",
+     "figure_image_not_found",
+     "set_instruction_not_found",
+     "shop_logo_not_found",
+     "media_asset_not_found",
+     "theme_group_not_found",
+     "theme_group_membership_not_found",
+     "theme_slug_taken",
+     "set_edition_not_found",
+     "set_edition_in_use",
+     "part_category_not_found",
+     "part_category_code_taken",
+     "part_not_found",
+     "color_not_found",
+     "color_code_taken",
+     "element_not_found",
+     "character_not_found",
+     "figure_not_found",
+     "set_inventory_not_found",
+     "inventory_revision_not_found",
+     "inventory_item_not_found",
+     "choice_group_not_found",
+     "choice_option_not_found",
+     "invalid_credentials",
+     "invalid_token",
+     "editor_not_found",
+     "editor_login_taken",
+     "own_account_deactivation",
+     "shop_not_found",
+     "shop_slug_taken",
+     "offer_not_found",
+     "offer_product_taken",
+     "shop_product_candidate_not_found",
+     "shop_product_queued",
+     "affiliate_network_not_found",
+     "affiliate_network_code_taken",
+     "affiliate_feed_not_found",
+     "affiliate_feed_code_taken",
+     "credentials_unreadable",
+     "affiliate_credentials_mismatch",
+     "init_data_required",
+     "invalid_init_data",
+     "invalid_service_key",
+     "user_not_found",
+     "favourite_limit_reached",
+     "price_alert_limit_reached",
+     "invariant_violation",
+     "forbidden_transition",
+     "hierarchy_cycle",
+     "bundle_cycle",
+     "part_assembly_cycle",
+     "self_relation",
+     "inactive_interest",
+     "inactive_feature",
+     "inactive_theme",
+     "keep_separate_not_applicable",
+     "review_case_not_found",
+     "ingestion_batch_not_found",
+     "import_already_running",
+     "catalog_not_refreshed",
+     "task_queue_unavailable",
+     "set_catalog_number_missing",
+     "source_mapping_conflict",
+     "source_set_not_found",
+     "source_not_configured",
+     "source_unavailable",
+     "chosen_assertion_required",
+     "assertion_not_in_case",
+     "unsupported_review_decision",
+     "unsupported_review_subject",
+     "unsupported_assertion_predicate",
+     "inactive_assignee",
+     "ambiguous_target",
+     "inventory_item_target_mismatch",
+     "requirement_owner_mismatch",
+     "requirement_target_mismatch",
+     "invalid_code",
+     "set_not_publishable",
+     "secondary_theme_repeats_primary",
+     "misplaced_identifier",
+     "duplicate_set_identifier",
+     "duplicate_edition_code",
+     "duplicate_default_edition",
+     "duplicate_canonical_inventory",
+     "duplicate_preferred_revision",
+     "duplicate_choice_option",
+     "impossible_choice_selection",
+     "assertion_value_mismatch",
+     "classification_source_mismatch",
+     "insecure_shop_url",
+     "official_seller_evidence_required",
+     "invalid_offer_quote",
+     "invalid_personal_data"
+    ],
+    "title": "ErrorCode",
+    "description": "Код помилки у відповіді API."
+   },
+   "ErrorDetail": {
+    "properties": {
+     "location": {
+      "type": "string",
+      "title": "Location",
+      "description": "Частина запиту.",
+      "examples": [
+       "body",
+       "query",
+       "path"
+      ]
+     },
+     "field": {
+      "type": "string",
+      "title": "Field",
+      "description": "Шлях до поля через крапку.",
+      "examples": [
+       "canonical_name"
+      ]
+     },
+     "message": {
+      "type": "string",
+      "title": "Message",
+      "description": "Причина відмови.",
+      "examples": [
+       "Field required"
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "location",
+     "field",
+     "message"
+    ],
+    "title": "ErrorDetail",
+    "description": "Поле запиту, що не пройшло перевірку."
+   },
+   "ErrorResponse": {
+    "properties": {
+     "error": {
+      "$ref": "#/components/schemas/ErrorCode",
+      "description": "Код помилки.",
+      "examples": [
+       "set_not_found"
+      ]
+     },
+     "message": {
+      "type": "string",
+      "title": "Message",
+      "description": "Опис помилки.",
+      "examples": [
+       "Набору немає."
+      ]
+     },
+     "details": {
+      "items": {
+       "$ref": "#/components/schemas/ErrorDetail"
+      },
+      "type": "array",
+      "title": "Details",
+      "description": "Подробиці за полями.",
+      "examples": [
+       []
+      ]
+     },
+     "request_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Request Id",
+      "description": "Ідентифікатор запиту з заголовка `X-Request-ID`; лише у відповіді 500.",
+      "examples": [
+       "019a7c3e-5b2f-7d41-9c3a-2f6e8b1d4a70"
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "error",
+     "message"
+    ],
+    "title": "ErrorResponse",
+    "description": "Відповідь про помилку."
+   },
+   "IdentifierType": {
+    "type": "string",
+    "enum": [
+     "official_set_number",
+     "catalog_set_id",
+     "lego_item_number",
+     "design_number",
+     "element_number",
+     "figure_id",
+     "ean",
+     "upc",
+     "gtin",
+     "isbn",
+     "internal_reference",
+     "other"
+    ],
+    "title": "IdentifierType",
+    "description": "Тип ідентифікатора в межах джерела."
+   },
+   "ImageUrlsResource": {
+    "properties": {
+     "large": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Large",
+      "description": "Адреса великої WebP-копії.",
+      "examples": [
+       "https://media.example.test/media/variants/sets/…/large.webp"
+      ]
+     },
+     "medium": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Medium",
+      "description": "Адреса середньої WebP-копії; без неї — великої.",
+      "examples": [
+       "https://media.example.test/media/variants/sets/…/medium.webp"
+      ]
+     },
+     "thumb": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Thumb",
+      "description": "Адреса малої WebP-копії; без неї — найближчої більшої.",
+      "examples": [
+       "https://media.example.test/media/variants/sets/…/thumb.webp"
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "large",
+     "medium",
+     "thumb"
+    ],
+    "title": "ImageUrlsResource"
+   },
+   "InstructionType": {
+    "type": "string",
+    "enum": [
+     "paper",
+     "pdf",
+     "lego_builder_3d",
+     "video",
+     "interactive",
+     "fan_instructions",
+     "other"
+    ],
+    "title": "InstructionType",
+    "description": "Вид інструкції."
+   },
+   "InventoryChoiceSelectionType": {
+    "type": "string",
+    "enum": [
+     "random",
+     "alternative",
+     "optional",
+     "configured"
+    ],
+    "title": "InventoryChoiceSelectionType",
+    "description": "Випадкові портрети / mystery box / варіанти."
+   },
+   "InventoryKind": {
+    "type": "string",
+    "enum": [
+     "official",
+     "third_party_catalog",
+     "editorial_reconstruction"
+    ],
+    "title": "InventoryKind",
+    "description": "Походження повної інвентаризації."
+   },
+   "InventoryRole": {
+    "type": "string",
+    "enum": [
+     "regular",
+     "extra",
+     "alternate",
+     "counterpart",
+     "other"
+    ],
+    "title": "InventoryRole",
+    "description": "Джерельна семантика regular/extra/alternate/counterpart; не всі сумуються однаково."
+   },
+   "LifecycleStatus": {
+    "type": "string",
+    "enum": [
+     "announced",
+     "upcoming",
+     "active",
+     "retiring",
+     "retired",
+     "discontinued",
+     "unknown"
+    ],
+    "title": "LifecycleStatus",
+    "description": "Стан випуску набору або системи; не наявність у магазині."
+   },
+   "MediaRole": {
+    "type": "string",
+    "enum": [
+     "primary",
+     "gallery",
+     "packaging",
+     "detail",
+     "instructions",
+     "promotional",
+     "other",
+     "figures",
+     "dimensions"
+    ],
+    "title": "MediaRole",
+    "description": "Роль у SetMedia/EditionMedia/інших."
+   },
+   "OfferAvailability": {
+    "type": "string",
+    "enum": [
+     "in_stock",
+     "out_of_stock",
+     "preorder",
+     "unknown"
+    ],
+    "title": "OfferAvailability",
+    "description": "Наявність за даними магазину."
+   },
+   "PackagingType": {
+    "type": "string",
+    "enum": [
+     "box",
+     "polybag",
+     "foil_pack",
+     "mystery_box",
+     "blister",
+     "tube",
+     "tin",
+     "bag",
+     "loose",
+     "booklet_package",
+     "other",
+     "unknown"
+    ],
+    "title": "PackagingType",
+    "description": "Форма упаковки; не SetType."
+   },
+   "RetailSetDealResource": {
+    "properties": {
+     "price": {
+      "type": "string",
+      "title": "Price",
+      "description": "Ціна в гривнях.",
+      "examples": [
+       "7399.00"
+      ]
+     },
+     "old_price": {
+      "type": "string",
+      "title": "Old Price",
+      "description": "Стара ціна в гривнях.",
+      "examples": [
+       "10299.00"
+      ]
+     },
+     "discount_percent": {
+      "type": "integer",
+      "title": "Discount Percent",
+      "description": "Знижка у відсотках, округлена до цілого.",
+      "examples": [
+       28
+      ]
+     },
+     "shop_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Shop Id",
+      "description": "Магазин пропозиції.",
+      "examples": [
+       "019a5a10-7736-74bd-8536-7e22bc056c40"
+      ]
+     },
+     "shop_name": {
+      "type": "string",
+      "title": "Shop Name",
+      "description": "Назва магазину.",
+      "examples": [
+       "Touch"
+      ]
+     },
+     "shop_logo_url": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Shop Logo Url",
+      "description": "Зовнішній логотип магазину, заданий посиланням.",
+      "examples": [
+       "https://touch.com.ua/logo.svg"
+      ]
+     },
+     "shop_logo": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/ImageUrlsResource"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Логотип магазину для показу: WebP-копії завантаженого логотипа; без нього кожна адреса веде на `shop_logo_url`; без обох — `null`."
+     }
+    },
+    "type": "object",
+    "required": [
+     "price",
+     "old_price",
+     "discount_percent",
+     "shop_id",
+     "shop_name",
+     "shop_logo_url",
+     "shop_logo"
+    ],
+    "title": "RetailSetDealResource",
+    "description": "Свіжа пропозиція набору в наявності з найбільшою знижкою."
+   },
+   "RetailSetListItemResource": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id",
+      "description": "Ідентифікатор набору.",
+      "examples": [
+       "01a19868-7736-74bd-8536-7e22bc056c66"
+      ]
+     },
+     "name": {
+      "type": "string",
+      "title": "Name",
+      "description": "Українська назва з офіційного, редакторського чи перевіреного перекладу; без нього — канонічна назва.",
+      "examples": [
+       "Ракета для космічних прогулянок"
+      ]
+     },
+     "canonical_name": {
+      "type": "string",
+      "title": "Canonical Name",
+      "description": "Назва набору.",
+      "examples": [
+       "Space Ride Rocket"
+      ]
+     },
+     "official_number_display": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Official Number Display",
+      "description": "Номер для показу.",
+      "examples": [
+       "60429"
+      ]
+     },
+     "set_type": {
+      "$ref": "#/components/schemas/CatalogSetTypeResource",
+      "examples": [
+       {
+        "code": "BUILDING_SET",
+        "name": "Конструктор"
+       }
+      ]
+     },
+     "theme": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/CatalogThemeResource"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Найконкретніша тема.",
+      "examples": [
+       {
+        "id": "01a19868-7736-74bd-8536-7e22bc056c02",
+        "name": "Space",
+        "slug": "space"
+       }
+      ]
+     },
+     "intro_year": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Intro Year",
+      "description": "Рік появи набору.",
+      "examples": [
+       2024
+      ]
+     },
+     "age_min_months": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Age Min Months",
+      "description": "Мінімальний вік у місяцях.",
+      "examples": [
+       48
+      ]
+     },
+     "age_max_months": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Age Max Months",
+      "description": "Максимальний вік у місяцях.",
+      "examples": [
+       144
+      ]
+     },
+     "age_label": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Age Label",
+      "description": "Вікове маркування.",
+      "examples": [
+       "4+"
+      ]
+     },
+     "declared_piece_count": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Declared Piece Count",
+      "description": "Кількість деталей.",
+      "examples": [
+       37
+      ]
+     },
+     "image": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/ImageUrlsResource"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Адреси WebP-копій основного зображення набору; відсутню копію заміняє найближча більша, без копій — файл; `null` — зображення немає."
+     },
+     "release_date": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Release Date",
+      "description": "Перший вихід: найраніша дата виходу серед видань; може бути в майбутньому для анонсу; `null` — дати немає.",
+      "examples": [
+       "2026-12-01"
+      ]
+     },
+     "release_date_precision": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/DatePrecision"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Точність `release_date`: день, місяць чи рік.",
+      "examples": [
+       "day"
+      ]
+     },
+     "has_in_stock_offer": {
+      "type": "boolean",
+      "title": "Has In Stock Offer",
+      "description": "У продажу в Україні: є свіжа ефективна пропозиція `in_stock`.",
+      "examples": [
+       true
+      ]
+     },
+     "min_in_stock_price": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Min In Stock Price",
+      "description": "Найменша ціна в гривнях серед свіжих ефективних пропозицій `in_stock`.",
+      "examples": [
+       "1299.00"
+      ]
+     },
+     "offers_count": {
+      "type": "integer",
+      "title": "Offers Count",
+      "description": "Кількість ефективних пропозицій незалежно від наявності.",
+      "examples": [
+       3
+      ]
+     },
+     "in_stock_offers_count": {
+      "type": "integer",
+      "title": "In Stock Offers Count",
+      "description": "Кількість свіжих ефективних пропозицій `in_stock`.",
+      "examples": [
+       2
+      ]
+     },
+     "in_stock_shops_count": {
+      "type": "integer",
+      "title": "In Stock Shops Count",
+      "description": "Кількість різних магазинів зі свіжою ефективною пропозицією `in_stock`; кілька пропозицій одного магазину рахуються один раз.",
+      "examples": [
+       2
+      ]
+     },
+     "has_official_in_stock_offer": {
+      "type": "boolean",
+      "title": "Has Official In Stock Offer",
+      "description": "Є свіжа офіційна пропозиція `in_stock`.",
+      "examples": [
+       true
+      ]
+     },
+     "has_preorder_offer": {
+      "type": "boolean",
+      "title": "Has Preorder Offer",
+      "description": "Є свіжа ефективна пропозиція `preorder`.",
+      "examples": [
+       false
+      ]
+     },
+     "min_preorder_price": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Min Preorder Price",
+      "description": "Найменша ціна в гривнях серед свіжих ефективних пропозицій `preorder`.",
+      "examples": [
+       "4999.00"
+      ]
+     },
+     "best_deal": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/RetailSetDealResource"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Свіжа пропозиція в наявності з найбільшою знижкою; без знижки — `null`."
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "name",
+     "canonical_name",
+     "official_number_display",
+     "set_type",
+     "theme",
+     "intro_year",
+     "age_min_months",
+     "age_max_months",
+     "age_label",
+     "declared_piece_count",
+     "image",
+     "release_date",
+     "release_date_precision",
+     "has_in_stock_offer",
+     "min_in_stock_price",
+     "offers_count",
+     "in_stock_offers_count",
+     "in_stock_shops_count",
+     "has_official_in_stock_offer",
+     "has_preorder_offer"
+    ],
+    "title": "RetailSetListItemResource",
+    "description": "Набір у списку каталогу з роздрібними полями."
+   },
+   "RetailSetListPageResource": {
+    "properties": {
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/RetailSetListItemResource"
+      },
+      "type": "array",
+      "title": "Items",
+      "description": "Записи сторінки.",
+      "examples": [
+       []
+      ]
+     },
+     "total": {
+      "type": "integer",
+      "title": "Total",
+      "description": "Кількість записів у всьому переліку.",
+      "examples": [
+       1
+      ]
+     },
+     "limit": {
+      "type": "integer",
+      "title": "Limit",
+      "description": "Кількість записів на сторінці.",
+      "examples": [
+       20
+      ]
+     },
+     "offset": {
+      "type": "integer",
+      "title": "Offset",
+      "description": "Кількість пропущених записів.",
+      "examples": [
+       0
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "items",
+     "total",
+     "limit",
+     "offset"
+    ],
+    "title": "RetailSetListPageResource",
+    "description": "Сторінка роздрібного списку наборів."
+   },
+   "RetailSetSort": {
+    "type": "string",
+    "enum": [
+     "name_asc",
+     "price_asc",
+     "price_desc",
+     "year_asc",
+     "year_desc",
+     "discount_desc",
+     "release_desc"
+    ],
+    "title": "RetailSetSort",
+    "description": "Порядок роздрібного списку наборів."
+   },
+   "RetailShopResource": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id",
+      "description": "Ідентифікатор магазину.",
+      "examples": [
+       "019a5a10-7736-74bd-8536-7e22bc056c40"
+      ]
+     },
+     "slug": {
+      "type": "string",
+      "title": "Slug",
+      "description": "Slug магазину.",
+      "examples": [
+       "touch"
+      ]
+     },
+     "name": {
+      "type": "string",
+      "title": "Name",
+      "description": "Назва.",
+      "examples": [
+       "Touch"
+      ]
+     },
+     "logo_url": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Logo Url",
+      "description": "Зовнішній логотип магазину, заданий посиланням.",
+      "examples": [
+       "https://touch.com.ua/logo.svg"
+      ]
+     },
+     "logo": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/ImageUrlsResource"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Логотип для показу: WebP-копії завантаженого логотипа; без нього кожна адреса веде на `logo_url`; без обох — `null`."
+     },
+     "is_official": {
+      "type": "boolean",
+      "title": "Is Official",
+      "description": "Підтверджений офіційний продавець LEGO.",
+      "examples": [
+       false
+      ]
+     },
+     "in_stock_sets_count": {
+      "type": "integer",
+      "title": "In Stock Sets Count",
+      "description": "Кількість наборів зі свіжою пропозицією `in_stock` у магазині.",
+      "examples": [
+       127
+      ]
+     },
+     "max_discount_percent": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Max Discount Percent",
+      "description": "Найбільша знижка серед свіжих пропозицій `in_stock`; без знижок — `null`.",
+      "examples": [
+       28
+      ]
+     },
+     "last_checked_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Checked At",
+      "description": "Час останньої перевірки пропозицій магазину.",
+      "examples": [
+       "2026-11-19T03:05:00Z"
+      ]
+     },
+     "site_url": {
+      "type": "string",
+      "title": "Site Url",
+      "description": "Перехід на сайт магазину: сторінка переходу, а без неї — сайт; для магазину з фідом партнерської мережі — партнерське посилання.",
+      "examples": [
+       "https://wbbsv.com/g/abc123/?f_id=20724&subid=tsehlynka&ulp=https%3A%2F%2Ftouch.com.ua%2F"
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "slug",
+     "name",
+     "logo_url",
+     "logo",
+     "is_official",
+     "in_stock_sets_count",
+     "max_discount_percent",
+     "last_checked_at",
+     "site_url"
+    ],
+    "title": "RetailShopResource",
+    "description": "Підключений магазин."
+   },
+   "SetDetailsResource": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id",
+      "description": "Ідентифікатор набору.",
+      "examples": [
+       "01a19868-7736-74bd-8536-7e22bc056c66"
+      ]
+     },
+     "name": {
+      "type": "string",
+      "title": "Name",
+      "description": "Українська назва з офіційного, редакторського чи перевіреного перекладу; без нього — канонічна назва.",
+      "examples": [
+       "Ракета для космічних прогулянок"
+      ]
+     },
+     "canonical_name": {
+      "type": "string",
+      "title": "Canonical Name",
+      "description": "Назва набору.",
+      "examples": [
+       "Space Ride Rocket"
+      ]
+     },
+     "official_number_display": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Official Number Display",
+      "description": "Номер для показу.",
+      "examples": [
+       "60429"
+      ]
+     },
+     "description": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Description",
+      "description": "Опис з того самого українського перекладу, що й назва; без нього — опис набору.",
+      "examples": [
+       "Ракета з пусковим майданчиком для наймолодших."
+      ]
+     },
+     "set_type": {
+      "$ref": "#/components/schemas/CatalogSetTypeResource",
+      "examples": [
+       {
+        "code": "BUILDING_SET",
+        "name": "Конструктор"
+       }
+      ]
+     },
+     "theme_path": {
+      "items": {
+       "$ref": "#/components/schemas/CatalogThemeResource"
+      },
+      "type": "array",
+      "title": "Theme Path",
+      "description": "Теми від кореня до найконкретнішої.",
+      "examples": [
+       [
+        {
+         "id": "01a19868-7736-74bd-8536-7e22bc056c03",
+         "name": "City",
+         "slug": "city"
+        },
+        {
+         "id": "01a19868-7736-74bd-8536-7e22bc056c02",
+         "name": "Space",
+         "slug": "space"
+        }
+       ]
+      ]
+     },
+     "intro_year": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Intro Year",
+      "description": "Рік появи набору.",
+      "examples": [
+       2024
+      ]
+     },
+     "age_min_months": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Age Min Months",
+      "description": "Мінімальний вік у місяцях.",
+      "examples": [
+       48
+      ]
+     },
+     "age_max_months": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Age Max Months",
+      "description": "Максимальний вік у місяцях.",
+      "examples": [
+       144
+      ]
+     },
+     "age_label": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Age Label",
+      "description": "Вікове маркування.",
+      "examples": [
+       "4+"
+      ]
+     },
+     "declared_piece_count": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Declared Piece Count",
+      "description": "Кількість деталей.",
+      "examples": [
+       37
+      ]
+     },
+     "declared_figure_count": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Declared Figure Count",
+      "description": "Кількість фігурок.",
+      "examples": [
+       1
+      ]
+     },
+     "lifecycle_status": {
+      "$ref": "#/components/schemas/LifecycleStatus",
+      "description": "Стан випуску набору.",
+      "examples": [
+       "active"
+      ]
+     },
+     "identifiers": {
+      "items": {
+       "$ref": "#/components/schemas/CatalogIdentifierResource"
+      },
+      "type": "array",
+      "title": "Identifiers",
+      "description": "Ідентифікатори набору.",
+      "examples": [
+       [
+        {
+         "identifier_type": "official_set_number",
+         "value": "60429"
+        }
+       ]
+      ]
+     },
+     "editions": {
+      "items": {
+       "$ref": "#/components/schemas/CatalogEditionResource"
+      },
+      "type": "array",
+      "title": "Editions",
+      "description": "Видання набору.",
+      "examples": [
+       [
+        {
+         "edition_name": "Базове",
+         "edition_type": "standard",
+         "is_default": true,
+         "packaging_type": "box",
+         "release_date": "2024-01-01",
+         "release_date_precision": "month"
+        }
+       ]
+      ]
+     },
+     "images": {
+      "items": {
+       "$ref": "#/components/schemas/CatalogImageResource"
+      },
+      "type": "array",
+      "title": "Images",
+      "description": "Галерея: основне зображення першим, далі за порядком показу.",
+      "examples": [
+       [
+        {
+         "height": 768,
+         "role": "primary",
+         "url": "https://cdn.rebrickable.com/media/sets/60429-1.jpg",
+         "variants": {
+          "large": "https://cdn.rebrickable.com/media/sets/60429-1.jpg",
+          "medium": "https://cdn.rebrickable.com/media/sets/60429-1.jpg",
+          "thumb": "https://cdn.rebrickable.com/media/sets/60429-1.jpg"
+         },
+         "width": 1024
+        }
+       ]
+      ]
+     },
+     "instructions": {
+      "items": {
+       "$ref": "#/components/schemas/CatalogInstructionResource"
+      },
+      "type": "array",
+      "title": "Instructions",
+      "description": "Опубліковані інструкції за мовою й номером частини.",
+      "examples": [
+       [
+        {
+         "instruction_type": "pdf",
+         "part_number": 1,
+         "title": "Інструкція, частина 1",
+         "total_parts": 2,
+         "url": "https://www.lego.com/cdn/product-assets/product.bi.core.pdf/6497001.pdf"
+        }
+       ]
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "name",
+     "canonical_name",
+     "official_number_display",
+     "description",
+     "set_type",
+     "theme_path",
+     "intro_year",
+     "age_min_months",
+     "age_max_months",
+     "age_label",
+     "declared_piece_count",
+     "declared_figure_count",
+     "lifecycle_status",
+     "identifiers",
+     "editions",
+     "images",
+     "instructions"
+    ],
+    "title": "SetDetailsResource",
+    "description": "Картка набору в каталозі."
+   },
+   "SetEditionType": {
+    "type": "string",
+    "enum": [
+     "standard",
+     "regional",
+     "packaging_variant",
+     "reissue",
+     "promotional",
+     "content_variant",
+     "unspecified",
+     "other"
+    ],
+    "title": "SetEditionType",
+    "description": "Відмінності випуску."
+   },
+   "SetListItemResource": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id",
+      "description": "Ідентифікатор набору.",
+      "examples": [
+       "01a19868-7736-74bd-8536-7e22bc056c66"
+      ]
+     },
+     "name": {
+      "type": "string",
+      "title": "Name",
+      "description": "Українська назва з офіційного, редакторського чи перевіреного перекладу; без нього — канонічна назва.",
+      "examples": [
+       "Ракета для космічних прогулянок"
+      ]
+     },
+     "canonical_name": {
+      "type": "string",
+      "title": "Canonical Name",
+      "description": "Назва набору.",
+      "examples": [
+       "Space Ride Rocket"
+      ]
+     },
+     "official_number_display": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Official Number Display",
+      "description": "Номер для показу.",
+      "examples": [
+       "60429"
+      ]
+     },
+     "set_type": {
+      "$ref": "#/components/schemas/CatalogSetTypeResource",
+      "examples": [
+       {
+        "code": "BUILDING_SET",
+        "name": "Конструктор"
+       }
+      ]
+     },
+     "theme": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/CatalogThemeResource"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Найконкретніша тема.",
+      "examples": [
+       {
+        "id": "01a19868-7736-74bd-8536-7e22bc056c02",
+        "name": "Space",
+        "slug": "space"
+       }
+      ]
+     },
+     "intro_year": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Intro Year",
+      "description": "Рік появи набору.",
+      "examples": [
+       2024
+      ]
+     },
+     "age_min_months": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Age Min Months",
+      "description": "Мінімальний вік у місяцях.",
+      "examples": [
+       48
+      ]
+     },
+     "age_max_months": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Age Max Months",
+      "description": "Максимальний вік у місяцях.",
+      "examples": [
+       144
+      ]
+     },
+     "age_label": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Age Label",
+      "description": "Вікове маркування.",
+      "examples": [
+       "4+"
+      ]
+     },
+     "declared_piece_count": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Declared Piece Count",
+      "description": "Кількість деталей.",
+      "examples": [
+       37
+      ]
+     },
+     "image": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/ImageUrlsResource"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Адреси WebP-копій основного зображення набору; відсутню копію заміняє найближча більша, без копій — файл; `null` — зображення немає."
+     },
+     "release_date": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Release Date",
+      "description": "Перший вихід: найраніша дата виходу серед видань; може бути в майбутньому для анонсу; `null` — дати немає.",
+      "examples": [
+       "2026-12-01"
+      ]
+     },
+     "release_date_precision": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/DatePrecision"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Точність `release_date`: день, місяць чи рік.",
+      "examples": [
+       "day"
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "name",
+     "canonical_name",
+     "official_number_display",
+     "set_type",
+     "theme",
+     "intro_year",
+     "age_min_months",
+     "age_max_months",
+     "age_label",
+     "declared_piece_count",
+     "image",
+     "release_date",
+     "release_date_precision"
+    ],
+    "title": "SetListItemResource",
+    "description": "Набір у списку каталогу."
+   },
+   "SetListPageResource": {
+    "properties": {
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/SetListItemResource"
+      },
+      "type": "array",
+      "title": "Items",
+      "description": "Записи сторінки.",
+      "examples": [
+       []
+      ]
+     },
+     "total": {
+      "type": "integer",
+      "title": "Total",
+      "description": "Кількість записів у всьому переліку.",
+      "examples": [
+       1
+      ]
+     },
+     "limit": {
+      "type": "integer",
+      "title": "Limit",
+      "description": "Кількість записів на сторінці.",
+      "examples": [
+       20
+      ]
+     },
+     "offset": {
+      "type": "integer",
+      "title": "Offset",
+      "description": "Кількість пропущених записів.",
+      "examples": [
+       0
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "items",
+     "total",
+     "limit",
+     "offset"
+    ],
+    "title": "SetListPageResource",
+    "description": "Сторінка списку наборів каталогу."
+   },
+   "SetShopOfferResource": {
+    "properties": {
+     "shop_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Shop Id",
+      "description": "Ідентифікатор магазину.",
+      "examples": [
+       "019a5a10-7736-74bd-8536-7e22bc056c40"
+      ]
+     },
+     "shop_name": {
+      "type": "string",
+      "title": "Shop Name",
+      "description": "Назва магазину.",
+      "examples": [
+       "Rozetka"
+      ]
+     },
+     "logo_url": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Logo Url",
+      "description": "Зовнішній логотип магазину, заданий посиланням.",
+      "examples": [
+       "https://rozetka.com.ua/logo.svg"
+      ]
+     },
+     "logo": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/ImageUrlsResource"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Логотип для показу: WebP-копії завантаженого логотипа; без нього кожна адреса веде на `logo_url`; без обох — `null`."
+     },
+     "is_official": {
+      "type": "boolean",
+      "title": "Is Official",
+      "description": "Офіційний продавець LEGO: магазин підтверджено, продає сам магазин.",
+      "examples": [
+       true
+      ]
+     },
+     "is_sold_by_shop": {
+      "type": "boolean",
+      "title": "Is Sold By Shop",
+      "description": "Продає сам магазин; `false` — сторонній продавець маркетплейсу.",
+      "examples": [
+       true
+      ]
+     },
+     "seller_name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Seller Name",
+      "description": "Продавець на маркетплейсі, якщо продає не сам магазин.",
+      "examples": [
+       null
+      ]
+     },
+     "price": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Price",
+      "description": "Ціна в гривнях.",
+      "examples": [
+       "1299.00"
+      ]
+     },
+     "old_price": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Old Price",
+      "description": "Ціна до знижки.",
+      "examples": [
+       "1599.00"
+      ]
+     },
+     "currency": {
+      "$ref": "#/components/schemas/Currency",
+      "description": "Валюта.",
+      "examples": [
+       "UAH"
+      ]
+     },
+     "availability": {
+      "$ref": "#/components/schemas/OfferAvailability",
+      "description": "Наявність з урахуванням свіжості; застаріла — `unknown`.",
+      "examples": [
+       "in_stock"
+      ]
+     },
+     "last_checked_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Last Checked At",
+      "description": "Час останньої перевірки.",
+      "examples": [
+       "2026-11-06T10:00:00Z"
+      ]
+     },
+     "product_url": {
+      "type": "string",
+      "title": "Product Url",
+      "description": "Сторінка товару в магазині.",
+      "examples": [
+       "https://rozetka.com.ua/ua/lego-60429/p398571244/"
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "shop_id",
+     "shop_name",
+     "logo_url",
+     "logo",
+     "is_official",
+     "is_sold_by_shop",
+     "seller_name",
+     "price",
+     "old_price",
+     "currency",
+     "availability",
+     "last_checked_at",
+     "product_url"
+    ],
+    "title": "SetShopOfferResource",
+    "description": "Пропозиція набору в блоці «Де купити»."
+   }
+  }
+ }
+}
