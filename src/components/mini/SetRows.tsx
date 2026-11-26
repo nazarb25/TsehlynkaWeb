@@ -88,8 +88,9 @@ export function SalePrice({ item }: { item: SetItem }) {
       <b>
         {(item.in_stock_offers_count ?? 0) > 1 ? 'від ' : ''}
         {price(item.min_in_stock_price)}
-      </b>{' '}
-      · {shopsPhrase(item.in_stock_shops_count)}
+      </b>
+      <span className="c-price-sep"> · </span>
+      {shopsPhrase(item.in_stock_shops_count)}
     </>
   )
 }
