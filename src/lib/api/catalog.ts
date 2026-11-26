@@ -55,3 +55,25 @@ export const findSetIdByNumber = cache(async (number: string): Promise<string | 
   const page = await apiGet<Page<CatalogSetItem>>('sets', { number, include_specialized: true, limit: 5 }, 900)
   return page.items.find((item) => item.official_number_display === number)?.id ?? null
 })
+
+const RETAIL_IDS_LIMIT = 100
+
+/** Роздрібні поля для власного списку наборів: особисті списки API віддають лише поля каталогу. */
+export async function withRetail<T extends SetItem>(items: T[]): Promise<T[]> {
+  const ids = [...new Set(items.map((item) => item.id))]
+  if (!ids.length) return items
+  const retail = new Map<string, RetailSetItem>()
+  try {
+    for (let start = 0; start < ids.length; start += RETAIL_IDS_LIMIT) {
+      const chunk = ids.slice(start, start + RETAIL_IDS_LIMIT)
+      const page = await apiGet<Page<RetailSetItem>>('retail/sets', { set_id: chunk, include_specialized: true, limit: chunk.length }, 120)
+      for (const item of page.items) retail.set(item.id, item)
+    }
+  } catch {
+    return items
+  }
+  return items.map((item) => {
+    const found = retail.get(item.id)
+    return found ? { ...found, ...item } : item
+  })
+}

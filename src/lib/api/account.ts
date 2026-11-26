@@ -2,6 +2,7 @@ import 'server-only'
 
 import * as Sentry from '@sentry/nextjs'
 
+import { withRetail } from '@/lib/api/catalog'
 import type { Page, SetItem } from '@/lib/api/types'
 
 const TIMEOUT_MS = 8000
@@ -118,8 +119,9 @@ export function getProfile(session: string): Promise<Profile | null> {
   return send<Profile>('/me', { method: 'GET', credentials: { session } })
 }
 
-export function listFavourites(session: string, offset: number, limit = 20): Promise<Page<SetItem> | null> {
-  return send<Page<SetItem>>(`/me/favourites?limit=${limit}&offset=${offset}`, { method: 'GET', credentials: { session } })
+export async function listFavourites(session: string, offset: number, limit = 20): Promise<Page<SetItem> | null> {
+  const page = await send<Page<SetItem>>(`/me/favourites?limit=${limit}&offset=${offset}`, { method: 'GET', credentials: { session } })
+  return page ? { ...page, items: await withRetail(page.items) } : null
 }
 
 /** Які з наборів є в обраному; до 100 за запит. */
@@ -136,8 +138,9 @@ export async function setFavourite(session: string, setId: string, selected: boo
   return result !== null
 }
 
-export function recentSets(session: string): Promise<SetItem[] | null> {
-  return send<SetItem[]>('/me/recently-viewed', { method: 'GET', credentials: { session } })
+export async function recentSets(session: string): Promise<SetItem[] | null> {
+  const items = await send<SetItem[]>('/me/recently-viewed', { method: 'GET', credentials: { session } })
+  return items ? withRetail(items) : null
 }
 
 /** `false` — сесію відхилено. */
@@ -158,4 +161,32 @@ export function updatePersonalData(session: string, field: PersonalField, value:
 /** `false` — сесію відхилено. */
 export async function clearPersonalData(session: string): Promise<boolean> {
   return (await send<undefined>('/me/personal-data', { method: 'DELETE', credentials: { session } })) !== null
+}
+
+/** Стеження за ціною: набір і ціна, нижче за яку надійде сповіщення; `null` — повідомимо про появу в наявності. */
+export type PriceAlert = SetItem & { watched_since: string; baseline_price: string | null }
+
+/** Найбільше стежень за ціною в одного користувача. */
+export const PRICE_ALERT_LIMIT = 100
+
+export async function listPriceAlerts(session: string, offset: number, limit = 20): Promise<Page<PriceAlert> | null> {
+  const page = await send<Page<PriceAlert>>(`/me/price-alerts?limit=${limit}&offset=${offset}`, { method: 'GET', credentials: { session } })
+  return page ? { ...page, items: await withRetail(page.items) } : null
+}
+
+/** Кількість стежень без самих наборів. */
+export async function countPriceAlerts(session: string): Promise<number | null> {
+  const page = await send<Page<PriceAlert>>('/me/price-alerts?limit=1&offset=0', { method: 'GET', credentials: { session } })
+  return page ? page.total : null
+}
+
+export async function isWatchingPrice(session: string, setId: string): Promise<boolean | null> {
+  const result = await send<{ is_watching: boolean }>(`/me/price-alerts/${encodeURIComponent(setId)}`, { method: 'GET', credentials: { session } })
+  return result ? result.is_watching : null
+}
+
+/** Стежити чи не стежити за ціною набору; `false` — сесію відхилено, понад ліміт — `AccountRequestError(409)`. */
+export async function setPriceAlert(session: string, setId: string, watching: boolean): Promise<boolean> {
+  const result = await send<undefined>(`/me/price-alerts/${encodeURIComponent(setId)}`, { method: watching ? 'PUT' : 'DELETE', credentials: { session } })
+  return result !== null
 }

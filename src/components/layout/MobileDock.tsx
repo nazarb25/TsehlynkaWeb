@@ -40,7 +40,7 @@ const TABS = [
     key: 'me',
     href: '/me',
     label: 'Моє',
-    match: (path: string) => ['/me', '/profile', '/recent'].some((prefix) => path.startsWith(prefix)),
+    match: (path: string) => ['/me', '/profile', '/recent', '/price-alerts'].some((prefix) => path.startsWith(prefix)),
     icon: (
       <>
         <circle cx="12" cy="8.5" r="3.5" />

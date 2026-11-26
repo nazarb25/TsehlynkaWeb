@@ -8,6 +8,7 @@ import type { AccountView } from './AuthProvider'
 
 const ITEMS = [
   { href: '/favourites', label: 'Обране' },
+  { href: '/price-alerts', label: 'Стежу за ціною' },
   { href: '/recent', label: 'Нещодавно переглянуті' },
   { href: '/profile/personal-data', label: 'Особисті дані' },
 ] as const

@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { notFound, permanentRedirect } from 'next/navigation'
 import { cache, Suspense } from 'react'
 
+import { WatchCard } from '@/components/alerts/WatchCard'
+import { WatchProvider } from '@/components/alerts/WatchProvider'
 import { MiniSet } from '@/components/mini/MiniSet'
 import { TrackView } from '@/components/platform/Analytics'
 import { JsonLd } from '@/components/seo/JsonLd'
@@ -21,7 +23,7 @@ import { piecesCount, releaseUpcoming } from '@/lib/format'
 import { isUuid, numbersFromSetSlug, setPath } from '@/lib/routes'
 import { safe } from '@/lib/safe'
 import { pageMetadata, productSchema, themeCrumbs } from '@/lib/seo'
-import { botSetUrl } from '@/lib/site'
+import { botUsername } from '@/lib/site'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -96,8 +98,10 @@ export default async function SetPage({ params }: Props) {
   const edition = details.editions.find((item) => item.is_default) ?? details.editions[0]
   const upcoming = edition ? releaseUpcoming(edition.release_date, edition.release_date_precision) : false
 
+  const bot = botUsername()
+
   return (
-    <>
+    <WatchProvider setId={details.id} bot={bot ?? ''}>
       <div className="m-only">
         <MiniSet
           details={details}
@@ -109,7 +113,7 @@ export default async function SetPage({ params }: Props) {
           figures={figures}
           figureCount={figureCount}
           related={related}
-          watchUrl={botSetUrl(details.id)}
+          watch={Boolean(bot)}
           now={now}
         />
       </div>
@@ -128,12 +132,13 @@ export default async function SetPage({ params }: Props) {
             figureCount={figureCount}
             edition={edition}
             upcoming={upcoming}
-            watchUrl={botSetUrl(details.id)}
+            watch={Boolean(bot)}
             now={now}
           />
 
           <div className="set__main">
             {offers.length ? <Offers setNumber={details.official_number_display} offers={offers} best={bestOffer(offers)} now={now} /> : null}
+            {offers.length && bot ? <WatchCard place="offers" price={summary.minInStockPrice} appear={false} /> : null}
             <SetFigures figures={figures} />
             <SetAbout details={details} figureCount={figureCount} edition={edition} now={now} />
           </div>
@@ -158,6 +163,6 @@ export default async function SetPage({ params }: Props) {
           }}
         />
       </div>
-    </>
+    </WatchProvider>
   )
 }

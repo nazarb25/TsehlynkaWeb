@@ -197,6 +197,8 @@ function descendants(themeId) {
 
 function filterSets(query, retail) {
   let list = [...sets]
+  const ids = query.getAll('set_id')
+  if (ids.length) list = list.filter((set) => ids.includes(set.id))
   const number = query.get('number')
   const search = query.get('search')?.toLocaleLowerCase('uk')
   if (number) list = list.filter((set) => set.official_number_display === number.replace(/\s+/g, ''))
@@ -351,7 +353,12 @@ const favourites = sets.slice(0, 3).map((set) => set.id)
 const recent = sets.slice(2, 7).map((set) => set.id)
 const personalData = { email: 'olena@example.com', phone: null, phone_source: null, birth_date: '1990-05-17' }
 const byId = (id) => sets.find((set) => set.id === id)
-const listItem = (id) => ({ ...retailItem(byId(id)), favourited_at: today.toISOString(), viewed_at: today.toISOString() })
+const listItem = (id) => ({ ...catalogItem(byId(id)), favourited_at: today.toISOString(), viewed_at: today.toISOString() })
+const priceAlerts = sets.slice(1, 4).map((set) => set.id)
+const alertItem = (id, index) => {
+  const set = byId(id)
+  return { ...catalogItem(set), watched_since: today.toISOString(), baseline_price: index === 2 ? null : set.min_in_stock_price }
+}
 
 function readBody(request) {
   return new Promise((resolve) => {
@@ -384,6 +391,22 @@ async function personal(path, url, request, response) {
     const index = favourites.indexOf(favourite[1])
     if (request.method === 'PUT' && index < 0) favourites.unshift(favourite[1])
     if (request.method === 'DELETE' && index >= 0) favourites.splice(index, 1)
+    return response.writeHead(204).end()
+  }
+  if (path === '/me/price-alerts') {
+    const limit = Number(url.searchParams.get('limit') ?? 20)
+    const offset = Number(url.searchParams.get('offset') ?? 0)
+    return json(response, 200, { items: priceAlerts.slice(offset, offset + limit).map(alertItem), total: priceAlerts.length, limit, offset })
+  }
+  const alert = /^\/me\/price-alerts\/([0-9a-f-]{36})$/.exec(path)
+  if (alert) {
+    const index = priceAlerts.indexOf(alert[1])
+    if (request.method === 'GET') return json(response, 200, { is_watching: index >= 0 })
+    if (request.method === 'PUT' && index < 0) {
+      if (priceAlerts.length >= 100) return json(response, 409, { error: 'price_alert_limit_reached', message: 'limit' })
+      priceAlerts.unshift(alert[1])
+    }
+    if (request.method === 'DELETE' && index >= 0) priceAlerts.splice(index, 1)
     return response.writeHead(204).end()
   }
   if (path === '/me/recently-viewed' && request.method === 'GET') return json(response, 200, recent.map(listItem))

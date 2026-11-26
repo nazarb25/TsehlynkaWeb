@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
-import { AgeIcon, BellIcon, ChevronRight, ExternalIcon, FigureIcon, PiecesIcon } from '@/components/icons'
+import { WatchCard } from '@/components/alerts/WatchCard'
+import { AgeIcon, ChevronRight, ExternalIcon, FigureIcon, PiecesIcon } from '@/components/icons'
 import type { SetDetails, ShopOffer } from '@/lib/api/types'
 import { bestOffer, discountPercent, isWebUrl, summarizeOffers } from '@/lib/catalog/offers'
 import { ageMark, figuresCount, piecesCount, plural, price, release } from '@/lib/format'
@@ -16,12 +17,13 @@ interface BuyPanelProps {
   figureCount: number | null
   edition: Edition | undefined
   upcoming: boolean
-  watchUrl: string | null
+  /** Стеження за ціною доступне. */
+  watch: boolean
   now: Date
 }
 
 /** Липка панель праворуч: назва, характеристики, ціна за станом пропозицій і дії. */
-export function BuyPanel({ details, offers, offersFailed, figureCount, edition, upcoming, watchUrl, now }: BuyPanelProps) {
+export function BuyPanel({ details, offers, offersFailed, figureCount, edition, upcoming, watch, now }: BuyPanelProps) {
   const theme = details.theme_path.at(-1) ?? null
   const age = ageMark(details.age_label, details.age_min_months)
   const summary = summarizeOffers(offers)
@@ -147,13 +149,8 @@ export function BuyPanel({ details, offers, offersFailed, figureCount, edition, 
                 Порівняти ціни · {offersCount} {plural(offersCount, 'пропозиція', 'пропозиції', 'пропозицій')}
               </a>
             ) : null}
-            {watchUrl ? (
-              <a className={`button web-only${offersCount ? ' button--ghost' : ' button--outline'}`} href={watchUrl} target="_blank" rel="noopener" data-track="telegram_watch_clicked" data-track-set={details.official_number_display ?? undefined}>
-                <BellIcon size={16} />
-                Стежити за ціною в Telegram
-              </a>
-            ) : null}
           </div>
+          {watch ? <WatchCard place="panel" price={summary.minInStockPrice} appear={summary.state === 'none' && !offersFailed} /> : null}
         </div>
       </div>
     </aside>
