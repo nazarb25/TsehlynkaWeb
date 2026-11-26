@@ -356,6 +356,23 @@ const api = createServer((request, response) => {
   const url = new URL(request.url, `http://localhost:${API_PORT}`)
   const path = url.pathname.replace(/^\/api\/v1/, '')
   if (process.env.MOCK_API_DOWN === '1') return json(response, 503, { error: 'internal_error', message: 'down' })
+  if (path === '/sessions/mini-app' && request.method === 'POST') {
+    if (!request.headers.authorization?.startsWith('tma ')) return json(response, 401, { error: 'init_data_required' })
+    return json(response, 201, { token: 'mock-session', expires_at: new Date(Date.now() + 30 * 86400000).toISOString() })
+  }
+  if (path === '/sessions/current' && request.method === 'DELETE') return response.writeHead(204).end()
+  if (path === '/me') {
+    if (request.headers.authorization !== 'Bearer mock-session') return json(response, 401, { error: 'invalid_session' })
+    return json(response, 200, {
+      telegram_id: 279058397,
+      first_name: 'Олена',
+      last_name: 'Коваль',
+      username: 'olena_k',
+      language_code: 'uk',
+      favourites_count: 3,
+      recently_viewed_count: 5,
+    })
+  }
   if (path === '/themes') return json(response, 200, themes)
   if (path === '/retail/shops') return json(response, 200, shops)
   if (path === '/sets') return json(response, 200, filterSets(url.searchParams, false))

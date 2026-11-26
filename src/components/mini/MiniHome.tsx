@@ -1,5 +1,7 @@
 import Link from 'next/link'
 
+import { AccountButton } from '@/components/auth/AccountButton'
+
 import type { SetItem, Theme } from '@/lib/api/types'
 import { plural } from '@/lib/format'
 import { themePath } from '@/lib/routes'
@@ -11,7 +13,6 @@ interface MiniHomeProps {
   themes: Theme[] | null
   newest: SetItem[] | null
   deals: SetItem[]
-  telegramUrl: string | null
 }
 
 function Logo() {
@@ -84,19 +85,13 @@ function SetsSection({ title, href, items, deal }: { title: string; href: string
 }
 
 /** Головна Mini App: шапка, пошук, швидкі входи, теми, новинки й знижки. */
-export function MiniHome({ themes, newest, deals, telegramUrl }: MiniHomeProps) {
+export function MiniHome({ themes, newest, deals }: MiniHomeProps) {
   return (
     <div className="c-home">
       <header className="c-home__top">
         <Logo />
         <span className="c-home__brand">Цеглинка</span>
-        {telegramUrl ? (
-          <a className="c-avatar c-avatar--telegram" href={telegramUrl} aria-label="Відкрити в Telegram">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M20.7 4.3 2.9 11.2c-1.2.5-1.2 1.2-.2 1.5l4.6 1.4 1.7 5.4c.2.6.4.8.9.8.4 0 .6-.2.9-.4l2.2-2.1 4.6 3.4c.8.5 1.4.2 1.6-.8l3-14.1c.3-1.2-.5-1.8-1.5-1.3Zm-3 3.6-8.4 7.6-.3 3.5-1.6-5 9.8-6.3c.4-.3.9 0 .5.2Z" />
-            </svg>
-          </a>
-        ) : null}
+        <AccountButton variant="home" />
       </header>
 
       <Link className="c-home__search" href="/search">

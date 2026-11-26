@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 
+import { AuthProvider } from '@/components/auth/AuthProvider'
+import { MiniAppLogin } from '@/components/auth/MiniAppLogin'
 import { AnalyticsClicks } from '@/components/platform/Analytics'
 import { MobileDock } from '@/components/layout/MobileDock'
 import { SiteFooter } from '@/components/layout/SiteFooter'
@@ -7,6 +9,7 @@ import { SiteHeader } from '@/components/layout/SiteHeader'
 import { TelegramBridge } from '@/components/platform/TelegramBridge'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { listThemes } from '@/lib/api/catalog'
+import { currentAccount, initial } from '@/lib/auth/session'
 import type { Theme } from '@/lib/api/types'
 import { popularThemes } from '@/lib/catalog/themes'
 import { organizationSchema, websiteSchema } from '@/lib/seo'
@@ -19,6 +22,7 @@ import '@/styles/sets.css'
 import '@/styles/catalog.css'
 import '@/styles/set.css'
 import '@/styles/pages.css'
+import '@/styles/auth.css'
 import '@/styles/mini/mini.css'
 
 export const dynamic = 'force-dynamic'
@@ -57,17 +61,20 @@ async function loadThemes(): Promise<Theme[]> {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const themes = await loadThemes()
+  const [themes, account] = await Promise.all([loadThemes(), currentAccount()])
   const telegram = botUrl()
   return (
     <html lang="uk">
       <body>
         <TelegramBridge>
-          <SiteHeader themes={popularThemes(themes, 12)} botUrl={telegram} />
-          <main className="main">{children}</main>
-          <SiteFooter themes={popularThemes(themes, 4)} botUrl={telegram} />
-          <MobileDock />
-          <AnalyticsClicks />
+          <AuthProvider account={account ? { ...account, initial: initial(account.name) } : null}>
+            <SiteHeader themes={popularThemes(themes, 12)} />
+            <main className="main">{children}</main>
+            <SiteFooter themes={popularThemes(themes, 4)} botUrl={telegram} />
+            <MobileDock />
+            <MiniAppLogin />
+            <AnalyticsClicks />
+          </AuthProvider>
         </TelegramBridge>
         <JsonLd data={[websiteSchema(), organizationSchema()]} />
       </body>
