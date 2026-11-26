@@ -71,24 +71,35 @@ export function WatchProvider({ setId, bot, children }: { setId: string; bot: st
     [openLogin, setId],
   )
 
+  /** Поточний стан з API; `null` — не вдалося дізнатися, при відхиленій сесії відкривається вхід. */
+  const load = useCallback(async (): Promise<boolean | null> => {
+    try {
+      const response = await fetch(`/api/me/price-alerts/${setId}`)
+      if (response.status === 401) {
+        openLogin()
+        return null
+      }
+      if (!response.ok) return null
+      return ((await response.json()) as { watching: boolean }).watching
+    } catch {
+      return null
+    }
+  }, [openLogin, setId])
+
   useEffect(() => {
     if (!account) return
     let active = true
     const pending = takePending(setId)
     void (async () => {
-      try {
-        const response = await fetch(`/api/me/price-alerts/${setId}`)
-        if (!response.ok) return
-        const { watching: current } = (await response.json()) as { watching: boolean }
-        if (!active) return
-        setWatching(current)
-        if (pending && !current) void change(true)
-      } catch {}
+      const current = await load()
+      if (!active || current === null) return
+      setWatching(current)
+      if (pending && !current) void change(true)
     })()
     return () => {
       active = false
     }
-  }, [account, change, setId])
+  }, [account, change, load, setId])
 
   const toggle = useCallback(() => {
     if (busy) return
@@ -97,9 +108,23 @@ export function WatchProvider({ setId, bot, children }: { setId: string; bot: st
       openLogin()
       return
     }
-    if (watching === undefined) return
-    void change(!watching)
-  }, [account, busy, change, openLogin, setId, watching])
+    if (watching !== undefined) {
+      void change(!watching)
+      return
+    }
+    setBusy(true)
+    setNotice(null)
+    void (async () => {
+      const current = await load()
+      setBusy(false)
+      if (current === null) {
+        setNotice('failed')
+        return
+      }
+      setWatching(current)
+      void change(!current)
+    })()
+  }, [account, busy, change, load, openLogin, setId, watching])
 
   const value = useMemo<Watch>(() => ({ watching, busy, notice, bot, toggle }), [watching, busy, notice, bot, toggle])
   return <WatchContext.Provider value={value}>{children}</WatchContext.Provider>
