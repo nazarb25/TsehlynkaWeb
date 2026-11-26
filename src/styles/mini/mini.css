@@ -188,6 +188,132 @@
     --ease-sheet-close: cubic-bezier(0.4, 0, 1, 1);
   }
 
+  body {
+    container-type: inline-size;
+  }
+}
+
+/* Особисті екрани на десктопі — той самий мобільний вигляд у вузькій колонці по центру. */
+@media (min-width: 1000px) {
+  .c-desk {
+
+    --color-bg: var(--tg-theme-secondary-bg-color, light-dark(#f2f2f7, #1c1c1e));
+    --color-section: var(--tg-theme-section-bg-color, var(--tg-theme-bg-color, light-dark(#ffffff, #2c2c2e)));
+    --color-text: var(--tg-theme-text-color, light-dark(#1d2025, #ffffff));
+    --color-hint: var(--tg-theme-hint-color, light-dark(#676d77, #98989f));
+    --color-link: var(--tg-theme-link-color, light-dark(#2481cc, #5aa7ff));
+    --color-section-header: var(--tg-theme-section-header-text-color, var(--color-hint));
+    --color-separator: var(--tg-theme-section-separator-color, light-dark(#e5e5ea, #3d3d41));
+    --color-fill: color-mix(in srgb, var(--color-text) 6%, var(--color-section));
+    --color-chevron: color-mix(in srgb, var(--color-hint) 70%, transparent);
+    --color-verified: var(--color-link);
+    /* Статуси пропозицій: текст і крапка поруч. Світла крапка яскравіша за текст, щоб зелений читався. */
+    --color-success: light-dark(#15803d, #74c69d);
+    --color-success-dot: light-dark(#34c759, #74c69d);
+    --color-warning: light-dark(#8a5a00, #f3bd63);
+    --color-info: var(--color-link);
+    --color-photo-bg: #ffffff;
+    /* Сцена під фото наборів і фігурок; у темній темі світла, бо фото наборів на білому. */
+    --color-photo-stage: light-dark(color-mix(in srgb, var(--color-text) 4%, var(--color-section)), #ececef);
+    /* Підпис заглушки на сцені без фото. */
+    --color-photo-stage-text: light-dark(var(--color-hint), #6d6d72);
+    /* Шторка в темній темі світліша за екран і над темнішим затемненням, щоб не зливатися з ним. */
+    --color-backdrop: light-dark(rgb(0 0 0 / 35%), rgb(0 0 0 / 60%));
+    --color-sheet: light-dark(var(--color-bg), color-mix(in srgb, var(--color-bg) 90%, #ffffff));
+    --color-sheet-section: light-dark(var(--color-section), color-mix(in srgb, var(--color-section) 88%, #ffffff));
+    --color-sheet-edge: light-dark(transparent, rgb(255 255 255 / 8%));
+    --color-dot: color-mix(in srgb, var(--color-text) 30%, transparent);
+    --color-dot-active: var(--color-text);
+
+    /* Мед: основні кнопки, вибрані чипи, сердечко, монограма й аватар профілю, ціна в картці набору. */
+    --color-honey: #f2c65b;
+    --color-on-honey: #1c1c1e;
+    /* Активна вкладка нижньої панелі: у світлій темі медова підкладка й темний значок, у темній — світла підкладка й медовий значок. */
+    --color-tab-active-bg: light-dark(rgb(242 198 91 / 35%), rgb(255 255 255 / 8%));
+    --color-tab-active: light-dark(var(--color-text), var(--color-honey));
+    --color-chip-selected-bg: light-dark(rgb(242 198 91 / 30%), rgb(242 198 91 / 16%));
+    --color-chip-selected: light-dark(#7a5400, var(--color-honey));
+    --color-segment-selected: light-dark(#ffffff, #5a5a5e);
+    --color-segment-track: light-dark(color-mix(in srgb, var(--color-text) 7%, var(--color-bg)), var(--color-section));
+    --color-field: light-dark(color-mix(in srgb, var(--color-text) 5%, var(--color-section)), #3a3a3c);
+    --color-toggle-off: light-dark(#e9e9eb, #5a5a5f);
+    --color-honey-text: light-dark(#9a6a00, var(--color-honey));
+    --color-honey-light: #f7cf6a;
+    --color-honey-deep: #e9a93a;
+    --color-on-avatar: #ffffff;
+
+    /* Плитки з ініціалом магазину без логотипа. */
+    --color-on-tint: #ffffff;
+    --tint-0: #5b7fd6;
+    --tint-1: #34a853;
+    --tint-2: #9b5de5;
+    --tint-3: #f29d38;
+    --tint-4: #e5534b;
+    --tint-5: #3aa6b9;
+    --tint-gray: #8e8e93;
+    --tint-pink: #e85d9a;
+    --color-danger: light-dark(#d93025, #ff6b61);
+
+    /* Спливне повідомлення лишається темним в обох темах, як у Telegram. */
+    --color-toast: light-dark(#2c2c2e, #3a3a3c);
+    --color-on-toast: #ffffff;
+    --color-toast-action: #5aa7ff;
+
+    /* Скляна нижня панель вкладок. */
+    --color-glass: light-dark(rgb(255 255 255 / 88%), rgb(44 44 46 / 86%));
+    --color-glass-edge: light-dark(rgb(0 0 0 / 6%), rgb(255 255 255 / 8%));
+    --shadow-float: 0 8px 24px light-dark(rgb(0 0 0 / 10%), rgb(0 0 0 / 35%));
+
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --space-6: 32px;
+
+    --radius-s: 8px;
+    --radius-m: 12px;
+    --radius-l: 16px;
+    /* Згруповані списки, картки й шторки. */
+    --radius-xl: 20px;
+    --radius-pill: 999px;
+
+    --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, system-ui, sans-serif;
+    --font-size-xs: 12px;
+    --font-size-s: 13px;
+    --font-size-m: 15px;
+    --font-size-input: 16px;
+    --font-size-l: 17px;
+    --font-size-xl: 22px;
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-bold: 600;
+    --line-height: 1.35;
+
+    --viewport-height: var(--tg-viewport-stable-height, 100vh);
+    --safe-area-bottom: max(var(--tg-safe-area-inset-bottom, 0px), env(safe-area-inset-bottom, 0px));
+    --row-height: 44px;
+    --tap-min: 44px;
+
+    /* Нижня панель: висота, відступ від краю й місце, яке вона забирає внизу екрана. */
+    --dock-height: 64px;
+    --dock-gap: 16px;
+    --dock-space: calc(var(--dock-height) + var(--dock-gap) * 2 + var(--safe-area-bottom));
+
+    /* Шторка виїжджає знизу зі сповільненням, як шторки Telegram, і ховається швидше. */
+    --sheet-open-duration: 360ms;
+    --sheet-close-duration: 240ms;
+    --ease-sheet-open: cubic-bezier(0.32, 0.72, 0, 1);
+    --ease-sheet-close: cubic-bezier(0.4, 0, 1, 1);
+  }
+}
+
+.c-desk {
+  container-type: inline-size;
+}
+
+@container (max-width: 999.98px) {
+
   /* Шапка екрана */
   .c-header {
     display: flex;
@@ -959,22 +1085,6 @@
     padding-bottom: var(--dock-space);
   }
 
-  /* На дуже низьких екранах панель компактна, але всі чотири вкладки лишаються. */
-  @media (max-height: 560px) {
-    :root {
-      --dock-height: 52px;
-      --dock-gap: 8px;
-    }
-
-    .c-dock__tab {
-      font-size: 10px;
-    }
-
-    .c-dock__tab svg {
-      width: 20px;
-      height: 20px;
-    }
-  }
 
   /* Каталог: заголовок з «Пошуком», режими, чипи фільтрів, порядок, лічильник і вигляд */
   .c-cat,
@@ -3172,10 +3282,6 @@
     background: #ffffff;
   }
 
-  body.is-gallery-open {
-    overflow: hidden;
-  }
-
   /* Шторка «Де купити» */
   .c-offers__header {
     flex-direction: row;
@@ -4320,33 +4426,6 @@
     display: none;
   }
 
-  /* Смужка переходу між екранами: з'являється, коли екран відповідає довше за мить. */
-  body::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-    height: 2px;
-    background: var(--color-link);
-    transform: scaleX(0);
-    transform-origin: left;
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  body.is-navigating::before {
-    opacity: 1;
-    transform: scaleX(0.85);
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    body.is-navigating::before {
-      transition: transform 2.5s cubic-bezier(0.1, 0.6, 0.2, 1), opacity 0.15s;
-    }
-  }
-
   /* Фото набору мишею: стрічку можна тягнути, а стрілки з'являються лише там, де є курсор
      (Telegram Desktop, веб), — на телефоні фото гортаються пальцем. */
   .c-set-media__track.is-dragging,
@@ -4407,6 +4486,57 @@
     .c-set-media__track,
     .c-gallery__track {
       cursor: grab;
+    }
+  }
+}
+
+@media (max-width: 999.98px) {
+  /* На дуже низьких екранах панель компактна, але всі чотири вкладки лишаються. */
+  @media (max-height: 560px) {
+    :root {
+      --dock-height: 52px;
+      --dock-gap: 8px;
+    }
+
+    .c-dock__tab {
+      font-size: 10px;
+    }
+
+    .c-dock__tab svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  body.is-gallery-open {
+    overflow: hidden;
+  }
+
+
+  /* Смужка переходу між екранами: з'являється, коли екран відповідає довше за мить. */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    height: 2px;
+    background: var(--color-link);
+    transform: scaleX(0);
+    transform-origin: left;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  body.is-navigating::before {
+    opacity: 1;
+    transform: scaleX(0.85);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    body.is-navigating::before {
+      transition: transform 2.5s cubic-bezier(0.1, 0.6, 0.2, 1), opacity 0.15s;
     }
   }
 }

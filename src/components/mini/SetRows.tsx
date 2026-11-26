@@ -1,5 +1,6 @@
 import Link from 'next/link'
 
+import { HeartButton } from '@/components/favourites/HeartButton'
 import { shopTint } from '@/components/ui/ShopLogo'
 import type { SetDeal, SetItem } from '@/lib/api/types'
 import { plural, price, release, releaseUpcoming, thousands } from '@/lib/format'
@@ -126,10 +127,12 @@ interface RowProps {
   note?: React.ReactNode
   name?: React.ReactNode
   eager?: boolean
+  /** Стан сердечка, коли він уже відомий, як у списку «Обране». */
+  selected?: boolean
 }
 
 /** Рядок набору: фото й назва, рядок ціни чи дати, лого магазину знижки праворуч угорі, параметри внизу. */
-export function SetRow({ item, price: amount, deal, note, name, eager }: RowProps) {
+export function SetRow({ item, price: amount, deal, note, name, eager, selected }: RowProps) {
   const path = setPath(item)
   return (
     <div className={`c-urow${deal ? ' has-logo' : ''}`}>
@@ -145,6 +148,7 @@ export function SetRow({ item, price: amount, deal, note, name, eager }: RowProp
         {deal ? <DealLogo deal={deal} /> : null}
         <div className="c-urow__foot">
           <SetMetaLine item={item} />
+          <HeartButton setId={item.id} name={item.name} initial={selected} />
         </div>
       </div>
     </div>
@@ -152,7 +156,7 @@ export function SetRow({ item, price: amount, deal, note, name, eager }: RowProp
 }
 
 /** Картка сітки: фото 4:3 з лого магазину в куті, назва, ціна, номер і рік. */
-export function SetCard({ item, price: amount, deal, eager }: RowProps) {
+export function SetCard({ item, price: amount, deal, eager, selected }: RowProps) {
   const path = setPath(item)
   return (
     <div className="c-ucard">
@@ -166,6 +170,7 @@ export function SetCard({ item, price: amount, deal, eager }: RowProps) {
       {deal ? <DealLogo deal={deal} className="c-ucard__logo" /> : null}
       <div className="c-ucard__foot">
         <SetMetaLine item={item} short />
+        <HeartButton setId={item.id} name={item.name} initial={selected} />
       </div>
     </div>
   )
@@ -186,4 +191,11 @@ export function CatalogRow({ item, context, grid, eager }: { item: SetItem; cont
   else if (context.sale && item.has_preorder_offer) amount = <RetailPrice item={item} />
   else if (context.newest) amount = <ReleaseLine item={item} />
   return grid ? <SetCard item={item} price={amount} deal={deal} eager={eager} /> : <SetRow item={item} price={amount} deal={deal} eager={eager} />
+}
+
+/** Рядок особистих списків: найкраща знижка з лого магазину або ціна в продажу чи передзамовлення. */
+export function PersonalRow({ item, selected, grid }: { item: SetItem; selected?: boolean; grid?: boolean }) {
+  const deal = item.best_deal ?? null
+  const amount = <RetailPrice item={item} />
+  return grid ? <SetCard item={item} price={amount} deal={deal} selected={selected} /> : <SetRow item={item} price={amount} deal={deal} selected={selected} />
 }

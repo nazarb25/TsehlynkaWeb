@@ -1,5 +1,7 @@
 import Link from 'next/link'
 
+import { HeartButton } from '@/components/favourites/HeartButton'
+import { RecordView } from '@/components/favourites/RecordView'
 import { shopTint } from '@/components/ui/ShopLogo'
 import type { InventoryFigure, SetDetails, SetImage, SetItem, ShopOffer } from '@/lib/api/types'
 import { bestOffer, discountPercent, groupOffers, isWebUrl, type OfferSummary } from '@/lib/catalog/offers'
@@ -332,7 +334,9 @@ export function MiniSet({ details, model, packaging, offers, offersFailed, summa
             <span aria-hidden="true">Фото набору поки немає</span>
           </span>
         )}
+        <HeartButton setId={details.id} name={details.name} variant="media" />
       </div>
+      <RecordView setId={details.id} />
 
       <div className={`c-set${state !== 'none' ? ' c-set--cta' : ''}`}>
         {rootTheme ? (

@@ -347,6 +347,71 @@ function offers(set) {
   }
 }
 
+const favourites = sets.slice(0, 3).map((set) => set.id)
+const recent = sets.slice(2, 7).map((set) => set.id)
+const personalData = { email: 'olena@example.com', phone: null, phone_source: null, birth_date: '1990-05-17' }
+const byId = (id) => sets.find((set) => set.id === id)
+const listItem = (id) => ({ ...retailItem(byId(id)), favourited_at: today.toISOString(), viewed_at: today.toISOString() })
+
+function readBody(request) {
+  return new Promise((resolve) => {
+    let body = ''
+    request.on('data', (chunk) => (body += chunk))
+    request.on('end', () => resolve(body ? JSON.parse(body) : {}))
+  })
+}
+
+async function personal(path, url, request, response) {
+  if (path === '/me')
+    return json(response, 200, {
+      telegram_id: 279058397,
+      first_name: 'Олена',
+      last_name: 'Коваль',
+      username: 'olena_k',
+      language_code: 'uk',
+      personal_data: personalData,
+      favourites_count: favourites.length,
+      recently_viewed_count: recent.length,
+    })
+  if (path === '/me/favourites') {
+    const limit = Number(url.searchParams.get('limit') ?? 20)
+    const offset = Number(url.searchParams.get('offset') ?? 0)
+    return json(response, 200, { items: favourites.slice(offset, offset + limit).map(listItem), total: favourites.length, limit, offset })
+  }
+  if (path === '/me/favourites/membership') return json(response, 200, { set_ids: url.searchParams.getAll('set_id').filter((id) => favourites.includes(id)) })
+  const favourite = /^\/me\/favourites\/([0-9a-f-]{36})$/.exec(path)
+  if (favourite) {
+    const index = favourites.indexOf(favourite[1])
+    if (request.method === 'PUT' && index < 0) favourites.unshift(favourite[1])
+    if (request.method === 'DELETE' && index >= 0) favourites.splice(index, 1)
+    return response.writeHead(204).end()
+  }
+  if (path === '/me/recently-viewed' && request.method === 'GET') return json(response, 200, recent.map(listItem))
+  if (path === '/me/recently-viewed' && request.method === 'DELETE') {
+    recent.length = 0
+    return response.writeHead(204).end()
+  }
+  const viewed = /^\/me\/recently-viewed\/([0-9a-f-]{36})$/.exec(path)
+  if (viewed) {
+    const index = recent.indexOf(viewed[1])
+    if (index >= 0) recent.splice(index, 1)
+    recent.unshift(viewed[1])
+    return response.writeHead(204).end()
+  }
+  if (path === '/me/personal-data' && request.method === 'PATCH') {
+    const body = await readBody(request)
+    if (typeof body.email === 'string' && !body.email.includes('@')) return json(response, 422, { error: 'invalid_personal_data', message: 'Електронна адреса некоректна' })
+    Object.assign(personalData, body)
+    personalData.phone_source = personalData.phone ? 'user_input' : null
+    return json(response, 200, personalData)
+  }
+  if (path === '/me/personal-data' && request.method === 'DELETE') {
+    Object.assign(personalData, { email: null, phone: null, phone_source: null, birth_date: null })
+    return response.writeHead(204).end()
+  }
+  return json(response, 404, { error: 'not_found' })
+}
+
 function json(response, status, body) {
   response.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' })
   response.end(JSON.stringify(body))
@@ -361,17 +426,9 @@ const api = createServer((request, response) => {
     return json(response, 201, { token: 'mock-session', expires_at: new Date(Date.now() + 30 * 86400000).toISOString() })
   }
   if (path === '/sessions/current' && request.method === 'DELETE') return response.writeHead(204).end()
-  if (path === '/me') {
+  if (path === '/me' || path.startsWith('/me/')) {
     if (request.headers.authorization !== 'Bearer mock-session') return json(response, 401, { error: 'invalid_session' })
-    return json(response, 200, {
-      telegram_id: 279058397,
-      first_name: 'Олена',
-      last_name: 'Коваль',
-      username: 'olena_k',
-      language_code: 'uk',
-      favourites_count: 3,
-      recently_viewed_count: 5,
-    })
+    return personal(path, url, request, response)
   }
   if (path === '/themes') return json(response, 200, themes)
   if (path === '/retail/shops') return json(response, 200, shops)

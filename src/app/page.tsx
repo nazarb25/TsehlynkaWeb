@@ -8,7 +8,9 @@ import { ThemeCard } from '@/components/themes/ThemeCard'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SearchField } from '@/components/ui/SearchField'
 import { SectionHead } from '@/components/ui/SectionHead'
+import { recentSets } from '@/lib/api/account'
 import { findSets, listThemes } from '@/lib/api/catalog'
+import { sessionToken } from '@/lib/auth/session'
 import { apiQuery, DEALS, NEWEST, parseFilters } from '@/lib/catalog/filters'
 import { currentRootThemes, popularThemes } from '@/lib/catalog/themes'
 import { safe } from '@/lib/safe'
@@ -34,10 +36,12 @@ const QUICK_LINKS = [
 export default async function HomePage() {
   const newest = parseFilters({}, NEWEST)
   const deals = parseFilters({}, DEALS)
-  const [themes, newestPage, dealsPage] = await Promise.all([
+  const session = await sessionToken()
+  const [themes, newestPage, dealsPage, recent] = await Promise.all([
     safe(listThemes()),
     safe(findSets(apiQuery(newest, NEWEST, {}, ROW), false)),
     safe(findSets(apiQuery(deals, DEALS, {}, ROW), true)),
+    session ? safe(recentSets(session)) : Promise.resolve(null),
   ])
   const unavailable = !themes && !newestPage && !dealsPage
   const top = themes ? popularThemes(themes, 8) : []
@@ -49,6 +53,7 @@ export default async function HomePage() {
           themes={themes ? currentRootThemes(themes).slice(0, 6) : null}
           newest={newestPage ? newestPage.items.slice(0, 3) : null}
           deals={(dealsPage?.items ?? []).filter((item) => item.best_deal).slice(0, 3)}
+          recent={(recent ?? []).slice(0, 3)}
         />
       </div>
       <section className="hero d-only">
