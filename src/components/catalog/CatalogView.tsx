@@ -131,7 +131,7 @@ export async function CatalogView({ sectionKey, filters, title, hint, crumbs, mo
     <>
       <div className="m-only">
         {sectionKey === 'search' ? (
-          <MiniSearch filters={filters} initial={page ? { theme: suggestedTheme, items: page.items, total } : null} chips={chips} />
+          <MiniSearch filters={filters} initial={page && filters.page === 1 ? { theme: suggestedTheme, items: page.items, total } : null} chips={chips} />
         ) : (
           <MiniCatalog sectionKey={sectionKey} section={section} filters={filters} page={page} themes={themes} shops={shops} />
         )}

@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 
-import { findSets, listThemes } from '@/lib/api/catalog'
+import { findSets, listShops, listThemes } from '@/lib/api/catalog'
 import { apiQuery, filterIds, isSale, parseFilters, SEARCH } from '@/lib/catalog/filters'
 import { matchTheme } from '@/lib/catalog/themes'
 
@@ -9,8 +9,8 @@ export async function GET(request: NextRequest) {
   const filters = parseFilters(request.nextUrl.searchParams, SEARCH)
   if (!filters.q) return NextResponse.json({ theme: null, items: [], total: 0 })
   try {
-    const themes = await listThemes()
-    const ids = filterIds(filters, themes, [])
+    const [themes, shops] = await Promise.all([listThemes(), filters.shop && isSale(filters) ? listShops() : Promise.resolve([])])
+    const ids = filterIds(filters, themes, shops)
     if (ids === 'failed') throw new Error('lookup failed')
     const page = ids === 'missing' ? { items: [], total: 0 } : await findSets(apiQuery(filters, SEARCH, ids), isSale(filters))
     return NextResponse.json({

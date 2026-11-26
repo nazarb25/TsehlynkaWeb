@@ -12,6 +12,7 @@ import { themePath } from '@/lib/routes'
 import { Chevron, ModeIcon, StateIcon, XIcon } from './icons'
 import { MiniLoadMore } from './MiniLoadMore'
 import { isOnSale, SalePrice, SetRow } from './SetRows'
+import { useMobile } from './useMobile'
 
 interface SearchResult {
   theme: Theme | null
@@ -42,33 +43,38 @@ function Highlight({ text, query }: { text: string; query: string }) {
 }
 
 /** Повноекранний пошук Mini App: поле з режимом каталогу; результати оновлюються за введенням із затримкою. */
+function searchKey(filters: CatalogFilters, q: string, mode: CatalogMode): string {
+  return queryParams({ ...filters, q: q || null, mode, page: 1, view: null }, SEARCH).toString()
+}
+
 export function MiniSearch({ filters, initial, chips }: MiniSearchProps) {
   const router = useRouter()
+  const mobile = useMobile()
   const inputRef = useRef<HTMLInputElement>(null)
   const [text, setText] = useState(filters.q ?? '')
   const [mode, setMode] = useState<CatalogMode>(filters.mode)
   const [result, setResult] = useState<{
     key: string
     data: SearchResult | null
-  } | null>(filters.q ? { key: `${filters.q}|${filters.mode}`, data: initial } : null)
+  } | null>(filters.q && initial ? { key: searchKey(filters, filters.q.trim(), filters.mode), data: initial } : null)
   const [loading, setLoading] = useState(false)
   const [attempt, setAttempt] = useState(0)
 
   const query = text.trim()
-  const key = `${query}|${mode}`
-  const params = queryParams({ ...filters, q: query || null, mode, page: 1, view: null }, SEARCH)
-  const paramsText = params.toString()
+  const paramsText = searchKey(filters, query, mode)
+  const key = paramsText
 
   useEffect(() => {
-    if (!filters.q) inputRef.current?.focus()
-  }, [filters.q])
+    if (mobile && !filters.q) inputRef.current?.focus()
+  }, [mobile, filters.q])
 
   useEffect(() => {
+    if (!mobile) return
     window.history.replaceState(window.history.state, '', paramsText ? `/search?${paramsText}` : '/search')
-  }, [paramsText])
+  }, [mobile, paramsText])
 
   useEffect(() => {
-    if (!query) return
+    if (!mobile || !query) return
     if (result?.key === key && attempt === 0) return
     const controller = new AbortController()
     const timer = window.setTimeout(async () => {
@@ -93,7 +99,7 @@ export function MiniSearch({ filters, initial, chips }: MiniSearchProps) {
       window.clearTimeout(timer)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, paramsText, attempt])
+  }, [mobile, key, paramsText, attempt])
 
   const cancel = () => {
     if (window.history.length > 1) router.back()
