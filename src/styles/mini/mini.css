@@ -50,6 +50,14 @@
     background: #2aabee;
   }
 
+  .c-ucard__foot {
+    min-height: var(--tap-min);
+  }
+
+  .c-ucard__price .c-price-sep {
+    display: none;
+  }
+
   :where(.m-only) h1,
   :where(.m-only) h2,
   :where(.m-only) p {
