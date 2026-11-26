@@ -20,6 +20,12 @@ describe('parseFilters', () => {
   it('ignores preorder on the deals page', () => {
     expect(parse('preorder=true', DEALS)).toMatchObject({ preorder: false, onSale: true })
   })
+
+  it('reads the search text from the bot link parameter', () => {
+    expect(parse('search=falcon').q).toBe('falcon')
+    expect(parse('q=castle&search=falcon').q).toBe('castle')
+    expect(queryParams(parse('search=falcon'), CATALOG).get('q')).toBe('falcon')
+  })
 })
 
 describe('effectiveSort', () => {

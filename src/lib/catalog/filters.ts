@@ -186,7 +186,7 @@ export function parseFilters(params: Params, section: CatalogSection): CatalogFi
   const preorder = !section.onSale && readFlag(params, 'preorder')
   return {
     mode,
-    q: read(params, 'q')?.slice(0, 100) ?? null,
+    q: (read(params, 'q') ?? read(params, 'search'))?.slice(0, 100) ?? null,
     theme: read(params, 'theme'),
     shop: read(params, 'shop'),
     sort,
