@@ -848,3 +848,23 @@
     display: none;
   }
 }
+
+.watch-button.is-on {
+  color: var(--color-success);
+}
+
+.watch-note {
+  margin: -2px 0 0;
+  color: var(--color-hint);
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.watch-note a {
+  color: var(--color-link);
+}
+
+.watch-note--error {
+  color: var(--color-danger);
+}

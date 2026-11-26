@@ -6,7 +6,8 @@ export type AnalyticsEvent =
   | 'filters_applied'
   | 'set_viewed'
   | 'shop_clicked'
-  | 'telegram_watch_clicked'
+  | 'price_watch_started'
+  | 'price_watch_stopped'
   | 'telegram_opened'
 
 type Properties = Record<string, string | number | boolean | null | undefined>

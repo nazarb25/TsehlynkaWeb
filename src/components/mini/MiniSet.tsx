@@ -1,5 +1,6 @@
 import Link from 'next/link'
 
+import { WatchRow } from '@/components/alerts/WatchRow'
 import { HeartButton } from '@/components/favourites/HeartButton'
 import { RecordView } from '@/components/favourites/RecordView'
 import { shopTint } from '@/components/ui/ShopLogo'
@@ -52,7 +53,8 @@ interface MiniSetProps {
   figures: FigureSet
   figureCount: number | null
   related: SetItem[]
-  watchUrl: string | null
+  /** Стеження за ціною доступне. */
+  watch: boolean
   now: Date
 }
 
@@ -258,7 +260,7 @@ function OffersSheet({ details, offers, summary, now }: { details: SetDetails; o
 }
 
 /** Картка набору Mini App. */
-export function MiniSet({ details, model, packaging, offers, offersFailed, summary, figures, figureCount, related, watchUrl, now }: MiniSetProps) {
+export function MiniSet({ details, model, packaging, offers, offersFailed, summary, figures, figureCount, related, watch, now }: MiniSetProps) {
   const images = [...model, ...packaging]
   const age = ageMark(details.age_label, details.age_min_months)
   const rootTheme = details.theme_path[0] ?? null
@@ -451,25 +453,7 @@ export function MiniSet({ details, model, packaging, offers, offersFailed, summa
           </div>
         )}
 
-        {watchUrl ? (
-          <div className={`c-watch c-watch--${place}`}>
-            <a className="c-watch__row" href={watchUrl} target="_blank" rel="noopener" data-track="telegram_opened" data-track-place="set_watch">
-              <span className="c-watch__icon" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round">
-                  <path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8" />
-                  <path d="M10 20a2 2 0 0 0 4 0" fill="none" />
-                </svg>
-              </span>
-              <span className="c-watch__label">{place === 'appear' ? "Повідомити, коли з'явиться" : 'Стежити за ціною'}</span>
-              <span className="c-switch" aria-hidden="true" />
-            </a>
-            <p className="c-watch__note">
-              {place === 'appear'
-                ? "Бот напише, коли набір з'явиться в українських магазинах."
-                : 'Бот повідомить про зниження ціни або повернення набору в наявність.'}
-            </p>
-          </div>
-        ) : null}
+        {watch ? <WatchRow place={place} /> : null}
 
         <h2 className="c-set__heading">Про набір</h2>
         <div className="c-set-facts">

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { notFound, permanentRedirect } from 'next/navigation'
 import { cache, Suspense } from 'react'
 
+import { WatchProvider } from '@/components/alerts/WatchProvider'
 import { MiniSet } from '@/components/mini/MiniSet'
 import { TrackView } from '@/components/platform/Analytics'
 import { JsonLd } from '@/components/seo/JsonLd'
@@ -21,7 +22,7 @@ import { piecesCount, releaseUpcoming } from '@/lib/format'
 import { isUuid, numbersFromSetSlug, setPath } from '@/lib/routes'
 import { safe } from '@/lib/safe'
 import { pageMetadata, productSchema, themeCrumbs } from '@/lib/seo'
-import { botSetUrl } from '@/lib/site'
+import { botUsername } from '@/lib/site'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -96,8 +97,10 @@ export default async function SetPage({ params }: Props) {
   const edition = details.editions.find((item) => item.is_default) ?? details.editions[0]
   const upcoming = edition ? releaseUpcoming(edition.release_date, edition.release_date_precision) : false
 
+  const bot = botUsername()
+
   return (
-    <>
+    <WatchProvider setId={details.id} bot={bot ?? ''}>
       <div className="m-only">
         <MiniSet
           details={details}
@@ -109,7 +112,7 @@ export default async function SetPage({ params }: Props) {
           figures={figures}
           figureCount={figureCount}
           related={related}
-          watchUrl={botSetUrl(details.id)}
+          watch={Boolean(bot)}
           now={now}
         />
       </div>
@@ -128,7 +131,7 @@ export default async function SetPage({ params }: Props) {
             figureCount={figureCount}
             edition={edition}
             upcoming={upcoming}
-            watchUrl={botSetUrl(details.id)}
+            watch={Boolean(bot)}
             now={now}
           />
 
@@ -158,6 +161,6 @@ export default async function SetPage({ params }: Props) {
           }}
         />
       </div>
-    </>
+    </WatchProvider>
   )
 }

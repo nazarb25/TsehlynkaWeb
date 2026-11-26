@@ -2890,7 +2890,8 @@
     left: 22px;
   }
 
-  .c-switch.htmx-request {
+  .c-switch.htmx-request,
+  .c-switch.is-busy {
     opacity: 0.6;
   }
 

@@ -129,10 +129,12 @@ interface RowProps {
   eager?: boolean
   /** Стан сердечка, коли він уже відомий, як у списку «Обране». */
   selected?: boolean
+  /** Дія замість сердечка, як дзвіночок у «Стежу за ціною». */
+  action?: React.ReactNode
 }
 
 /** Рядок набору: фото й назва, рядок ціни чи дати, лого магазину знижки праворуч угорі, параметри внизу. */
-export function SetRow({ item, price: amount, deal, note, name, eager, selected }: RowProps) {
+export function SetRow({ item, price: amount, deal, note, name, eager, selected, action }: RowProps) {
   const path = setPath(item)
   return (
     <div className={`c-urow${deal ? ' has-logo' : ''}`}>
@@ -148,7 +150,7 @@ export function SetRow({ item, price: amount, deal, note, name, eager, selected 
         {deal ? <DealLogo deal={deal} /> : null}
         <div className="c-urow__foot">
           <SetMetaLine item={item} />
-          <HeartButton setId={item.id} name={item.name} initial={selected} />
+          {action ?? <HeartButton setId={item.id} name={item.name} initial={selected} />}
         </div>
       </div>
     </div>
