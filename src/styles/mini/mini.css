@@ -50,13 +50,19 @@
     background: #2aabee;
   }
 
-  /* У браузері зону жесту «додому» закриває панель Safari, тому відступ безпечної зони доку не потрібен. */
+  /* У Telegram панель стоїть просто над зоною жесту «додому»: сама безпечна зона і є відступом від краю.
+     У браузері цю зону закриває панель Safari, тому лишається 8px. */
+  html[data-platform='telegram'] {
+    --dock-bottom: max(8px, var(--safe-area-bottom));
+    --dock-space: calc(var(--dock-height) + var(--dock-gap) + var(--dock-bottom));
+  }
+
   html:not([data-platform='telegram']) {
     --dock-bottom: 8px;
     --dock-space: calc(var(--dock-height) + var(--dock-gap) + var(--dock-bottom));
   }
 
-  html:not([data-platform='telegram']) .c-dock {
+  html .c-dock {
     bottom: var(--dock-bottom);
   }
 
