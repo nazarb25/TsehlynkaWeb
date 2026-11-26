@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 
 import { useAuth } from '@/components/auth/AuthProvider'
 import { track } from '@/lib/analytics'
@@ -45,9 +45,12 @@ export function WatchProvider({ setId, bot, children }: { setId: string; bot: st
   const [watching, setWatching] = useState<boolean | undefined>(account ? undefined : false)
   const [busy, setBusy] = useState(false)
   const [notice, setNotice] = useState<WatchNotice>(null)
+  /** Номер останньої дії користувача: відповідь, отримана до неї, стан уже не змінює. */
+  const action = useRef(0)
 
   const change = useCallback(
     async (next: boolean) => {
+      action.current += 1
       setBusy(true)
       setNotice(null)
       try {
@@ -96,9 +99,10 @@ export function WatchProvider({ setId, bot, children }: { setId: string; bot: st
     if (!account) return
     let active = true
     const pending = takePending(setId)
+    const started = action.current
     void (async () => {
       const current = await load(false)
-      if (!active || typeof current !== 'boolean') return
+      if (!active || started !== action.current || typeof current !== 'boolean') return
       setWatching(current)
       if (pending && !current) void change(true)
     })()
@@ -118,6 +122,7 @@ export function WatchProvider({ setId, bot, children }: { setId: string; bot: st
       void change(!watching)
       return
     }
+    action.current += 1
     setBusy(true)
     setNotice(null)
     void (async () => {
