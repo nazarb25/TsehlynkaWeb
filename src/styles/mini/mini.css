@@ -50,9 +50,9 @@
     background: #2aabee;
   }
 
-  /* У браузері нижній край вікна вже над панеллю Safari, тому док сідає ближче до краю, ніж у Telegram. */
+  /* У браузері зону жесту «додому» закриває панель Safari, тому відступ безпечної зони доку не потрібен. */
   html:not([data-platform='telegram']) {
-    --dock-bottom: max(8px, calc(env(safe-area-inset-bottom, 0px) - 16px));
+    --dock-bottom: 8px;
     --dock-space: calc(var(--dock-height) + var(--dock-gap) + var(--dock-bottom));
   }
 
