@@ -26,7 +26,7 @@ export interface CatalogSection {
 export const CATALOG: CatalogSection = { path: '/catalog' }
 export const NEWEST: CatalogSection = { path: '/new', mode: 'all', newest: true }
 export const DEALS: CatalogSection = { path: '/deals', mode: 'sale', onSale: true, defaultSort: 'discount_desc' }
-export const SEARCH: CatalogSection = { path: '/search', defaultMode: 'all' }
+export const SEARCH: CatalogSection = { path: '/search', defaultMode: 'sale' }
 
 export interface CatalogFilters {
   mode: CatalogMode

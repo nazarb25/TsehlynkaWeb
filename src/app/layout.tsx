@@ -19,6 +19,7 @@ import '@/styles/sets.css'
 import '@/styles/catalog.css'
 import '@/styles/set.css'
 import '@/styles/pages.css'
+import '@/styles/mini/mini.css'
 
 export const dynamic = 'force-dynamic'
 

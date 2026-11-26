@@ -5,6 +5,7 @@ import { BrickIcon } from '@/components/icons'
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SearchField } from '@/components/ui/SearchField'
+import { MiniSearch } from '@/components/mini/MiniSearch'
 import { hint, parseFilters, SEARCH } from '@/lib/catalog/filters'
 import { pageMetadata } from '@/lib/seo'
 
@@ -20,7 +21,11 @@ export default async function SearchPage({ searchParams }: Props) {
   const filters = parseFilters(await searchParams, SEARCH)
   if (!filters.q) {
     return (
-      <div className="wrap">
+      <>
+        <div className="m-only">
+          <MiniSearch filters={filters} initial={null} chips={[]} />
+        </div>
+        <div className="wrap d-only">
         <Breadcrumbs items={[{ name: 'Пошук' }]} />
         <div className="page-head">
           <h1>Пошук наборів</h1>
@@ -30,6 +35,7 @@ export default async function SearchPage({ searchParams }: Props) {
           <EmptyState icon={<BrickIcon size={28} />} title="Що шукаємо?" text="Введіть номер набору, назву, тему чи персонажа: наприклад, 75192, «Сокіл» або Ninjago." />
         </div>
       </div>
+      </>
     )
   }
   return (

@@ -15,7 +15,7 @@ export const TRADEMARK_NOTICE =
 
 export function SiteFooter({ themes, botUrl }: SiteFooterProps) {
   return (
-    <footer className="footer">
+    <footer className="footer d-only">
       <div className="footer__in wrap">
         <div className="footer__about">
           <Link className="brand" href="/">
