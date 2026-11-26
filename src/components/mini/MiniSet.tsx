@@ -55,6 +55,7 @@ interface MiniSetProps {
   related: SetItem[]
   /** Стеження за ціною доступне. */
   watch: boolean
+  openOffers?: boolean
   now: Date
 }
 
@@ -260,7 +261,7 @@ function OffersSheet({ details, offers, summary, now }: { details: SetDetails; o
 }
 
 /** Картка набору Mini App. */
-export function MiniSet({ details, model, packaging, offers, offersFailed, summary, figures, figureCount, related, watch, now }: MiniSetProps) {
+export function MiniSet({ details, model, packaging, offers, offersFailed, summary, figures, figureCount, related, watch, openOffers = false, now }: MiniSetProps) {
   const images = [...model, ...packaging]
   const age = ageMark(details.age_label, details.age_min_months)
   const rootTheme = details.theme_path[0] ?? null
@@ -623,7 +624,7 @@ export function MiniSet({ details, model, packaging, offers, offersFailed, summa
       </div>
 
       {state !== 'none' ? (
-        <MiniOffersCta label={state === 'in_stock' ? 'Порівняти ціни' : state === 'preorder' ? 'Переглянути передзамовлення' : 'Переглянути пропозиції'}>
+        <MiniOffersCta openOnLoad={openOffers} label={state === 'in_stock' ? 'Порівняти ціни' : state === 'preorder' ? 'Переглянути передзамовлення' : 'Переглянути пропозиції'}>
           <OffersSheet details={details} offers={offers} summary={summary} now={now} />
         </MiniOffersCta>
       ) : null}

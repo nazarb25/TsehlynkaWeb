@@ -25,7 +25,10 @@ import { safe } from '@/lib/safe'
 import { pageMetadata, productSchema, themeCrumbs } from '@/lib/seo'
 import { botUsername } from '@/lib/site'
 
-type Props = { params: Promise<{ slug: string }> }
+type Props = {
+  params: Promise<{ slug: string }>
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}
 
 const resolveSet = cache(async (slug: string): Promise<SetDetails> => {
   try {
@@ -69,11 +72,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   })
 }
 
-export default async function SetPage({ params }: Props) {
+export default async function SetPage({ params, searchParams }: Props) {
   const { slug } = await params
   const details = await resolveSet(slug)
   const canonical = setPath(details)
-  if (`/sets/${slug}` !== canonical) permanentRedirect(canonical)
+  const openOffers = (await searchParams).sheet === 'shops'
+  if (`/sets/${slug}` !== canonical) permanentRedirect(openOffers ? `${canonical}?sheet=shops` : canonical)
 
   const theme = details.theme_path.at(-1) ?? null
   const [offersResult, inventory, relatedResult] = await Promise.all([
@@ -114,6 +118,7 @@ export default async function SetPage({ params }: Props) {
           figureCount={figureCount}
           related={related}
           watch={Boolean(bot)}
+          openOffers={openOffers}
           now={now}
         />
       </div>

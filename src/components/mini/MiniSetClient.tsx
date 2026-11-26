@@ -132,9 +132,20 @@ export function MiniSetBehaviour({ children }: { children: React.ReactNode }) {
 }
 
 /** Нижня кнопка картки набору й шторка «Де купити». */
-export function MiniOffersCta({ label, children }: { label: string; children: React.ReactNode }) {
+const NARROW_LAYOUT = '(max-width: 999.98px)'
+
+/** `?sheet=shops` з кнопки бота «Ціни в магазинах»: на телефоні відкриває шторку, на широкому екрані гортає до «Де купити». */
+export function MiniOffersCta({ label, openOnLoad = false, children }: { label: string; openOnLoad?: boolean; children: React.ReactNode }) {
   const [open, setOpen] = useState(false)
   const close = useCallback(() => setOpen(false), [])
+  useEffect(() => {
+    if (!openOnLoad) return
+    const frame = window.requestAnimationFrame(() => {
+      if (window.matchMedia(NARROW_LAYOUT).matches) setOpen(true)
+      else document.getElementById('offers')?.scrollIntoView({ block: 'start' })
+    })
+    return () => window.cancelAnimationFrame(frame)
+  }, [openOnLoad])
   return (
     <>
       <div className="c-set-cta">
