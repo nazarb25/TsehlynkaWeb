@@ -72,7 +72,7 @@ export default async function FavouritesPage({ searchParams }: FavouritesPagePro
               {items.map((item) => (
                 <PersonalRow key={item.id} item={item} selected grid={grid} />
               ))}
-              <FavouritesMore key={grid ? 'grid' : 'list'} offset={items.length} total={total} grid={grid} />
+              <FavouritesMore key={grid ? 'grid' : 'list'} shown={items.map((item) => item.id)} total={total} grid={grid} />
             </div>
           </>
         ) : (

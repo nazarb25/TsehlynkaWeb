@@ -26,8 +26,7 @@ export function DELETE(request: Request) {
   return withSession(
     request,
     async (session) => {
-      await clearPersonalData(session)
-      return noContent()
+      return (await clearPersonalData(session)) ? noContent() : null
     },
     { mutates: true },
   )

@@ -7,8 +7,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   return withSession(
     request,
     async (session) => {
-      await recordView(session, id)
-      return noContent()
+      return (await recordView(session, id)) ? noContent() : null
     },
     { mutates: true },
   )

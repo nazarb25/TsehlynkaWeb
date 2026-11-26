@@ -6,8 +6,7 @@ export function DELETE(request: Request) {
   return withSession(
     request,
     async (session) => {
-      await clearRecent(session)
-      return noContent()
+      return (await clearRecent(session)) ? noContent() : null
     },
     { mutates: true },
   )

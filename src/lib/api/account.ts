@@ -140,12 +140,14 @@ export function recentSets(session: string): Promise<SetItem[] | null> {
   return send<SetItem[]>('/me/recently-viewed', { method: 'GET', credentials: { session } })
 }
 
-export async function recordView(session: string, setId: string): Promise<void> {
-  await send<undefined>(`/me/recently-viewed/${encodeURIComponent(setId)}`, { method: 'POST', credentials: { session } })
+/** `false` — сесію відхилено. */
+export async function recordView(session: string, setId: string): Promise<boolean> {
+  return (await send<undefined>(`/me/recently-viewed/${encodeURIComponent(setId)}`, { method: 'POST', credentials: { session } })) !== null
 }
 
-export async function clearRecent(session: string): Promise<void> {
-  await send<undefined>('/me/recently-viewed', { method: 'DELETE', credentials: { session } })
+/** `false` — сесію відхилено. */
+export async function clearRecent(session: string): Promise<boolean> {
+  return (await send<undefined>('/me/recently-viewed', { method: 'DELETE', credentials: { session } })) !== null
 }
 
 /** Змінити одне поле особистих даних; `null` очищає його. */
@@ -153,6 +155,7 @@ export function updatePersonalData(session: string, field: PersonalField, value:
   return send<PersonalData>('/me/personal-data', { method: 'PATCH', credentials: { session }, body: { [field]: value } })
 }
 
-export async function clearPersonalData(session: string): Promise<void> {
-  await send<undefined>('/me/personal-data', { method: 'DELETE', credentials: { session } })
+/** `false` — сесію відхилено. */
+export async function clearPersonalData(session: string): Promise<boolean> {
+  return (await send<undefined>('/me/personal-data', { method: 'DELETE', credentials: { session } })) !== null
 }

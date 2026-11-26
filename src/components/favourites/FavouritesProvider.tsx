@@ -119,3 +119,7 @@ export function useFavourite(setId: string, initial?: boolean): { selected: bool
   const selected = state(setId) ?? initial ?? false
   return { selected, toggle: () => toggle(setId, selected) }
 }
+
+export function useFavourites(): Favourites {
+  return useContext(FavouritesContext)
+}
