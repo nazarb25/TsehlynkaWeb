@@ -24,16 +24,22 @@ interface HeartButtonProps {
   name: string
   /** Відомий стан, наприклад у списку «Обране»; без нього стан підтягується з API. */
   initial?: boolean
-  variant?: 'row' | 'media'
+  variant?: 'row' | 'media' | 'tile'
 }
 
 /** Сердечко обраного: без входу відкриває вхід і зберігає набір після нього. */
 export function HeartButton({ setId, name, initial, variant = 'row' }: HeartButtonProps) {
   const { selected, toggle } = useFavourite(setId, initial)
-  const base = variant === 'media' ? 'c-set-media__fav' : 'c-uact'
+  const base = variant === 'media' ? 'c-set-media__fav' : variant === 'tile' ? 'tile__fav' : 'c-uact'
   return (
     <button type="button" className={`${base}${selected ? ' is-selected' : ''}`} aria-pressed={selected} aria-label={`Обране: ${name}`} onClick={toggle}>
-      {variant === 'media' ? <HeartIcon size={20} width={2} filled={false} /> : <HeartIcon />}
+      {variant === 'media' ? (
+        <HeartIcon size={20} width={2} filled={false} />
+      ) : variant === 'tile' ? (
+        <HeartIcon size={18} width={2} filled={false} />
+      ) : (
+        <HeartIcon />
+      )}
     </button>
   )
 }

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 import { Logo } from '@/components/icons'
+import { INFO_PAGES } from '@/components/personal/InfoLinks'
 import type { Theme } from '@/lib/api/types'
 import { themePath } from '@/lib/routes'
 import { SITE_NAME } from '@/lib/site'
@@ -23,9 +24,7 @@ export function SiteFooter({ themes, botUrl }: SiteFooterProps) {
             <span>{SITE_NAME}</span>
           </Link>
           <p>{TRADEMARK_NOTICE}</p>
-          <p className="footer__small">
-            Зображення наборів і фігурок та інструкції захищені авторським правом групи компаній LEGO.
-          </p>
+          <p className="footer__small">Зображення наборів і фігурок та інструкції захищені авторським правом групи компаній LEGO.</p>
         </div>
         <nav className="hide-mobile" aria-label="Каталог">
           <h3>Каталог</h3>
@@ -48,6 +47,11 @@ export function SiteFooter({ themes, botUrl }: SiteFooterProps) {
           <h3>{SITE_NAME}</h3>
           <Link href="/themes">Теми LEGO</Link>
           <Link href="/themes/archive">Архів тем</Link>
+          {INFO_PAGES.map((page) => (
+            <Link key={page.href} href={page.href}>
+              {page.label}
+            </Link>
+          ))}
           {botUrl ? (
             <a className="web-only" href={botUrl} target="_blank" rel="noopener">
               Бот у Telegram

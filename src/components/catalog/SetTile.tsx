@@ -1,5 +1,6 @@
 import Link from 'next/link'
 
+import { HeartButton } from '@/components/favourites/HeartButton'
 import { Photo } from '@/components/ui/Photo'
 import { SetMeta } from '@/components/ui/SetMeta'
 import { ShopLogo } from '@/components/ui/ShopLogo'
@@ -57,9 +58,8 @@ export function SetTile({ set, context, eager }: SetTileProps) {
   return (
     <article className={`tile${deal ? ' has-deal' : ''}`}>
       <Photo src={set.image?.medium ?? set.image?.thumb} className="tile__photo" eager={eager}>
-        {deal ? (
-          <ShopLogo shopId={deal.shop_id} name={deal.shop_name} logo={deal.shop_logo} logoUrl={deal.shop_logo_url} className="tile__badge" />
-        ) : null}
+        {deal ? <ShopLogo shopId={deal.shop_id} name={deal.shop_name} logo={deal.shop_logo} logoUrl={deal.shop_logo_url} className="tile__badge" /> : null}
+        <HeartButton setId={set.id} name={set.name} variant="tile" />
       </Photo>
       <div className="tile__body">
         <h3 className="tile__name">
