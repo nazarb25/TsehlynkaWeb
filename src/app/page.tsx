@@ -3,16 +3,17 @@ import Link from 'next/link'
 
 import { SetTiles } from '@/components/catalog/SetTiles'
 import { BagIcon, GridIcon, StarIcon, TagIcon } from '@/components/icons'
+import { MiniHome } from '@/components/mini/MiniHome'
 import { ThemeCard } from '@/components/themes/ThemeCard'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SearchField } from '@/components/ui/SearchField'
 import { SectionHead } from '@/components/ui/SectionHead'
 import { findSets, listThemes } from '@/lib/api/catalog'
 import { apiQuery, DEALS, NEWEST, parseFilters } from '@/lib/catalog/filters'
-import { popularThemes } from '@/lib/catalog/themes'
+import { currentRootThemes, popularThemes } from '@/lib/catalog/themes'
 import { safe } from '@/lib/safe'
 import { pageMetadata } from '@/lib/seo'
-import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE } from '@/lib/site'
+import { botUrl, SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE } from '@/lib/site'
 
 export function generateMetadata(): Metadata {
   return {
@@ -43,7 +44,15 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="hero">
+      <div className="m-only">
+        <MiniHome
+          themes={themes ? currentRootThemes(themes).slice(0, 6) : null}
+          newest={newestPage ? newestPage.items.slice(0, 3) : null}
+          deals={(dealsPage?.items ?? []).filter((item) => item.best_deal).slice(0, 3)}
+          telegramUrl={botUrl()}
+        />
+      </div>
+      <section className="hero d-only">
         <div className="hero__in wrap">
           <h1 className="hide-mobile">{SITE_TAGLINE}</h1>
           <p className="hide-mobile">Повний каталог, архів і пропозиції в одному місці</p>
@@ -60,7 +69,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <div className="wrap home">
+      <div className="wrap home d-only">
         {unavailable ? (
           <EmptyState title="Каталог тимчасово недоступний" text="Спробуйте оновити сторінку за хвилину." />
         ) : null}

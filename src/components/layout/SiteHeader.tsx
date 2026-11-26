@@ -14,7 +14,7 @@ interface SiteHeaderProps {
 
 export function SiteHeader({ themes, botUrl }: SiteHeaderProps) {
   return (
-    <header className="header">
+    <header className="header d-only">
       <div className="header__in wrap">
         <Link className="brand" href="/" aria-label={`${SITE_NAME}: головна`}>
           <Logo />

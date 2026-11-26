@@ -34,6 +34,8 @@ import { matchTheme } from '@/lib/catalog/themes'
 import { setCount } from '@/lib/format'
 import { themePath } from '@/lib/routes'
 import { safe } from '@/lib/safe'
+import { MiniCatalog } from '@/components/mini/MiniCatalog'
+import { MiniSearch } from '@/components/mini/MiniSearch'
 import { itemListSchema, type Crumb } from '@/lib/seo'
 
 import type { FilterOption } from './FiltersPanel'
@@ -126,7 +128,15 @@ export async function CatalogView({ sectionKey, filters, title, hint, crumbs, mo
   const olderHref = isNewest(filters) ? catalogHref(filters, SECTIONS.catalog, { newest: false, page: 1 }) : null
 
   return (
-    <div className="wrap">
+    <>
+      <div className="m-only">
+        {sectionKey === 'search' ? (
+          <MiniSearch filters={filters} initial={page && filters.page === 1 ? { theme: suggestedTheme, items: page.items, total } : null} chips={chips} />
+        ) : (
+          <MiniCatalog sectionKey={sectionKey} section={section} filters={filters} page={page} themes={themes} shops={shops} />
+        )}
+      </div>
+      <div className="wrap d-only">
       <Breadcrumbs items={crumbs} />
       <div className="page-head">
         <h1>{title}</h1>
@@ -310,5 +320,6 @@ export async function CatalogView({ sectionKey, filters, title, hint, crumbs, mo
         </div>
       </div>
     </div>
+    </>
   )
 }
