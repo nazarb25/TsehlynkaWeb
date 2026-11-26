@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { notFound, permanentRedirect } from 'next/navigation'
 import { cache, Suspense } from 'react'
 
+import { MiniSet } from '@/components/mini/MiniSet'
 import { TrackView } from '@/components/platform/Analytics'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { BuyPanel } from '@/components/set/BuyPanel'
@@ -11,7 +12,7 @@ import { RelatedSets, RelatedSetsSkeleton } from '@/components/set/RelatedSets'
 import { SetAbout } from '@/components/set/SetAbout'
 import { SetFigures } from '@/components/set/SetFigures'
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
-import { findSetIdByNumber, getInventory, getOffers, getSet } from '@/lib/api/catalog'
+import { findRetailSets, findSetIdByNumber, getInventory, getOffers, getSet } from '@/lib/api/catalog'
 import { NotFoundError } from '@/lib/api/client'
 import type { SetDetails } from '@/lib/api/types'
 import { bestOffer, summarizeOffers } from '@/lib/catalog/offers'
@@ -73,14 +74,20 @@ export default async function SetPage({ params }: Props) {
   if (`/sets/${slug}` !== canonical) permanentRedirect(canonical)
 
   const theme = details.theme_path.at(-1) ?? null
-  const [offersResult, inventory] = await Promise.all([safe(getOffers(details.id)), safe(getInventory(details.id))])
+  const [offersResult, inventory, relatedResult] = await Promise.all([
+    safe(getOffers(details.id)),
+    safe(getInventory(details.id)),
+    theme ? safe(findRetailSets({ theme_id: theme.id, sort: 'year_desc', limit: 11 })) : null,
+  ])
+  const related = (relatedResult?.items ?? []).filter((item) => item.id !== details.id).slice(0, 10)
   const offersFailed = offersResult === null
   const offers = offersResult ?? []
   const summary = summarizeOffers(offers)
   const figures = figureSet(inventory)
   const figureCount = details.declared_figure_count ?? (figures.figureCount || null)
   const now = new Date()
-  const images: GalleryImage[] = gallery(details).all.map((image) => ({
+  const photos = gallery(details)
+  const images: GalleryImage[] = photos.all.map((image) => ({
     src: imageSrc(image),
     thumb: image.variants?.thumb ?? imageSrc(image),
     alt: image.alt ?? `${details.name}: ${imageCaption(image).toLowerCase()}`,
@@ -90,50 +97,66 @@ export default async function SetPage({ params }: Props) {
   const upcoming = edition ? releaseUpcoming(edition.release_date, edition.release_date_precision) : false
 
   return (
-    <div className="wrap set">
-      <Breadcrumbs items={[{ name: 'Теми', path: '/themes' }, ...themeCrumbs(details.theme_path), { name: details.name }]} />
-
-      <div className="set__top">
-        <div className="set__gallery">
-          <Gallery images={images} name={details.name} />
-        </div>
-
-        <BuyPanel
+    <>
+      <div className="m-only">
+        <MiniSet
           details={details}
+          model={photos.model}
+          packaging={photos.packaging}
           offers={offers}
-          offersFailed={offersFailed}
+          summary={summary}
+          figures={figures}
           figureCount={figureCount}
-          edition={edition}
-          upcoming={upcoming}
+          related={related}
           watchUrl={botSetUrl(details.id)}
           now={now}
         />
-
-        <div className="set__main">
-          {offers.length ? <Offers setNumber={details.official_number_display} offers={offers} best={bestOffer(offers)} now={now} /> : null}
-          <SetFigures figures={figures} />
-          <SetAbout details={details} figureCount={figureCount} edition={edition} now={now} />
-        </div>
       </div>
+      <div className="wrap set d-only">
+        <Breadcrumbs items={[{ name: 'Теми', path: '/themes' }, ...themeCrumbs(details.theme_path), { name: details.name }]} />
 
-      {theme ? (
-        <Suspense fallback={<RelatedSetsSkeleton />}>
-          <RelatedSets setId={details.id} theme={theme} />
-        </Suspense>
-      ) : null}
+        <div className="set__top">
+          <div className="set__gallery">
+            <Gallery images={images} name={details.name} />
+          </div>
 
-      <JsonLd data={productSchema(details, offers, canonical)} />
-      <TrackView
-        event="set_viewed"
-        properties={{
-          set_number: details.official_number_display,
-          set_name: details.name,
-          theme: theme?.name,
-          offers_count: offers.length,
-          availability: summary.state,
-          lead_price: summary.leadPrice,
-        }}
-      />
-    </div>
+          <BuyPanel
+            details={details}
+            offers={offers}
+            offersFailed={offersFailed}
+            figureCount={figureCount}
+            edition={edition}
+            upcoming={upcoming}
+            watchUrl={botSetUrl(details.id)}
+            now={now}
+          />
+
+          <div className="set__main">
+            {offers.length ? <Offers setNumber={details.official_number_display} offers={offers} best={bestOffer(offers)} now={now} /> : null}
+            <SetFigures figures={figures} />
+            <SetAbout details={details} figureCount={figureCount} edition={edition} now={now} />
+          </div>
+        </div>
+
+        {theme ? (
+          <Suspense fallback={<RelatedSetsSkeleton />}>
+            <RelatedSets setId={details.id} theme={theme} />
+          </Suspense>
+        ) : null}
+
+        <JsonLd data={productSchema(details, offers, canonical)} />
+        <TrackView
+          event="set_viewed"
+          properties={{
+            set_number: details.official_number_display,
+            set_name: details.name,
+            theme: theme?.name,
+            offers_count: offers.length,
+            availability: summary.state,
+            lead_price: summary.leadPrice,
+          }}
+        />
+      </div>
+    </>
   )
 }

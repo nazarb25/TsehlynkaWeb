@@ -42,6 +42,10 @@
     text-decoration: none;
   }
 
+  :where(.m-only) a.c-watch__row {
+    color: var(--color-text);
+  }
+
   :where(.m-only) h1,
   :where(.m-only) h2,
   :where(.m-only) p {

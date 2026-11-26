@@ -51,7 +51,14 @@ export function MiniSheet({ open, label, onClose, children }: MiniSheetProps) {
       <div className="c-sheet__backdrop" onClick={onClose} />
       <section ref={panelRef} className="c-sheet__panel" aria-label={label} role="dialog" aria-modal="true">
         <div className="c-sheet__handle" aria-hidden="true" />
-        <div className="c-sheet__body">{children}</div>
+        <div
+          className="c-sheet__body"
+          onClick={(event) => {
+            if ((event.target as HTMLElement).closest('[data-sheet-close]')) onClose()
+          }}
+        >
+          {children}
+        </div>
       </section>
     </div>,
     document.body,
