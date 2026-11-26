@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
-import { Logo, TelegramIcon } from '@/components/icons'
+import { AccountButton } from '@/components/auth/AccountButton'
+import { Logo } from '@/components/icons'
 import type { Theme } from '@/lib/api/types'
 import { SITE_NAME } from '@/lib/site'
 
@@ -9,10 +10,9 @@ import { HeaderSearch } from './HeaderSearch'
 
 interface SiteHeaderProps {
   themes: Theme[]
-  botUrl: string | null
 }
 
-export function SiteHeader({ themes, botUrl }: SiteHeaderProps) {
+export function SiteHeader({ themes }: SiteHeaderProps) {
   return (
     <header className="header d-only">
       <div className="header__in wrap">
@@ -22,13 +22,7 @@ export function SiteHeader({ themes, botUrl }: SiteHeaderProps) {
         </Link>
         <HeaderNav themes={themes} />
         <HeaderSearch />
-        {botUrl ? (
-          <a className="header__tg web-only" href={botUrl} target="_blank" rel="noopener" data-track="telegram_opened" data-track-place="header">
-            <TelegramIcon />
-            <span className="hide-mobile">Відкрити в Telegram</span>
-            <span className="hide-desktop">Telegram</span>
-          </a>
-        ) : null}
+        <AccountButton variant="header" />
       </div>
     </header>
   )

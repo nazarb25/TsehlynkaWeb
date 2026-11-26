@@ -13,7 +13,7 @@ import { apiQuery, DEALS, NEWEST, parseFilters } from '@/lib/catalog/filters'
 import { currentRootThemes, popularThemes } from '@/lib/catalog/themes'
 import { safe } from '@/lib/safe'
 import { pageMetadata } from '@/lib/seo'
-import { botUrl, SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE } from '@/lib/site'
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE } from '@/lib/site'
 
 export function generateMetadata(): Metadata {
   return {
@@ -49,7 +49,6 @@ export default async function HomePage() {
           themes={themes ? currentRootThemes(themes).slice(0, 6) : null}
           newest={newestPage ? newestPage.items.slice(0, 3) : null}
           deals={(dealsPage?.items ?? []).filter((item) => item.best_deal).slice(0, 3)}
-          telegramUrl={botUrl()}
         />
       </div>
       <section className="hero d-only">
