@@ -2,6 +2,8 @@ import 'server-only'
 
 import { createHash, randomBytes } from 'node:crypto'
 
+import * as Sentry from '@sentry/nextjs'
+
 import { siteUrl } from '@/lib/site'
 
 const AUTHORIZE_URL = 'https://oauth.telegram.org/auth'
@@ -76,7 +78,12 @@ export async function exchangeCode(client: TelegramClient, code: string, verifie
     cache: 'no-store',
     signal: AbortSignal.timeout(TIMEOUT_MS),
   })
-  if (!response.ok) return null
-  const body = (await response.json()) as { id_token?: unknown }
-  return typeof body.id_token === 'string' ? body.id_token : null
+  const body = (await response.json().catch(() => ({}))) as { id_token?: unknown; error?: unknown; error_description?: unknown }
+  if (response.ok && typeof body.id_token === 'string') return body.id_token
+  Sentry.logger.warn('Telegram token exchange rejected', {
+    status: response.status,
+    error: typeof body.error === 'string' ? body.error : null,
+    description: typeof body.error_description === 'string' ? body.error_description : null,
+  })
+  return null
 }

@@ -36,6 +36,15 @@ function authorization(credentials?: Credentials): Record<string, string> {
   return { Authorization: 'session' in credentials ? `Bearer ${credentials.session}` : `tma ${credentials.initData}` }
 }
 
+async function rejectionReason(response: Response): Promise<string | null> {
+  try {
+    const body = (await response.json()) as { error?: unknown; message?: unknown }
+    return [body.error, body.message].filter((part) => typeof part === 'string').join(': ') || null
+  } catch {
+    return null
+  }
+}
+
 /** Особистий запит до API без кешу; повертає `null`, коли API відхилив облікові дані (401). */
 async function send<T>(path: string, init: { method: string; credentials?: Credentials; body?: unknown }): Promise<T | null> {
   let response: Response
@@ -55,7 +64,10 @@ async function send<T>(path: string, init: { method: string; credentials?: Crede
     Sentry.logger.error('Account API request failed', { path, reason: String(error) })
     throw new AccountUnavailableError(`API недоступний: ${path}`, { cause: error })
   }
-  if (response.status === 401) return null
+  if (response.status === 401) {
+    Sentry.logger.warn('Account API rejected credentials', { path, reason: await rejectionReason(response) })
+    return null
+  }
   if (!response.ok) {
     Sentry.logger.error('Account API responded with an error', { path, status: response.status })
     throw new AccountUnavailableError(`API відповів ${response.status}: ${path}`)
