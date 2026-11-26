@@ -81,7 +81,7 @@ export function AlertsList({ initial, total }: { initial: PriceAlert[]; total: n
     })
 
   const toggle = async (item: PriceAlert) => {
-    if (busy.has(item.id)) return
+    if (busy.has(item.id) || loading === 'loading') return
     const watching = off.has(item.id)
     mark(setBusy, item.id, true)
     try {
@@ -99,6 +99,7 @@ export function AlertsList({ initial, total }: { initial: PriceAlert[]; total: n
   }
 
   const more = async () => {
+    if (busy.size > 0) return
     setLoading('loading')
     try {
       const response = await fetch(`/api/me/price-alerts/page?offset=${Math.max(items.length - off.size, 0)}`)
@@ -130,7 +131,7 @@ export function AlertsList({ initial, total }: { initial: PriceAlert[]; total: n
                   className={`c-uact${on ? ' is-on' : ''}`}
                   aria-pressed={on}
                   aria-label={on ? `Не стежити за «${item.name}»` : `Стежити за «${item.name}»`}
-                  disabled={busy.has(item.id)}
+                  disabled={busy.has(item.id) || loading === 'loading'}
                   onClick={() => void toggle(item)}
                 >
                   <BellGlyph filled={on} />
@@ -140,7 +141,7 @@ export function AlertsList({ initial, total }: { initial: PriceAlert[]; total: n
           )
         })}
         {remaining ? (
-          <button type="button" className="c-more" onClick={more} disabled={loading === 'loading'}>
+          <button type="button" className="c-more" onClick={more} disabled={loading === 'loading' || busy.size > 0}>
             {loading === 'loading' ? 'Завантажуємо…' : loading === 'error' ? 'Не вдалося. Спробувати ще' : 'Показати ще'}
           </button>
         ) : null}
