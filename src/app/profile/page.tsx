@@ -30,7 +30,7 @@ function LogoutForm({ className }: { className: string }) {
 export default async function ProfilePage() {
   const token = await sessionToken()
   const profile = token ? await getProfile(token) : null
-  if (!profile) redirect('/login?next=/profile')
+  if (!profile) redirect(token ? '/auth/session?next=/profile' : '/login?next=/profile')
 
   const fullName = [profile.first_name, profile.last_name].filter(Boolean).join(' ')
   const language = languageName(profile.language_code)

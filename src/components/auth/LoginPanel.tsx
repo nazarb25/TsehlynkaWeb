@@ -2,6 +2,7 @@ import { TelegramIcon } from '@/components/icons'
 
 const ERRORS: Record<string, string> = {
   cancelled: 'Вхід скасовано в Telegram.',
+  ended: 'Сесія завершилась. Увійдіть знову.',
   expired: 'Час на вхід минув. Спробуйте ще раз.',
   rejected: 'Telegram не підтвердив вхід. Спробуйте ще раз.',
   unavailable: 'Вхід зараз недоступний. Спробуйте за хвилину.',
