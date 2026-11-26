@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 import { Chevron } from '@/components/mini/icons'
+import { InfoLinks } from '@/components/personal/InfoLinks'
 import { PersonalPage } from '@/components/personal/PersonalPage'
 import { SignInState } from '@/components/personal/SignInState'
 import { TILE, TileIcon } from '@/components/personal/icons'
@@ -22,6 +23,9 @@ export default async function MePage() {
     return (
       <PersonalPage>
         <SignInState title="Увійдіть, щоб бачити своє" hint="Обране, стеження за ціною, історія переглядів і профіль зберігаються у вашому акаунті Telegram." />
+        <div className="c-personal">
+          <InfoLinks />
+        </div>
       </PersonalPage>
     )
   }
@@ -75,6 +79,8 @@ export default async function MePage() {
           )}
           .
         </p>
+
+        <InfoLinks />
       </div>
     </PersonalPage>
   )

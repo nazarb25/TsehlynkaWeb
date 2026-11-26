@@ -30,6 +30,18 @@ export function botSetUrl(setId: string, shops = false): string | null {
   return `https://t.me/${username}?start=${shops ? 'shops' : 'set'}_${setId.replace(/-/g, '')}`
 }
 
+/** Чат підтримки: лише посилання https://t.me/…, як у Mini App. */
+export function supportUrl(): string | null {
+  const value = process.env.SUPPORT_URL?.trim()
+  if (!value) return null
+  try {
+    const url = new URL(value)
+    return url.protocol === 'https:' && url.host === 't.me' ? url.toString() : null
+  } catch {
+    return null
+  }
+}
+
 export function isIndexable(): boolean {
   return process.env.SITE_INDEXABLE === 'true'
 }

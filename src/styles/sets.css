@@ -56,6 +56,44 @@
   right: 10px;
 }
 
+.tile__fav {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(28 28 30 / 55%);
+  color: #ffffff;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    transform 0.15s;
+}
+
+.tile__fav:hover {
+  background: rgb(28 28 30 / 72%);
+  transform: scale(1.06);
+}
+
+.tile__fav.is-selected {
+  color: var(--color-honey);
+}
+
+.tile__fav.is-selected path {
+  fill: currentColor;
+}
+
+.tile__fav:focus-visible {
+  outline: 2px solid var(--color-link);
+  outline-offset: 2px;
+}
+
 .tile__body {
   display: flex;
   flex-direction: column;
@@ -444,4 +482,12 @@
   .tiles--list .tile__hint {
     color: var(--color-hint);
   }
+}
+
+.tiles--list .tile__fav,
+.tiles--auto .tile__fav {
+  top: 6px;
+  left: 6px;
+  width: 28px;
+  height: 28px;
 }
