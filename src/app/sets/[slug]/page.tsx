@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { notFound, permanentRedirect } from 'next/navigation'
 import { cache, Suspense } from 'react'
 
+import { WatchCard } from '@/components/alerts/WatchCard'
 import { WatchProvider } from '@/components/alerts/WatchProvider'
 import { MiniSet } from '@/components/mini/MiniSet'
 import { TrackView } from '@/components/platform/Analytics'
@@ -137,6 +138,7 @@ export default async function SetPage({ params }: Props) {
 
           <div className="set__main">
             {offers.length ? <Offers setNumber={details.official_number_display} offers={offers} best={bestOffer(offers)} now={now} /> : null}
+            {offers.length && bot ? <WatchCard place="offers" price={summary.minInStockPrice} appear={false} /> : null}
             <SetFigures figures={figures} />
             <SetAbout details={details} figureCount={figureCount} edition={edition} now={now} />
           </div>

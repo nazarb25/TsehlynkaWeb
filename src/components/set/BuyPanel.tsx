@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import { WatchButton } from '@/components/alerts/WatchButton'
+import { WatchCard } from '@/components/alerts/WatchCard'
 import { AgeIcon, ChevronRight, ExternalIcon, FigureIcon, PiecesIcon } from '@/components/icons'
 import type { SetDetails, ShopOffer } from '@/lib/api/types'
 import { bestOffer, discountPercent, isWebUrl, summarizeOffers } from '@/lib/catalog/offers'
@@ -149,8 +149,8 @@ export function BuyPanel({ details, offers, offersFailed, figureCount, edition, 
                 Порівняти ціни · {offersCount} {plural(offersCount, 'пропозиція', 'пропозиції', 'пропозицій')}
               </a>
             ) : null}
-            {watch ? <WatchButton prominent={!offersCount} appear={summary.state === 'none' && !offersFailed} /> : null}
           </div>
+          {watch ? <WatchCard place="panel" price={summary.minInStockPrice} appear={summary.state === 'none' && !offersFailed} /> : null}
         </div>
       </div>
     </aside>
