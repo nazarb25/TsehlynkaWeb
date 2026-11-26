@@ -1,6 +1,8 @@
 import Link from 'next/link'
 
 import { AlertIcon } from '@/components/icons'
+import { StateIcon } from '@/components/mini/icons'
+import { MiniThemes } from '@/components/mini/MiniThemes'
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { listThemes } from '@/lib/api/catalog'
@@ -24,27 +26,45 @@ export async function ThemesPage({ archive }: { archive: boolean }) {
     }
   }
   return (
-    <div className="wrap">
-      <Breadcrumbs items={archive ? [{ name: 'Теми', path: '/themes' }, { name: 'Архів' }] : [{ name: 'Теми' }]} />
-      <div className="page-head">
-        <h1>{archive ? 'Архів тем LEGO' : 'Теми LEGO'}</h1>
-        <nav className="seg" aria-label="Теми">
-          <Link href="/themes" aria-current={archive ? undefined : 'page'}>
-            Актуальні
-          </Link>
-          <Link href="/themes/archive" aria-current={archive ? 'page' : undefined}>
-            Архів
-          </Link>
-        </nav>
-      </div>
-      <p className="page-hint">{archive ? 'Теми, набори яких більше не виходять' : 'Теми, у яких виходять нові набори'}</p>
-      <div className="themes-body">
+    <>
+      <div className="m-only">
         {themes ? (
-          <ThemesBrowser themes={list} notes={notes} />
+          <MiniThemes themes={themes} archive={archive} year={year} />
         ) : (
-          <EmptyState icon={<AlertIcon size={26} />} title="Не вдалося завантажити теми" text="Каталог тимчасово недоступний. Спробуйте оновити сторінку за хвилину." />
+          <section className="c-state">
+            <span className="c-state__icon">
+              <StateIcon kind="error" />
+            </span>
+            <h1 className="c-state__title">Не вдалося завантажити теми</h1>
+          </section>
         )}
       </div>
-    </div>
+      <div className="wrap d-only">
+        <Breadcrumbs items={archive ? [{ name: 'Теми', path: '/themes' }, { name: 'Архів' }] : [{ name: 'Теми' }]} />
+        <div className="page-head">
+          <h1>{archive ? 'Архів тем LEGO' : 'Теми LEGO'}</h1>
+          <nav className="seg" aria-label="Теми">
+            <Link href="/themes" aria-current={archive ? undefined : 'page'}>
+              Актуальні
+            </Link>
+            <Link href="/themes/archive" aria-current={archive ? 'page' : undefined}>
+              Архів
+            </Link>
+          </nav>
+        </div>
+        <p className="page-hint">{archive ? 'Теми, набори яких більше не виходять' : 'Теми, у яких виходять нові набори'}</p>
+        <div className="themes-body">
+          {themes ? (
+            <ThemesBrowser themes={list} notes={notes} />
+          ) : (
+            <EmptyState
+              icon={<AlertIcon size={26} />}
+              title="Не вдалося завантажити теми"
+              text="Каталог тимчасово недоступний. Спробуйте оновити сторінку за хвилину."
+            />
+          )}
+        </div>
+      </div>
+    </>
   )
 }

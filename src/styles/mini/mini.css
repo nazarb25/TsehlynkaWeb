@@ -46,6 +46,10 @@
     color: var(--color-text);
   }
 
+  .c-home__top .c-avatar.c-avatar--telegram {
+    background: #2aabee;
+  }
+
   :where(.m-only) h1,
   :where(.m-only) h2,
   :where(.m-only) p {

@@ -61,7 +61,7 @@ export function MobileDock() {
   }, [visible])
 
   return (
-    <nav className="c-dock m-only" aria-label="Розділи" hidden={!visible}>
+    <nav className="c-dock m-only" aria-label="Розділи" hidden={!visible} style={{ gridTemplateColumns: `repeat(${TABS.length}, minmax(0, 1fr))` }}>
       {TABS.map((tab) => {
         const active = tab.match(pathname)
         return (
