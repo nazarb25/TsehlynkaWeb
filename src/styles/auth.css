@@ -94,7 +94,8 @@
   background: var(--color-section);
 }
 
-[data-platform='telegram'] .login-trigger {
+[data-platform='telegram'] .login-trigger,
+[data-platform='telegram'] .logout-form {
   display: none;
 }
 

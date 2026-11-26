@@ -18,7 +18,7 @@ function languageName(code: string | null): string | null {
 
 function LogoutForm({ className }: { className: string }) {
   return (
-    <form action="/auth/logout" method="post">
+    <form action="/auth/logout" method="post" className="logout-form">
       <button type="submit" className={className}>
         Вийти
       </button>

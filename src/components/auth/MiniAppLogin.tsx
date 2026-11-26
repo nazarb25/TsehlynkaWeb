@@ -8,7 +8,7 @@ import { usePlatform } from '@/components/platform/TelegramBridge'
 
 import { useAuth } from './AuthProvider'
 
-/** У Mini App сайт входить сам: один раз передає init data на сервер і оновлює сторінку. */
+/** У Mini App сайт входить сам, як бот: один раз передає init data на сервер і оновлює сторінку; кнопки «Вийти» там немає. */
 export function MiniAppLogin() {
   const { telegram } = usePlatform()
   const { account } = useAuth()
