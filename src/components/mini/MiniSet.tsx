@@ -45,6 +45,7 @@ interface MiniSetProps {
   model: SetImage[]
   packaging: SetImage[]
   offers: ShopOffer[]
+  offersFailed: boolean
   summary: OfferSummary
   figures: FigureSet
   figureCount: number | null
@@ -255,7 +256,7 @@ function OffersSheet({ details, offers, summary, now }: { details: SetDetails; o
 }
 
 /** Картка набору Mini App. */
-export function MiniSet({ details, model, packaging, offers, summary, figures, figureCount, related, watchUrl, now }: MiniSetProps) {
+export function MiniSet({ details, model, packaging, offers, offersFailed, summary, figures, figureCount, related, watchUrl, now }: MiniSetProps) {
   const images = [...model, ...packaging]
   const age = ageMark(details.age_label, details.age_min_months)
   const rootTheme = details.theme_path[0] ?? null
@@ -272,7 +273,7 @@ export function MiniSet({ details, model, packaging, offers, summary, figures, f
   const numbers = otherNumbers(details)
   const original = originalName(details)
   const instructions = linkedInstructions(details)
-  const place = state === 'none' ? 'appear' : 'price'
+  const place = state === 'none' && !offersFailed ? 'appear' : 'price'
   const randomPlace = pack && ['polybag', 'foil_pack', 'bag'].includes(pack) ? 'в пакеті' : 'в наборі'
   const figuresText = figureCount ? `${figureCount} ${plural(figureCount, 'фігурка', 'фігурки', 'фігурок')}` : ''
   const figureIcon = (
@@ -433,6 +434,11 @@ export function MiniSet({ details, model, packaging, offers, summary, figures, f
                     {shops.charAt(0).toUpperCase() + shops.slice(1)}
                     {checked ? ` · ${checked.toLowerCase()}` : ''}
                   </span>
+                </>
+              ) : offersFailed ? (
+                <>
+                  <b>Не вдалося перевірити ціни</b>
+                  <span className="c-set-price__checked">Оновіть сторінку за хвилину</span>
                 </>
               ) : (
                 <b>Пропозицій українських магазинів поки немає</b>

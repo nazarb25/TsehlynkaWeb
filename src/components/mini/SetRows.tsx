@@ -182,6 +182,7 @@ export function CatalogRow({ item, context, grid, eager }: { item: SetItem; cont
   let amount: React.ReactNode = null
   if (deal) amount = <DealPrice deal={deal} />
   else if (context.sale && isOnSale(item)) amount = <SalePrice item={item} />
+  else if (context.sale && item.has_preorder_offer) amount = <RetailPrice item={item} />
   else if (context.newest) amount = <ReleaseLine item={item} />
   return grid ? <SetCard item={item} price={amount} deal={deal} eager={eager} /> : <SetRow item={item} price={amount} deal={deal} eager={eager} />
 }

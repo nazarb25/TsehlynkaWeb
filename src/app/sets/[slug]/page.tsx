@@ -104,6 +104,7 @@ export default async function SetPage({ params }: Props) {
           model={photos.model}
           packaging={photos.packaging}
           offers={offers}
+          offersFailed={offersFailed}
           summary={summary}
           figures={figures}
           figureCount={figureCount}
