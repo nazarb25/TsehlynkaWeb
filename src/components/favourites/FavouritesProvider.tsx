@@ -45,6 +45,9 @@ export function FavouritesProvider({ children }: { children: React.ReactNode }) 
   const requested = useRef(new Set<string>())
   const queued = useRef(new Set<string>())
   const timer = useRef<number | null>(null)
+  /** Останній вибір користувача й набори, для яких запит ще йде: запити одного набору йдуть по черзі. */
+  const wanted = useRef(new Map<string, boolean>())
+  const sending = useRef(new Set<string>())
 
   const flush = useCallback(async () => {
     timer.current = null
@@ -78,12 +81,28 @@ export function FavouritesProvider({ children }: { children: React.ReactNode }) 
   const change = useCallback(
     async (setId: string, selected: boolean) => {
       setKnown((value) => ({ ...value, [setId]: selected }))
-      const status = await send(setId, selected).catch(() => 0)
-      if (status === 204) return
-      setKnown((value) => ({ ...value, [setId]: !selected }))
-      if (status === 401) {
-        if (selected) writePending(setId)
-        openLogin()
+      wanted.current.set(setId, selected)
+      if (sending.current.has(setId)) return
+      sending.current.add(setId)
+      let saved = !selected
+      try {
+        for (let target = selected; ; target = wanted.current.get(setId) ?? target) {
+          if (target === saved) return
+          const status = await send(setId, target).catch(() => 0)
+          if (status === 204) {
+            saved = target
+            continue
+          }
+          wanted.current.set(setId, saved)
+          setKnown((value) => ({ ...value, [setId]: saved }))
+          if (status === 401) {
+            if (target) writePending(setId)
+            openLogin()
+          }
+          return
+        }
+      } finally {
+        sending.current.delete(setId)
       }
     },
     [openLogin],
