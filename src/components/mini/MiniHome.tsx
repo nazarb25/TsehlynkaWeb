@@ -7,12 +7,13 @@ import { plural } from '@/lib/format'
 import { themePath } from '@/lib/routes'
 
 import { TrademarkNotice } from './icons'
-import { DealPrice, ReleaseLine, SetRow } from './SetRows'
+import { DealPrice, PersonalRow, ReleaseLine, SetRow } from './SetRows'
 
 interface MiniHomeProps {
   themes: Theme[] | null
   newest: SetItem[] | null
   deals: SetItem[]
+  recent: SetItem[]
 }
 
 function Logo() {
@@ -85,7 +86,7 @@ function SetsSection({ title, href, items, deal }: { title: string; href: string
 }
 
 /** Головна Mini App: шапка, пошук, швидкі входи, теми, новинки й знижки. */
-export function MiniHome({ themes, newest, deals }: MiniHomeProps) {
+export function MiniHome({ themes, newest, deals, recent }: MiniHomeProps) {
   return (
     <div className="c-home">
       <header className="c-home__top">
@@ -218,6 +219,21 @@ export function MiniHome({ themes, newest, deals }: MiniHomeProps) {
         <SetsSection title="Новинки" href="/new" items={newest} deal={false} />
       )}
       <SetsSection title="Зі знижкою" href="/deals" items={deals} deal />
+      {recent.length ? (
+        <section className="c-hsec">
+          <div className="c-hsec__head">
+            <h2 className="c-hsec__title">Нещодавно переглянуті</h2>
+            <Link className="c-hsec__all" href="/recent">
+              Усі
+            </Link>
+          </div>
+          <div className="c-urows">
+            {recent.map((item) => (
+              <PersonalRow key={item.id} item={item} />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <TrademarkNotice />
     </div>

@@ -4,6 +4,7 @@ import Link from 'next/link'
 
 import { usePlatform } from '@/components/platform/TelegramBridge'
 
+import { AccountMenu } from './AccountMenu'
 import { useAuth } from './AuthProvider'
 
 /**
@@ -20,12 +21,7 @@ export function AccountButton({ variant }: { variant: 'home' | 'header' }) {
         {account.initial}
       </Link>
     ) : (
-      <Link className="header__account" href="/profile">
-        <span className="header__avatar" aria-hidden="true">
-          {account.initial}
-        </span>
-        <span>{account.name}</span>
-      </Link>
+      <AccountMenu account={account} />
     )
   }
   if (telegram) return null

@@ -30,15 +30,21 @@ const TABS = [
     ),
   },
   {
-    key: 'themes',
-    href: '/themes',
-    label: 'Теми',
-    match: (path: string) => path.startsWith('/themes'),
+    key: 'favourites',
+    href: '/favourites',
+    label: 'Обране',
+    match: (path: string) => path.startsWith('/favourites'),
+    icon: <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" />,
+  },
+  {
+    key: 'me',
+    href: '/me',
+    label: 'Моє',
+    match: (path: string) => ['/me', '/profile', '/recent'].some((prefix) => path.startsWith(prefix)),
     icon: (
       <>
-        <rect x="3" y="10" width="18" height="10" rx="2" />
-        <rect x="6" y="6" width="4" height="4" rx="1" />
-        <rect x="14" y="6" width="4" height="4" rx="1" />
+        <circle cx="12" cy="8.5" r="3.5" />
+        <path d="M5 20a7 7 0 0 1 14 0" />
       </>
     ),
   },

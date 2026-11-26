@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 
 import { AuthProvider } from '@/components/auth/AuthProvider'
+import { FavouritesProvider } from '@/components/favourites/FavouritesProvider'
 import { MiniAppLogin } from '@/components/auth/MiniAppLogin'
 import { AnalyticsClicks } from '@/components/platform/Analytics'
 import { MobileDock } from '@/components/layout/MobileDock'
@@ -68,12 +69,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body>
         <TelegramBridge>
           <AuthProvider account={account ? { ...account, initial: initial(account.name) } : null}>
-            <SiteHeader themes={popularThemes(themes, 12)} />
-            <main className="main">{children}</main>
-            <SiteFooter themes={popularThemes(themes, 4)} botUrl={telegram} />
-            <MobileDock />
-            <MiniAppLogin />
-            <AnalyticsClicks />
+            <FavouritesProvider>
+              <SiteHeader themes={popularThemes(themes, 12)} />
+              <main className="main">{children}</main>
+              <SiteFooter themes={popularThemes(themes, 4)} botUrl={telegram} />
+              <MobileDock />
+              <MiniAppLogin />
+              <AnalyticsClicks />
+            </FavouritesProvider>
           </AuthProvider>
         </TelegramBridge>
         <JsonLd data={[websiteSchema(), organizationSchema()]} />
