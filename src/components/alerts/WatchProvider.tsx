@@ -71,28 +71,34 @@ export function WatchProvider({ setId, bot, children }: { setId: string; bot: st
     [openLogin, setId],
   )
 
-  /** Поточний стан з API; `null` — не вдалося дізнатися, при відхиленій сесії відкривається вхід. */
-  const load = useCallback(async (): Promise<boolean | null> => {
-    try {
-      const response = await fetch(`/api/me/price-alerts/${setId}`)
-      if (response.status === 401) {
-        openLogin()
+  /** Поточний стан з API; `null` — не вдалося дізнатися. Після натискання відхилена сесія відкриває вхід. */
+  const load = useCallback(
+    async (tapped: boolean): Promise<boolean | null | 'session'> => {
+      try {
+        const response = await fetch(`/api/me/price-alerts/${setId}`)
+        if (response.status === 401) {
+          if (tapped) {
+            writePending(setId)
+            openLogin()
+          }
+          return 'session'
+        }
+        if (!response.ok) return null
+        return ((await response.json()) as { watching: boolean }).watching
+      } catch {
         return null
       }
-      if (!response.ok) return null
-      return ((await response.json()) as { watching: boolean }).watching
-    } catch {
-      return null
-    }
-  }, [openLogin, setId])
+    },
+    [openLogin, setId],
+  )
 
   useEffect(() => {
     if (!account) return
     let active = true
     const pending = takePending(setId)
     void (async () => {
-      const current = await load()
-      if (!active || current === null) return
+      const current = await load(false)
+      if (!active || typeof current !== 'boolean') return
       setWatching(current)
       if (pending && !current) void change(true)
     })()
@@ -115,8 +121,9 @@ export function WatchProvider({ setId, bot, children }: { setId: string; bot: st
     setBusy(true)
     setNotice(null)
     void (async () => {
-      const current = await load()
+      const current = await load(true)
       setBusy(false)
+      if (current === 'session') return
       if (current === null) {
         setNotice('failed')
         return
