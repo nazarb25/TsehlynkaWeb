@@ -51,9 +51,10 @@ export function Offers({ setNumber, offers, best, now }: OffersProps) {
               const discount = discountPercent(offer)
               const seller = sellerLine(offer)
               const link = isWebUrl(offer.product_url)
+              const sold = offer.availability === 'out_of_stock'
               const primary = best !== null && offer.shop_id === best.shop_id && offer.product_url === best.product_url && offer.seller_name === best.seller_name
               return (
-                <div key={`${offer.shop_id}-${offer.product_url}`} className={`otable__row${link ? '' : ' is-dim'}`} role="row">
+                <div key={`${offer.shop_id}-${offer.product_url}`} className={`otable__row${link && !sold ? '' : ' is-dim'}`} role="row">
                   <span className="ocell ocell--shop" role="cell">
                     <ShopLogo shopId={offer.shop_id} name={offer.shop_name} logo={offer.logo} logoUrl={offer.logo_url} size={32} />
                     <span>
@@ -78,7 +79,12 @@ export function Offers({ setNumber, offers, best, now }: OffersProps) {
                     ) : null}
                   </span>
                   <span className="ocell ocell--go" role="cell">
-                    {link ? (
+                    {sold ? (
+                      <span className="button button--small button--outline" aria-disabled="true">
+                        До магазину
+                        <ExternalIcon />
+                      </span>
+                    ) : link ? (
                       <a
                         className={`button button--small${primary ? ' button--primary' : ' button--outline'}`}
                         href={offer.product_url}

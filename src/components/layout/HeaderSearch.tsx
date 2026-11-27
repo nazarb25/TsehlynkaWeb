@@ -22,6 +22,8 @@ export function HeaderSearch() {
   const [pending, setLoading] = useState(false)
   const [found, setFound] = useState<{ query: string; data: Suggestions | null } | null>(null)
   const [active, setActive] = useState(-1)
+  const [docked, setDocked] = useState(false)
+  const home = pathname === '/'
 
   const [openedAt, setOpenedAt] = useState(pathname)
   if (openedAt !== pathname) {
@@ -30,6 +32,24 @@ export function HeaderSearch() {
     setText('')
     setActive(-1)
   }
+
+  useEffect(() => {
+    const hero = home ? document.querySelector('.hero__search') : null
+    if (!hero) return
+    const header = document.querySelector('.header')
+    const top = header?.getBoundingClientRect().height ?? 0
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry) setDocked(!entry.isIntersecting && entry.boundingClientRect.top < top)
+      },
+      { rootMargin: `-${top}px 0px 0px 0px` },
+    )
+    observer.observe(hero)
+    return () => {
+      observer.disconnect()
+      setDocked(false)
+    }
+  }, [home])
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -103,7 +123,7 @@ export function HeaderSearch() {
   return (
     <form
       role="search"
-      className={`hsearch hide-mobile${pathname === '/' ? ' hsearch--home' : ''}${open ? ' is-open' : ''}`}
+      className={`hsearch hide-mobile${home ? ' hsearch--home' : ''}${home && (docked || open) ? ' is-docked' : ''}${open ? ' is-open' : ''}`}
       action="/search"
       onSubmit={submit}
       onBlur={(event) => {
@@ -154,7 +174,7 @@ export function HeaderSearch() {
               aria-selected={active === ++index}
               className={`sugg${active === index ? ' is-active' : ''}`}
             >
-              <span className="stage sugg__photo">
+              <span className="stage stage--cover sugg__photo">
                 {result.theme.image ? <img src={result.theme.image} alt="" /> : <BrickIcon size={16} />}
               </span>
               <span className="sugg__text">

@@ -244,6 +244,28 @@
 
 .hsearch--home {
   visibility: hidden;
+  opacity: 0;
+  transform: translateY(16px) scale(0.96);
+  transition:
+    opacity 0.2s ease,
+    transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+    visibility 0s 0.3s;
+}
+
+.hsearch--home.is-docked {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.2s ease,
+    transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+    visibility 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hsearch--home {
+    transform: none;
+  }
 }
 
 .hsearch__field {
@@ -313,10 +335,6 @@
   height: 40px;
   flex: 0 0 auto;
   border-radius: 8px;
-}
-
-.sugg__photo > img {
-  padding: 0;
 }
 
 .sugg__cap {

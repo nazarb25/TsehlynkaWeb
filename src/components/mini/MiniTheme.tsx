@@ -51,7 +51,7 @@ export function MiniTheme({ theme, parents, subthemes, sets, catalogPath, specia
       </nav>
 
       {hero ? (
-        <span className="c-photo-stage c-tpage__hero">
+        <span className="c-photo-stage c-theme-image c-tpage__hero">
           <img className="c-photo-stage__photo" src={hero} alt="" decoding="async" />
         </span>
       ) : null}

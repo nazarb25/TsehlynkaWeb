@@ -77,7 +77,7 @@ export function HeaderNav({ themes }: HeaderNavProps) {
             {themes.map((theme) => (
               <li key={theme.id}>
                 <Link className="mega__theme" href={themePath(theme)}>
-                  <span className="stage mega__photo">
+                  <span className="stage stage--cover mega__photo">
                     {theme.image?.thumb ? <img src={theme.image.thumb} alt="" loading="lazy" /> : <BrickIcon />}
                   </span>
                   <span>
