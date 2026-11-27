@@ -4018,6 +4018,96 @@
     font-weight: var(--font-weight-bold);
   }
 
+  .c-article__date {
+    margin-top: 6px !important;
+    font-size: var(--font-size-m) !important;
+    color: var(--color-hint);
+  }
+
+  .c-article a {
+    color: var(--color-link);
+  }
+
+  .c-article__list {
+    margin: var(--space-2) 4px 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--font-size-input);
+  }
+
+  .c-article__list li + li {
+    margin-top: var(--space-2);
+  }
+
+  /* Контакти */
+  .c-contacts__lead {
+    margin: 0 4px;
+    line-height: 1.45;
+    font-size: var(--font-size-input);
+    color: var(--color-hint);
+  }
+
+  .c-contacts .c-list {
+    margin-top: var(--space-5);
+  }
+
+  .c-contacts__caption {
+    margin-top: 28px;
+  }
+
+  .c-contacts .c-list--flush {
+    margin-top: 0;
+  }
+
+  .c-contacts__topic {
+    min-height: 62px;
+  }
+
+  .c-contacts__topic .c-list__who b {
+    font-size: var(--font-size-l);
+    font-weight: 400;
+  }
+
+  .c-contacts__topic .c-list__who span {
+    font-size: var(--font-size-s);
+  }
+
+  .c-list__value--link {
+    color: var(--color-link);
+  }
+
+  .c-list__tile--blue { background: #0a84ff; }
+  .c-list__tile--sky { background: #2aabee; }
+  .c-list__tile--green { background: #30d158; }
+  .c-list__tile--red { background: #ff453a; }
+  .c-list__tile--honey { background: var(--color-honey); color: var(--color-on-honey); }
+
+  /* Посилання на довідкові сторінки внизу Головної */
+  .c-foot-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    margin-top: var(--space-6);
+    font-size: 13px;
+    color: var(--color-hint);
+  }
+
+  .c-foot-links a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .c-foot-links a + a::before {
+    content: "·";
+    margin-right: 8px;
+    color: var(--color-hint);
+  }
+
+  .c-foot-links + .c-trademark {
+    margin-top: var(--space-3);
+  }
+
   /* Спливне повідомлення з дією праворуч: «Скасувати» */
   .c-toast--action {
     pointer-events: auto;

@@ -32,6 +32,8 @@ export function SiteFooter({ themes, botUrl }: SiteFooterProps) {
           <Link href="/catalog">Є в продажу</Link>
           <Link href="/new">Новинки</Link>
           <Link href="/deals">Зі знижкою</Link>
+          <Link href="/themes">Теми LEGO</Link>
+          <Link href="/themes/archive">Архів тем</Link>
         </nav>
         {themes.length ? (
           <nav className="hide-mobile" aria-label="Популярні теми">
@@ -43,10 +45,8 @@ export function SiteFooter({ themes, botUrl }: SiteFooterProps) {
             ))}
           </nav>
         ) : null}
-        <nav className="hide-mobile" aria-label="Цеглинка">
-          <h3>{SITE_NAME}</h3>
-          <Link href="/themes">Теми LEGO</Link>
-          <Link href="/themes/archive">Архів тем</Link>
+        <nav className="hide-mobile" aria-label="Інформація">
+          <h3>Інформація</h3>
           {INFO_PAGES.map((page) => (
             <Link key={page.href} href={page.href}>
               {page.label}

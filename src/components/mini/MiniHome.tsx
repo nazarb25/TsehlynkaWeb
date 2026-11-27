@@ -235,6 +235,11 @@ export function MiniHome({ themes, newest, deals, recent }: MiniHomeProps) {
         </section>
       ) : null}
 
+      <nav className="c-foot-links" aria-label="Інформація">
+        <Link href="/profile/about">Про Цеглинку</Link>
+        <Link href="/contacts">Контакти</Link>
+        <Link href="/privacy">Політика конфіденційності</Link>
+      </nav>
       <TrademarkNotice />
     </div>
   )
