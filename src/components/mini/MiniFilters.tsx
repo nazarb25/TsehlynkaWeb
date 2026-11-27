@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
-import { AGE_MARKS, CATALOG, type CatalogFilters, type CatalogSection, catalogHref, effectiveInStock, queryParams } from '@/lib/catalog/filters'
+import { AGE_MARKS, CATALOG, MAX_PRICE, type CatalogFilters, type CatalogSection, catalogHref, effectiveInStock, queryParams } from '@/lib/catalog/filters'
 import { plural } from '@/lib/format'
 
 import { Chevron, FilterGlyph, XIcon } from './icons'
@@ -19,12 +19,14 @@ interface MiniFiltersProps {
   section: CatalogSection
   themes: MiniOption[]
   shops: MiniOption[]
+  lines: MiniOption[]
   active: number
   total: number
 }
 
 const YEAR = { min: 1949, max: 2100 }
 const PIECES = { min: 0, max: 100_000 }
+const PRICE = { min: 0, max: MAX_PRICE }
 
 type RangeError = 'order' | 'bounds' | null
 
@@ -49,7 +51,7 @@ function setCount(count: number): string {
 const CLOSE_ICON = <XIcon size={14} />
 
 /** Шторка фільтрів Mini App: зміни оновлюють лише кнопку з кількістю, «Показати» застосовує їх. */
-export function MiniFilters({ filters, section, themes, shops, active, total }: MiniFiltersProps) {
+export function MiniFilters({ filters, section, themes, shops, lines, active, total }: MiniFiltersProps) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [draft, setDraft] = useState<CatalogFilters>(filters)
@@ -61,12 +63,17 @@ export function MiniFilters({ filters, section, themes, shops, active, total }: 
     from: filters.piecesMin?.toString() ?? '',
     to: filters.piecesMax?.toString() ?? '',
   })
+  const [prices, setPrices] = useState({
+    from: filters.priceFrom?.toString() ?? '',
+    to: filters.priceTo?.toString() ?? '',
+  })
   const [count, setCountValue] = useState<number | null>(total)
   const sale = draft.mode === 'sale'
 
   const yearError = rangeError(years.from, years.to, YEAR)
   const piecesError = rangeError(pieces.from, pieces.to, PIECES)
-  const invalid = Boolean(yearError || piecesError)
+  const priceError = sale ? rangeError(prices.from, prices.to, PRICE) : null
+  const invalid = Boolean(yearError || piecesError || priceError)
 
   const next: CatalogFilters = {
     ...draft,
@@ -74,6 +81,8 @@ export function MiniFilters({ filters, section, themes, shops, active, total }: 
     yearTo: yearError ? null : toNumber(years.to),
     piecesMin: piecesError ? null : toNumber(pieces.from),
     piecesMax: piecesError ? null : toNumber(pieces.to),
+    priceFrom: priceError ? null : toNumber(prices.from),
+    priceTo: priceError ? null : toNumber(prices.to),
     page: 1,
   }
   const countQuery = queryParams(
@@ -117,6 +126,10 @@ export function MiniFilters({ filters, section, themes, shops, active, total }: 
       from: filters.piecesMin?.toString() ?? '',
       to: filters.piecesMax?.toString() ?? '',
     })
+    setPrices({
+      from: filters.priceFrom?.toString() ?? '',
+      to: filters.priceTo?.toString() ?? '',
+    })
     setCountValue(total)
     setOpen(true)
   }
@@ -126,12 +139,15 @@ export function MiniFilters({ filters, section, themes, shops, active, total }: 
     setDraft({
       ...draft,
       theme: null,
+      line: null,
       shop: null,
       yearFrom: null,
       yearTo: null,
       age: null,
       piecesMin: null,
       piecesMax: null,
+      priceFrom: null,
+      priceTo: null,
       inStock: null,
       preorder: false,
       onSale: false,
@@ -140,6 +156,7 @@ export function MiniFilters({ filters, section, themes, shops, active, total }: 
     })
     setYears({ from: '', to: '' })
     setPieces({ from: '', to: '' })
+    setPrices({ from: '', to: '' })
   }
 
   const apply = (event: React.FormEvent) => {
@@ -152,6 +169,7 @@ export function MiniFilters({ filters, section, themes, shops, active, total }: 
   const patch = (changes: Partial<CatalogFilters>) => setDraft((value) => ({ ...value, ...changes }))
   const themeName = themes.find((item) => item.slug === draft.theme)?.name ?? null
   const shopName = shops.find((item) => item.slug === draft.shop)?.name ?? null
+  const lineName = lines.find((item) => item.slug === draft.line)?.name ?? null
   const inStock = effectiveInStock(draft)
 
   return (
@@ -281,6 +299,33 @@ export function MiniFilters({ filters, section, themes, shops, active, total }: 
               {piecesError === 'bounds' ? 'Кількість має бути від 0 до 100 000' : 'Кількість «від» має бути не більшою за «до»'}
             </p>
 
+            {lines.length ? (
+              <>
+                <p className="c-filters__cap">Лінійка складання</p>
+                <div className="c-fgroup">
+                  <label className="c-frow c-frow--select">
+                    <span className="c-frow__text">
+                      <span>{lineName ?? 'Будь-яка'}</span>
+                    </span>
+                    <Chevron />
+                    <select
+                      className="c-frow__select"
+                      aria-label="Лінійка складання"
+                      value={draft.line ?? ''}
+                      onChange={(event) => patch({ line: event.target.value || null })}
+                    >
+                      <option value="">Будь-яка</option>
+                      {lines.map((item) => (
+                        <option key={item.slug} value={item.slug}>
+                          {item.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+              </>
+            ) : null}
+
             <div className="c-fgroup c-fgroup--spaced">
               <label className="c-frow">
                 <span className="c-frow__text">
@@ -292,6 +337,37 @@ export function MiniFilters({ filters, section, themes, shops, active, total }: 
 
             {sale ? (
               <>
+                <p className="c-filters__cap">Ціна, ₴</p>
+                <div className="c-fgroup c-frange">
+                  <label className="c-ffield">
+                    <span>Від</span>
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      min={PRICE.min}
+                      max={PRICE.max}
+                      placeholder="Будь-яка"
+                      value={prices.from}
+                      onChange={(event) => setPrices({ ...prices, from: event.target.value })}
+                    />
+                  </label>
+                  <label className="c-ffield">
+                    <span>До</span>
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      min={PRICE.min}
+                      max={PRICE.max}
+                      placeholder="Будь-яка"
+                      value={prices.to}
+                      onChange={(event) => setPrices({ ...prices, to: event.target.value })}
+                    />
+                  </label>
+                </div>
+                <p className="c-filters__error" hidden={!priceError}>
+                  {priceError === 'bounds' ? 'Ціна має бути від 0 до 1 000 000 ₴' : 'Ціна «від» має бути не більшою за «до»'}
+                </p>
+
                 <p className="c-filters__cap">Продаж</p>
                 <div className="c-fgroup">
                   <label className="c-frow">

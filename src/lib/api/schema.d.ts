@@ -126,7 +126,9 @@ export interface paths {
          *     `in_stock_offers_count` рахує свіжі ефективні пропозиції `in_stock`, а `in_stock_shops_count` —
          *     різні магазини з такими пропозиціями. `set_id` обмежує список переданими наборами, а
          *     `min_preorder_price` — найнижча ціна серед свіжих пропозицій `preorder`. `released_from` і
-         *     `release_desc` — за першим виходом набору (`release_date`), як у каталозі. Спеціальні
+         *     `release_desc` — за першим виходом набору (`release_date`), як у каталозі. `price_min` і
+         *     `price_max` відбирають за ціною, яку показує список: `min_in_stock_price`, а без пропозицій
+         *     у наявності — `min_preorder_price`; набір без таких цін не потрапляє. Спеціальні
          *     набори — як у каталозі: з `include_specialized`, у пошуку або серед переданих `set_id`.
          */
         get: operations["get_retail_sets_api_v1_retail_sets_get"];
@@ -203,10 +205,56 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/building-lines": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Лінійки складання каталогу
+         * @description Лінійки складання, до яких належать набори стандартного каталогу; лінійка без таких
+         *     наборів у список не потрапляє. Порядок — назва.
+         */
+        get: operations["get_catalog_building_lines_api_v1_building_lines_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * CatalogBuildingLineResource
+         * @description Лінійка складання з кількістю наборів стандартного каталогу.
+         */
+        CatalogBuildingLineResource: {
+            /**
+             * Id
+             * Format: uuid
+             * @description Ідентифікатор лінійки; значення фільтра `building_line_id`.
+             * @example 01a19868-7736-74bd-8536-7e22bc056c09
+             */
+            id: string;
+            /**
+             * Name
+             * @description Назва лінійки.
+             * @example 4+ / Learn to Build
+             */
+            name: string;
+            /**
+             * Set Count
+             * @description Кількість наборів стандартного каталогу в лінійці.
+             * @example 42
+             */
+            set_count: number;
+        };
         /**
          * CatalogChoiceGroupResource
          * @description Група вибору: скільки варіантів потрапляє в коробку.
@@ -765,7 +813,7 @@ export interface components {
          * @description Код помилки у відповіді API.
          * @enum {string}
          */
-        ErrorCode: "validation_error" | "route_not_found" | "method_not_allowed" | "http_error" | "internal_error" | "authentication_required" | "permission_denied" | "application_error" | "not_found" | "conflict" | "duplicate_record" | "set_not_found" | "set_translation_not_found" | "set_alias_not_found" | "collection_not_found" | "set_collection_not_found" | "interest_not_found" | "set_interest_not_found" | "building_line_not_found" | "set_building_line_not_found" | "feature_not_found" | "set_feature_not_found" | "property_not_found" | "set_property_not_found" | "organization_not_found" | "property_organization_not_found" | "creator_not_found" | "set_creator_not_found" | "real_world_subject_not_found" | "set_subject_not_found" | "market_not_found" | "edition_market_not_found" | "edition_identifier_not_found" | "set_identifier_not_found" | "distribution_program_not_found" | "set_distribution_not_found" | "set_relation_not_found" | "set_bundle_item_not_found" | "tag_not_found" | "set_tag_not_found" | "set_secondary_theme_not_found" | "set_type_not_found" | "set_type_code_taken" | "figure_code_taken" | "theme_not_found" | "request_body_too_large" | "invalid_image_file" | "unsafe_image" | "not_an_image" | "image_processing_failed" | "media_storage_unavailable" | "set_photo_not_found" | "theme_image_not_found" | "figure_image_not_found" | "set_instruction_not_found" | "shop_logo_not_found" | "media_asset_not_found" | "theme_group_not_found" | "theme_group_membership_not_found" | "theme_slug_taken" | "set_edition_not_found" | "set_edition_in_use" | "part_category_not_found" | "part_category_code_taken" | "part_not_found" | "color_not_found" | "color_code_taken" | "element_not_found" | "character_not_found" | "figure_not_found" | "set_inventory_not_found" | "inventory_revision_not_found" | "inventory_item_not_found" | "choice_group_not_found" | "choice_option_not_found" | "invalid_credentials" | "invalid_token" | "editor_not_found" | "editor_login_taken" | "own_account_deactivation" | "shop_not_found" | "shop_slug_taken" | "offer_not_found" | "offer_product_taken" | "shop_product_candidate_not_found" | "shop_product_queued" | "affiliate_network_not_found" | "affiliate_network_code_taken" | "affiliate_feed_not_found" | "affiliate_feed_code_taken" | "credentials_unreadable" | "affiliate_credentials_mismatch" | "init_data_required" | "invalid_init_data" | "invalid_service_key" | "user_not_found" | "favourite_limit_reached" | "price_alert_limit_reached" | "invariant_violation" | "forbidden_transition" | "hierarchy_cycle" | "bundle_cycle" | "part_assembly_cycle" | "self_relation" | "inactive_interest" | "inactive_feature" | "inactive_theme" | "keep_separate_not_applicable" | "review_case_not_found" | "ingestion_batch_not_found" | "import_already_running" | "catalog_not_refreshed" | "task_queue_unavailable" | "set_catalog_number_missing" | "source_mapping_conflict" | "source_set_not_found" | "source_not_configured" | "source_unavailable" | "chosen_assertion_required" | "assertion_not_in_case" | "unsupported_review_decision" | "unsupported_review_subject" | "unsupported_assertion_predicate" | "inactive_assignee" | "ambiguous_target" | "inventory_item_target_mismatch" | "requirement_owner_mismatch" | "requirement_target_mismatch" | "invalid_code" | "set_not_publishable" | "secondary_theme_repeats_primary" | "misplaced_identifier" | "duplicate_set_identifier" | "duplicate_edition_code" | "duplicate_default_edition" | "duplicate_canonical_inventory" | "duplicate_preferred_revision" | "duplicate_choice_option" | "impossible_choice_selection" | "assertion_value_mismatch" | "classification_source_mismatch" | "insecure_shop_url" | "official_seller_evidence_required" | "invalid_offer_quote" | "invalid_personal_data";
+        ErrorCode: "validation_error" | "route_not_found" | "method_not_allowed" | "http_error" | "internal_error" | "authentication_required" | "permission_denied" | "application_error" | "not_found" | "conflict" | "duplicate_record" | "set_not_found" | "set_translation_not_found" | "set_alias_not_found" | "collection_not_found" | "set_collection_not_found" | "interest_not_found" | "set_interest_not_found" | "building_line_not_found" | "set_building_line_not_found" | "feature_not_found" | "set_feature_not_found" | "property_not_found" | "set_property_not_found" | "organization_not_found" | "property_organization_not_found" | "creator_not_found" | "set_creator_not_found" | "real_world_subject_not_found" | "set_subject_not_found" | "market_not_found" | "edition_market_not_found" | "edition_identifier_not_found" | "set_identifier_not_found" | "distribution_program_not_found" | "set_distribution_not_found" | "set_relation_not_found" | "set_bundle_item_not_found" | "tag_not_found" | "set_tag_not_found" | "set_secondary_theme_not_found" | "set_type_not_found" | "set_type_code_taken" | "figure_code_taken" | "theme_not_found" | "request_body_too_large" | "invalid_image_file" | "unsafe_image" | "not_an_image" | "image_processing_failed" | "media_storage_unavailable" | "set_photo_not_found" | "theme_image_not_found" | "figure_image_not_found" | "set_instruction_not_found" | "shop_logo_not_found" | "media_asset_not_found" | "theme_group_not_found" | "theme_group_membership_not_found" | "theme_slug_taken" | "set_edition_not_found" | "set_edition_in_use" | "part_category_not_found" | "part_category_code_taken" | "part_not_found" | "color_not_found" | "color_code_taken" | "element_not_found" | "character_not_found" | "figure_not_found" | "set_inventory_not_found" | "inventory_revision_not_found" | "inventory_item_not_found" | "choice_group_not_found" | "choice_option_not_found" | "invalid_credentials" | "invalid_token" | "editor_not_found" | "editor_login_taken" | "own_account_deactivation" | "shop_not_found" | "shop_slug_taken" | "offer_not_found" | "offer_product_taken" | "shop_product_candidate_not_found" | "shop_product_queued" | "affiliate_network_not_found" | "affiliate_network_code_taken" | "affiliate_feed_not_found" | "affiliate_feed_code_taken" | "credentials_unreadable" | "affiliate_credentials_mismatch" | "init_data_required" | "invalid_init_data" | "invalid_telegram_login" | "invalid_session" | "invalid_service_key" | "user_not_found" | "favourite_limit_reached" | "price_alert_limit_reached" | "invariant_violation" | "forbidden_transition" | "hierarchy_cycle" | "bundle_cycle" | "part_assembly_cycle" | "self_relation" | "inactive_interest" | "inactive_feature" | "inactive_theme" | "keep_separate_not_applicable" | "review_case_not_found" | "ingestion_batch_not_found" | "import_already_running" | "catalog_not_refreshed" | "task_queue_unavailable" | "set_catalog_number_missing" | "source_mapping_conflict" | "source_set_not_found" | "source_not_configured" | "source_unavailable" | "chosen_assertion_required" | "assertion_not_in_case" | "unsupported_review_decision" | "unsupported_review_subject" | "unsupported_assertion_predicate" | "inactive_assignee" | "ambiguous_target" | "inventory_item_target_mismatch" | "requirement_owner_mismatch" | "requirement_target_mismatch" | "invalid_code" | "set_not_publishable" | "secondary_theme_repeats_primary" | "misplaced_identifier" | "duplicate_set_identifier" | "duplicate_edition_code" | "duplicate_default_edition" | "duplicate_canonical_inventory" | "duplicate_preferred_revision" | "duplicate_choice_option" | "impossible_choice_selection" | "assertion_value_mismatch" | "classification_source_mismatch" | "insecure_shop_url" | "official_seller_evidence_required" | "invalid_offer_quote" | "invalid_personal_data";
         /**
          * ErrorDetail
          * @description Поле запиту, що не пройшло перевірку.
@@ -1796,6 +1844,10 @@ export interface operations {
                 shop_id?: string | null;
                 /** @description Лише набори з цими ідентифікаторами, до 100; параметр повторюється. Так клієнт отримує роздрібні поля для власного списку наборів, наприклад обраного. */
                 set_id?: string[] | null;
+                /** @description Ціна від, ₴; включно. Порівнюється `min_in_stock_price`, а без пропозицій у наявності — `min_preorder_price`. */
+                price_min?: number | string | null;
+                /** @description Ціна до, ₴; включно; та сама ціна, що й для `price_min`. */
+                price_max?: number | string | null;
                 /** @description Порядок списку; без ціни, року чи знижки — в кінці, за рівності — за ідентифікатором. `discount_desc` — за найбільшою знижкою, `release_desc` — за першим виходом набору. */
                 sort?: components["schemas"]["RetailSetSort"];
                 /** @description Кількість наборів на сторінці. */
@@ -1970,6 +2022,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_catalog_building_lines_api_v1_building_lines_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CatalogBuildingLineResource"][];
                 };
             };
         };

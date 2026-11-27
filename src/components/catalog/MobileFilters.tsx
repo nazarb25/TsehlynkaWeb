@@ -12,11 +12,12 @@ interface MobileFiltersProps {
   section: CatalogSection
   themes: FilterOption[]
   shops: FilterOption[]
+  lines: FilterOption[]
   active: number
 }
 
 /** Кнопка «Фільтри» й шторка з чернеткою фільтрів на телефоні. */
-export function MobileFilters({ filters, section, themes, shops, active }: MobileFiltersProps) {
+export function MobileFilters({ filters, section, themes, shops, lines, active }: MobileFiltersProps) {
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
@@ -52,6 +53,7 @@ export function MobileFilters({ filters, section, themes, shops, active }: Mobil
               section={section}
               themes={themes}
               shops={shops}
+              lines={lines}
               variant="draft"
               onDone={() => setOpen(false)}
             />

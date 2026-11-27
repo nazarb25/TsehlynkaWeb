@@ -3,7 +3,7 @@ import type { Metadata, Viewport } from 'next'
 import { AuthProvider } from '@/components/auth/AuthProvider'
 import { FavouritesProvider } from '@/components/favourites/FavouritesProvider'
 import { MiniAppLogin } from '@/components/auth/MiniAppLogin'
-import { AnalyticsClicks } from '@/components/platform/Analytics'
+import { AnalyticsClicks, EntryTracker } from '@/components/platform/Analytics'
 import { MobileDock } from '@/components/layout/MobileDock'
 import { SiteFooter } from '@/components/layout/SiteFooter'
 import { SiteHeader } from '@/components/layout/SiteHeader'
@@ -76,6 +76,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <MobileDock />
               <MiniAppLogin />
               <AnalyticsClicks />
+              <EntryTracker />
             </FavouritesProvider>
           </AuthProvider>
         </TelegramBridge>

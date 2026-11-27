@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/nextjs'
 import posthog from 'posthog-js'
 
+import { stripPrivateParams } from '@/lib/analytics'
 import { IGNORED_ERRORS, tracesSampleRate } from '@/lib/sentry-options'
 
 const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN
@@ -41,6 +42,8 @@ Sentry.init({
 })
 
 const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY
+/** Адреси в подіях PostHog, з яких прибирається текст пошуку. */
+const URL_PROPERTIES = ['$current_url', '$referrer', '$initial_current_url', '$initial_referrer', '$prev_pageview_url']
 
 if (posthogKey) {
   posthog.init(posthogKey, {
@@ -52,6 +55,14 @@ if (posthogKey) {
     person_profiles: 'identified_only',
     session_recording: { maskAllInputs: true },
     capture_exceptions: false,
+    before_send: (event) => {
+      if (!event) return event
+      for (const bag of [event.properties, event.$set, event.$set_once]) {
+        if (!bag) continue
+        for (const key of URL_PROPERTIES) if (key in bag) bag[key] = stripPrivateParams(bag[key])
+      }
+      return event
+    },
   })
   posthog.register({ platform: 'web' })
 }

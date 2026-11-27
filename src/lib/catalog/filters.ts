@@ -32,6 +32,8 @@ export interface CatalogFilters {
   mode: CatalogMode
   q: string | null
   theme: string | null
+  /** Лінійка складання за ідентифікатором API. */
+  line: string | null
   shop: string | null
   sort: SetSort | null
   yearFrom: number | null
@@ -39,6 +41,9 @@ export interface CatalogFilters {
   age: number | null
   piecesMin: number | null
   piecesMax: number | null
+  /** Межі ціни в гривнях; лише в режимі продажу. */
+  priceFrom: number | null
+  priceTo: number | null
   inStock: boolean | null
   preorder: boolean
   onSale: boolean
@@ -97,6 +102,8 @@ export const API_MAX_OFFSET = 10_000
 
 export const MAX_PAGE = Math.floor(API_MAX_OFFSET / PAGE_SIZE) + 1
 const NEWEST_WINDOW_DAYS = 183
+export const MAX_PRICE = 1_000_000
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 const MIN_YEAR = 1949
 const MAX_YEAR = 2100
 
@@ -179,6 +186,10 @@ export function parseFilters(params: Params, section: CatalogSection): CatalogFi
   let piecesMin = readInt(params, 'pieces_min', 0, 100_000)
   let piecesMax = readInt(params, 'pieces_max', 0, 100_000)
   if (piecesMin !== null && piecesMax !== null && piecesMin > piecesMax) [piecesMin, piecesMax] = [piecesMax, piecesMin]
+  let priceFrom = readInt(params, 'price_from', 0, MAX_PRICE)
+  let priceTo = readInt(params, 'price_to', 0, MAX_PRICE)
+  if (priceFrom !== null && priceTo !== null && priceFrom > priceTo) [priceFrom, priceTo] = [priceTo, priceFrom]
+  const line = read(params, 'line')
   const view = read(params, 'view')
   const sort = read(params, 'sort') as SetSort | null
   const inStock = read(params, 'in_stock')
@@ -188,6 +199,7 @@ export function parseFilters(params: Params, section: CatalogSection): CatalogFi
     mode,
     q: (read(params, 'q') ?? read(params, 'search'))?.slice(0, 100) ?? null,
     theme: read(params, 'theme'),
+    line: line && UUID_PATTERN.test(line) ? line.toLowerCase() : null,
     shop: read(params, 'shop'),
     sort,
     yearFrom,
@@ -195,6 +207,8 @@ export function parseFilters(params: Params, section: CatalogSection): CatalogFi
     age: readInt(params, 'age', 1, 1200),
     piecesMin,
     piecesMax,
+    priceFrom,
+    priceTo,
     inStock: inStock === 'false' ? false : null,
     preorder,
     onSale: section.onSale ?? (!preorder && readFlag(params, 'on_sale')),
@@ -217,12 +231,15 @@ export function queryParams(filters: CatalogFilters, section: CatalogSection, ch
     ['q', next.q],
     ['mode', section.mode || next.mode === (section.defaultMode ?? 'sale') ? null : next.mode],
     ['theme', next.theme],
+    ['line', next.line],
     ['shop', sale ? next.shop : null],
     ['year_from', next.yearFrom],
     ['year_to', next.yearTo],
     ['age', next.age],
     ['pieces_min', next.piecesMin],
     ['pieces_max', next.piecesMax],
+    ['price_from', sale ? next.priceFrom : null],
+    ['price_to', sale ? next.priceTo : null],
     ['in_stock', sale && next.inStock === false ? 'false' : null],
     ['preorder', sale && next.preorder ? 'true' : null],
     ['on_sale', !section.onSale && sale && next.onSale ? 'true' : null],
@@ -249,12 +266,15 @@ export function catalogHref(filters: CatalogFilters, section: CatalogSection, ch
 export function resetHref(filters: CatalogFilters, section: CatalogSection): string {
   return catalogHref(filters, section, {
     theme: null,
+    line: null,
     shop: null,
     yearFrom: null,
     yearTo: null,
     age: null,
     piecesMin: null,
     piecesMax: null,
+    priceFrom: null,
+    priceTo: null,
     inStock: null,
     preorder: false,
     onSale: section.onSale ?? false,
@@ -280,6 +300,14 @@ export function piecesLabel(filters: CatalogFilters): string | null {
   return null
 }
 
+export function priceLabel(filters: CatalogFilters): string | null {
+  const { priceFrom, priceTo } = filters
+  if (priceFrom !== null && priceTo !== null) return `${priceFrom}–${priceTo} ₴`
+  if (priceFrom !== null) return `Від ${priceFrom} ₴`
+  if (priceTo !== null) return `До ${priceTo} ₴`
+  return null
+}
+
 export function ageLabel(filters: CatalogFilters): string | null {
   return AGE_MARKS.find((mark) => mark.months === filters.age)?.label ?? null
 }
@@ -293,13 +321,15 @@ export interface ActiveFilter {
 export function activeFilters(
   filters: CatalogFilters,
   section: CatalogSection,
-  names: { theme?: string | null; shop?: string | null },
+  names: { theme?: string | null; shop?: string | null; line?: string | null },
 ): ActiveFilter[] {
   const sale = isSale(filters)
   const candidates: [string | null, Partial<CatalogFilters>][] = [
     [!section.newest && isNewest(filters) ? 'Новинки' : null, { newest: false }],
     [filters.theme ? (names.theme ?? 'Тема') : null, { theme: null }],
+    [filters.line ? (names.line ?? 'Лінійка складання') : null, { line: null }],
     [sale && filters.shop ? (names.shop ?? 'Магазин') : null, { shop: null }],
+    [sale ? priceLabel(filters) : null, { priceFrom: null, priceTo: null }],
     [sale && filters.inStock === false ? 'Без наявності' : null, { inStock: null }],
     [sale && filters.preorder ? 'Передзамовлення' : null, { preorder: false }],
     [!section.onSale && sale && filters.onSale ? 'Зі знижкою' : null, { onSale: false }],
@@ -333,6 +363,7 @@ export function apiQuery(
     number,
     search: number ? null : filters.q,
     theme_id: ids.themeId ?? null,
+    building_line_id: filters.line,
     age_mark_months: filters.age,
     year_from: filters.yearFrom,
     year_to: filters.yearTo,
@@ -345,6 +376,8 @@ export function apiQuery(
     official: sale && filters.official ? true : null,
     on_sale: sale && filters.onSale ? true : null,
     shop_id: sale ? (ids.shopId ?? null) : null,
+    price_min: sale ? filters.priceFrom : null,
+    price_max: sale ? filters.priceTo : null,
     sort: effectiveSort(filters, section),
     limit,
     offset: (filters.page - 1) * limit,

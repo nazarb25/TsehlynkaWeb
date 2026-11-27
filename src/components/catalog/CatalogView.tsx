@@ -2,13 +2,14 @@ import Link from 'next/link'
 
 import { AlertIcon, BagIcon, ChevronRight, CloseIcon, GridIcon, ListIcon, SearchIcon } from '@/components/icons'
 import { TrackView } from '@/components/platform/Analytics'
+import { countBucket, queryShape } from '@/lib/analytics'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Photo } from '@/components/ui/Photo'
 import { SearchField } from '@/components/ui/SearchField'
-import { findSets, listShops, listThemes } from '@/lib/api/catalog'
-import type { Page, RetailShop, SetItem, Theme } from '@/lib/api/types'
+import { findSets, listBuildingLines, listShops, listThemes } from '@/lib/api/catalog'
+import type { BuildingLine, Page, RetailShop, SetItem, Theme } from '@/lib/api/types'
 import {
   activeFilters,
   API_MAX_OFFSET,
@@ -61,12 +62,17 @@ export interface CatalogData {
   page: Page<SetItem> | null
   themes: Theme[]
   shops: RetailShop[]
+  lines: BuildingLine[]
 }
 
 export async function loadCatalog(sectionKey: SectionKey, filters: CatalogFilters): Promise<CatalogData> {
   const section = SECTIONS[sectionKey]
   const sale = isSale(filters)
-  const [themes, shops] = await Promise.all([safe(listThemes()), sale ? safe(listShops()) : Promise.resolve([])])
+  const [themes, shops, lines] = await Promise.all([
+    safe(listThemes()),
+    sale ? safe(listShops()) : Promise.resolve([]),
+    safe(listBuildingLines()),
+  ])
   const ids = filterIds(filters, themes, shops)
   const offset = (filters.page - 1) * PAGE_SIZE
   const empty = { items: [], total: 0, limit: PAGE_SIZE, offset }
@@ -76,7 +82,7 @@ export async function loadCatalog(sectionKey: SectionKey, filters: CatalogFilter
       : ids === 'missing' || offset > API_MAX_OFFSET
         ? empty
         : await safe(findSets(apiQuery(filters, section, ids), sale))
-  return { page, themes: themes ?? [], shops: shops ?? [] }
+  return { page, themes: themes ?? [], shops: shops ?? [], lines: lines ?? [] }
 }
 
 /** Теми для фільтра; однакові назви розрізняє назва батьківської теми. */
@@ -105,11 +111,15 @@ function shopOptions(shops: RetailShop[]): FilterOption[] {
     .map((shop) => ({ slug: shop.slug, name: shop.name, count: shop.in_stock_sets_count }))
 }
 
+function lineOptions(lines: BuildingLine[]): FilterOption[] {
+  return lines.map((line) => ({ slug: line.id, name: line.name, count: line.set_count }))
+}
+
 const MODE_ICONS: Record<CatalogMode, typeof GridIcon> = { all: GridIcon, sale: BagIcon }
 
 export async function CatalogView({ sectionKey, filters, title, hint, crumbs, modes }: CatalogViewProps) {
   const section = SECTIONS[sectionKey]
-  const { page, themes, shops } = await loadCatalog(sectionKey, filters)
+  const { page, themes, shops, lines } = await loadCatalog(sectionKey, filters)
   const sale = isSale(filters)
   const context: TileContext = sale ? 'sale' : isNewest(filters) ? 'newest' : 'all'
   const sort = effectiveSort(filters, section)
@@ -118,9 +128,11 @@ export async function CatalogView({ sectionKey, filters, title, hint, crumbs, mo
   const view = filters.view ?? 'auto'
   const themeOpts = themeOptions(themes)
   const shopOpts = shopOptions(shops)
+  const lineOpts = lineOptions(lines)
   const names = {
     theme: themes.find((theme) => theme.slug === filters.theme)?.name ?? null,
     shop: shops.find((shop) => shop.slug === filters.shop)?.name ?? null,
+    line: lines.find((line) => line.id === filters.line)?.name ?? null,
   }
   const chips = activeFilters(filters, section, names)
   const suggestedTheme = sectionKey === 'search' && filters.q && filters.page === 1 ? matchTheme(themes, filters.q) : null
@@ -129,11 +141,12 @@ export async function CatalogView({ sectionKey, filters, title, hint, crumbs, mo
 
   return (
     <>
+      {page ? null : <TrackView event="error_shown" properties={{ error_code: 'catalog_unavailable', route_group: sectionKey }} />}
       <div className="m-only">
         {sectionKey === 'search' ? (
           <MiniSearch filters={filters} initial={page && filters.page === 1 ? { theme: suggestedTheme, items: page.items, total } : null} chips={chips} />
         ) : (
-          <MiniCatalog sectionKey={sectionKey} section={section} filters={filters} page={page} themes={themes} shops={shops} />
+          <MiniCatalog sectionKey={sectionKey} section={section} filters={filters} page={page} themes={themes} shops={shops} lines={lines} />
         )}
       </div>
       <div className="wrap d-only">
@@ -150,6 +163,9 @@ export async function CatalogView({ sectionKey, filters, title, hint, crumbs, mo
                   href={catalogHref(filters, section, { mode })}
                   aria-current={filters.mode === mode ? 'page' : undefined}
                   scroll={false}
+                  data-track={filters.mode === mode ? undefined : 'catalog_mode_change'}
+                  data-track-from={filters.mode}
+                  data-track-to={mode}
                 >
                   <Icon size={16} />
                   {MODE_LABELS[mode]}
@@ -161,13 +177,16 @@ export async function CatalogView({ sectionKey, filters, title, hint, crumbs, mo
       </div>
       <p className="page-hint">{hint}</p>
       {sectionKey === 'search' && page ? (
-        <TrackView event="search_results_viewed" properties={{ query: filters.q, total, mode: filters.mode, page: filters.page }} />
+        <TrackView
+          event="search_results_viewed"
+          properties={{ ...queryShape(filters.q), result_bucket: countBucket(total), mode: filters.mode, page: filters.page }}
+        />
       ) : null}
       {sectionKey === 'search' ? <SearchField defaultValue={filters.q} className="mobile-search hide-desktop" /> : null}
 
       <div className="catalog">
         <aside className="catalog__side hide-mobile" aria-label="Фільтри">
-          <FiltersPanel filters={filters} section={section} themes={themeOpts} shops={shopOpts} variant="live" />
+          <FiltersPanel filters={filters} section={section} themes={themeOpts} shops={shopOpts} lines={lineOpts} variant="live" />
         </aside>
 
         <div className="catalog__main">
@@ -182,6 +201,7 @@ export async function CatalogView({ sectionKey, filters, title, hint, crumbs, mo
                   section={section}
                   themes={themeOpts}
                   shops={shopOpts}
+                  lines={lineOpts}
                   active={filtersCount(filters, section)}
                 />
               </span>

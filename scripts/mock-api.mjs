@@ -195,6 +195,17 @@ function descendants(themeId) {
   return ids
 }
 
+const buildingLines = [
+  { id: '019a5a10-0000-7000-8000-00000000b001', name: '4+', test: (set) => set.age_min_months !== null && set.age_min_months <= 96 },
+  { id: '019a5a10-0000-7000-8000-00000000b002', name: 'Для дорослих 18+', test: (set) => set.age_min_months !== null && set.age_min_months >= 216 },
+]
+
+function buildingLineList() {
+  return buildingLines
+    .map((line) => ({ id: line.id, name: line.name, set_count: sets.filter(line.test).length }))
+    .filter((line) => line.set_count > 0)
+}
+
 function filterSets(query, retail) {
   let list = [...sets]
   const ids = query.getAll('set_id')
@@ -214,11 +225,16 @@ function filterSets(query, retail) {
   if (num('pieces_min') !== null) list = list.filter((set) => set.declared_piece_count >= num('pieces_min'))
   if (num('pieces_max') !== null) list = list.filter((set) => set.declared_piece_count <= num('pieces_max'))
   if (num('age_mark_months')) list = list.filter((set) => set.age_min_months === num('age_mark_months'))
+  const line = buildingLines.find((item) => item.id === query.get('building_line_id'))
+  if (query.get('building_line_id')) list = line ? list.filter(line.test) : []
   if (query.get('released_from')) list = list.filter((set) => set.release_date >= query.get('released_from'))
   if (retail) {
     if (query.get('in_stock') === 'true') list = list.filter((set) => set.has_in_stock_offer)
     if (query.get('preorder') === 'true') list = list.filter((set) => set.has_preorder_offer)
     if (query.get('on_sale') === 'true') list = list.filter((set) => set.best_deal)
+    const shown = (set) => (set.min_in_stock_price ?? set.min_preorder_price) === null ? null : Number(set.min_in_stock_price ?? set.min_preorder_price)
+    if (num('price_min') !== null) list = list.filter((set) => shown(set) !== null && shown(set) >= num('price_min'))
+    if (num('price_max') !== null) list = list.filter((set) => shown(set) !== null && shown(set) <= num('price_max'))
   }
   const sort = query.get('sort') ?? 'year_desc'
   const price = (set) => Number(set.min_in_stock_price ?? set.min_preorder_price ?? Infinity)
@@ -389,6 +405,7 @@ async function personal(path, url, request, response) {
   const favourite = /^\/me\/favourites\/([0-9a-f-]{36})$/.exec(path)
   if (favourite) {
     const index = favourites.indexOf(favourite[1])
+    if (request.method === 'PUT' && index < 0 && process.env.MOCK_FAVOURITES_FULL === '1') return json(response, 409, { error: 'favourite_limit_reached', message: 'limit' })
     if (request.method === 'PUT' && index < 0) favourites.unshift(favourite[1])
     if (request.method === 'DELETE' && index >= 0) favourites.splice(index, 1)
     return response.writeHead(204).end()
@@ -455,6 +472,7 @@ const api = createServer((request, response) => {
   }
   if (path === '/themes') return json(response, 200, themes)
   if (path === '/retail/shops') return json(response, 200, shops)
+  if (path === '/building-lines') return json(response, 200, buildingLineList())
   if (path === '/sets') return json(response, 200, filterSets(url.searchParams, false))
   if (path === '/retail/sets') return json(response, 200, filterSets(url.searchParams, true))
   const match = /^\/(retail\/)?sets\/([0-9a-f-]{36})(\/inventory|\/offers)?$/.exec(path)

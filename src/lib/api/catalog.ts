@@ -4,6 +4,7 @@ import { cache } from 'react'
 
 import { apiGet, NotFoundError } from './client'
 import type {
+  BuildingLine,
   CatalogSetItem,
   Inventory,
   Page,
@@ -19,6 +20,8 @@ type ApiQuery = Record<string, string | number | boolean | null | undefined>
 
 export const listThemes = cache(async (): Promise<Theme[]> => apiGet<Theme[]>('themes', undefined, 900))
 
+export const listBuildingLines = cache(async (): Promise<BuildingLine[]> => apiGet<BuildingLine[]>('building-lines', undefined, 900))
+
 export const listShops = cache(async (): Promise<RetailShop[]> => apiGet<RetailShop[]>('retail/shops', undefined, 900))
 
 export async function findRetailSets(query: ApiQuery): Promise<Page<RetailSetItem>> {
@@ -26,7 +29,7 @@ export async function findRetailSets(query: ApiQuery): Promise<Page<RetailSetIte
 }
 
 export async function findCatalogSets(query: ApiQuery): Promise<Page<CatalogSetItem>> {
-  const { in_stock: _a, preorder: _b, official: _c, on_sale: _d, shop_id: _e, ...catalog } = query
+  const { in_stock: _a, preorder: _b, official: _c, on_sale: _d, shop_id: _e, price_min: _f, price_max: _g, ...catalog } = query
   const sort = catalog.sort
   const allowed = sort === 'name_asc' || sort === 'year_asc' || sort === 'year_desc' || sort === 'release_desc'
   return apiGet<Page<CatalogSetItem>>('sets', { ...catalog, sort: allowed ? sort : 'year_desc' }, 300)

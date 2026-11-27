@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import type { Page, RetailShop, SetItem, Theme } from '@/lib/api/types'
+import type { BuildingLine, Page, RetailShop, SetItem, Theme } from '@/lib/api/types'
 import {
   activeFilters,
   AGE_MARKS,
@@ -52,6 +52,7 @@ interface MiniCatalogProps {
   page: Page<SetItem> | null
   themes: Theme[]
   shops: RetailShop[]
+  lines: BuildingLine[]
 }
 
 /** Розділ як прапорці фільтрів: новинки й знижки в Mini App — фільтри одного каталогу. */
@@ -80,7 +81,7 @@ export function shopOptions(shops: RetailShop[]): MiniOption[] {
 }
 
 /** Каталог Mini App: режими, швидкі чипи, рядок порядку й список наборів. */
-export function MiniCatalog({ sectionKey, section, filters: raw, page, themes, shops }: MiniCatalogProps) {
+export function MiniCatalog({ sectionKey, section, filters: raw, page, themes, shops, lines }: MiniCatalogProps) {
   const filters = asCatalog(raw, section)
   const sale = filters.mode === 'sale'
   const newest = filters.newest && !sale
@@ -91,7 +92,11 @@ export function MiniCatalog({ sectionKey, section, filters: raw, page, themes, s
   const grid = filters.view === 'grid'
   const theme = filters.theme ? themes.find((item) => item.slug === filters.theme) : undefined
   const shop = filters.shop ? shops.find((item) => item.slug === filters.shop) : undefined
-  const names = { theme: theme?.name ?? null, shop: shop?.name ?? null }
+  const names = {
+    theme: theme?.name ?? null,
+    shop: shop?.name ?? null,
+    line: lines.find((item) => item.id === filters.line)?.name ?? null,
+  }
   const chips = activeFilters(filters, CATALOG, names)
   const total = page?.total ?? 0
   const pages = Math.min(Math.ceil(total / PAGE_SIZE), MAX_PAGE)
@@ -125,6 +130,9 @@ export function MiniCatalog({ sectionKey, section, filters: raw, page, themes, s
             replace
             scroll={false}
             aria-current={mode === filters.mode ? 'true' : undefined}
+            data-track={mode === filters.mode ? undefined : 'catalog_mode_change'}
+            data-track-from={filters.mode}
+            data-track-to={mode}
           >
             <ModeIcon mode={mode} />
             {MODE_LABELS[mode]}
@@ -139,6 +147,7 @@ export function MiniCatalog({ sectionKey, section, filters: raw, page, themes, s
           section={CATALOG}
           themes={rootThemeOptions(themes, filters.theme)}
           shops={shopOptions(shops)}
+          lines={lines.map((line) => ({ slug: line.id, name: line.name }))}
           active={filtersCount(filters, CATALOG)}
           total={total}
         />
@@ -286,7 +295,9 @@ export function MiniCatalog({ sectionKey, section, filters: raw, page, themes, s
                 options={Object.entries(sorts).map(([value, label]) => ({
                   href: href({ sort: value as CatalogFilters['sort'] }),
                   label,
+                  key: value,
                 }))}
+                event={{ name: 'catalog_sort_change', properties: { mode: filters.mode } }}
               />
             </label>
             <span className="c-cat__count">

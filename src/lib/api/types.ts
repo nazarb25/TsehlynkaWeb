@@ -3,6 +3,7 @@ import type { components } from './schema'
 type Schemas = components['schemas']
 
 export type Theme = Schemas['CatalogThemeWithCountResource']
+export type BuildingLine = Schemas['CatalogBuildingLineResource']
 export type ThemeRef = Schemas['CatalogThemeResource']
 export type ImageUrls = Schemas['ImageUrlsResource']
 export type CatalogSetItem = Schemas['SetListItemResource']
