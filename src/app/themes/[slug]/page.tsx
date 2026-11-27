@@ -5,6 +5,7 @@ import { cache } from 'react'
 
 import { SetTiles } from '@/components/catalog/SetTiles'
 import { ChevronRight } from '@/components/icons'
+import { TrackView } from '@/components/platform/Analytics'
 import { MiniTheme } from '@/components/mini/MiniTheme'
 import { ThemeCard } from '@/components/themes/ThemeCard'
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
@@ -52,6 +53,7 @@ export default async function ThemePage({ params }: Props) {
 
   return (
     <>
+      <TrackView event="theme_open" properties={{ theme_id: theme.id, theme: theme.name, depth: parents.length, is_current: theme.is_current }} />
       <div className="m-only">
         <MiniTheme theme={theme} parents={parents} subthemes={children} sets={latest?.items ?? []} catalogPath={allSets} specializedPath={specializedSets} />
       </div>

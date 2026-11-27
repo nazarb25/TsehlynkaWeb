@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useId, useRef, useState } from 'react'
 
 import { BrickIcon, ChevronRight, SearchIcon } from '@/components/icons'
-import { track } from '@/lib/analytics'
+import { queryShape, track } from '@/lib/analytics'
 import type { Suggestions } from '@/lib/catalog/suggest'
 import { setCount } from '@/lib/format'
 
@@ -77,7 +77,8 @@ export function HeaderSearch() {
     const query = text.trim()
     const chosen = active >= 0 ? links[active] : undefined
     setOpen(false)
-    if (chosen) track('search_suggestion_selected', { query, href: chosen, position: active })
+    if (query) track('search_submit', { ...queryShape(query), suggestion: Boolean(chosen) })
+    if (chosen) track('search_suggestion_selected', { ...queryShape(query), kind: chosen.startsWith('/themes') ? 'theme' : 'set', position: active })
     if (chosen) router.push(chosen)
     else if (query) router.push(`/search?q=${encodeURIComponent(query)}`)
   }
@@ -146,7 +147,8 @@ export function HeaderSearch() {
               href={result.theme.href}
               data-track="search_suggestion_selected"
               data-track-kind="theme"
-              data-track-query={text.trim()}
+              data-track-query-type={queryShape(text).query_type}
+              data-track-query-length-bucket={queryShape(text).query_length_bucket}
               role="option"
               aria-selected={active === ++index}
               className={`sugg sugg--theme${active === index ? ' is-active' : ''}`}
@@ -167,7 +169,8 @@ export function HeaderSearch() {
               href={set.href}
               data-track="search_suggestion_selected"
               data-track-kind="set"
-              data-track-query={text.trim()}
+              data-track-query-type={queryShape(text).query_type}
+              data-track-query-length-bucket={queryShape(text).query_length_bucket}
               role="option"
               aria-selected={active === ++index}
               className={`sugg${active === index ? ' is-active' : ''}`}

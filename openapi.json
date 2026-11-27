@@ -595,7 +595,7 @@
      "Retail: sets"
     ],
     "summary": "Набори в продажу",
-    "description": "Набори стандартного каталогу з роздрібними полями; фільтри каталогу діють без змін.\n\nЕфективна пропозиція — активна пропозиція активного магазину; пропозиція, не перевірена\nпротягом вікна свіжості, має наявність `unknown`. `in_stock`, `preorder` і `official`\nпоєднуються з каталоговими фільтрами; `price_*` впорядковує за `min_in_stock_price`.\n`shop_id` обмежує набори й роздрібні поля пропозиціями одного магазину; `on_sale` і\n`discount_desc` спираються на `best_deal` — свіжу пропозицію в наявності з найбільшою знижкою.\n`in_stock_offers_count` рахує свіжі ефективні пропозиції `in_stock`, а `in_stock_shops_count` —\nрізні магазини з такими пропозиціями. `set_id` обмежує список переданими наборами, а\n`min_preorder_price` — найнижча ціна серед свіжих пропозицій `preorder`. `released_from` і\n`release_desc` — за першим виходом набору (`release_date`), як у каталозі. Спеціальні\nнабори — як у каталозі: з `include_specialized`, у пошуку або серед переданих `set_id`.",
+    "description": "Набори стандартного каталогу з роздрібними полями; фільтри каталогу діють без змін.\n\nЕфективна пропозиція — активна пропозиція активного магазину; пропозиція, не перевірена\nпротягом вікна свіжості, має наявність `unknown`. `in_stock`, `preorder` і `official`\nпоєднуються з каталоговими фільтрами; `price_*` впорядковує за `min_in_stock_price`.\n`shop_id` обмежує набори й роздрібні поля пропозиціями одного магазину; `on_sale` і\n`discount_desc` спираються на `best_deal` — свіжу пропозицію в наявності з найбільшою знижкою.\n`in_stock_offers_count` рахує свіжі ефективні пропозиції `in_stock`, а `in_stock_shops_count` —\nрізні магазини з такими пропозиціями. `set_id` обмежує список переданими наборами, а\n`min_preorder_price` — найнижча ціна серед свіжих пропозицій `preorder`. `released_from` і\n`release_desc` — за першим виходом набору (`release_date`), як у каталозі. `price_min` і\n`price_max` відбирають за ціною, яку показує список: `min_in_stock_price`, а без пропозицій\nу наявності — `min_preorder_price`; набір без таких цін не потрапляє. Спеціальні\nнабори — як у каталозі: з `include_specialized`, у пошуку або серед переданих `set_id`.",
     "operationId": "get_retail_sets_api_v1_retail_sets_get",
     "parameters": [
      {
@@ -1056,6 +1056,58 @@
       "description": "Лише набори з цими ідентифікаторами, до 100; параметр повторюється. Так клієнт отримує роздрібні поля для власного списку наборів, наприклад обраного."
      },
      {
+      "name": "price_min",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "maximum": 1000000.0,
+         "minimum": 0.0
+        },
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Ціна від, ₴; включно. Порівнюється `min_in_stock_price`, а без пропозицій у наявності — `min_preorder_price`.",
+       "examples": [
+        "1000"
+       ],
+       "title": "Price Min"
+      },
+      "description": "Ціна від, ₴; включно. Порівнюється `min_in_stock_price`, а без пропозицій у наявності — `min_preorder_price`."
+     },
+     {
+      "name": "price_max",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "maximum": 1000000.0,
+         "minimum": 0.0
+        },
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Ціна до, ₴; включно; та сама ціна, що й для `price_min`.",
+       "examples": [
+        "3000"
+       ],
+       "title": "Price Max"
+      },
+      "description": "Ціна до, ₴; включно; та сама ціна, що й для `price_min`."
+     },
+     {
       "name": "sort",
       "in": "query",
       "required": false,
@@ -1329,10 +1381,90 @@
      }
     }
    }
+  },
+  "/api/v1/building-lines": {
+   "get": {
+    "tags": [
+     "Catalog: building lines"
+    ],
+    "summary": "Лінійки складання каталогу",
+    "description": "Лінійки складання, до яких належать набори стандартного каталогу; лінійка без таких\nнаборів у список не потрапляє. Порядок — назва.",
+    "operationId": "get_catalog_building_lines_api_v1_building_lines_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/CatalogBuildingLineResource"
+         },
+         "type": "array",
+         "title": "Response Get Catalog Building Lines Api V1 Building Lines Get"
+        }
+       }
+      }
+     }
+    }
+   }
   }
  },
  "components": {
+  "securitySchemes": {
+   "TelegramInitData": {
+    "type": "http",
+    "description": "Init data Telegram Mini App: `Authorization: tma <initData>`.",
+    "scheme": "tma"
+   },
+   "SiteSession": {
+    "type": "http",
+    "description": "Сесія сайту після входу через Telegram: `Authorization: Bearer <токен>`.",
+    "scheme": "bearer"
+   },
+   "HTTPBearer": {
+    "type": "http",
+    "description": "Токен доступу з `POST /auth/login`.",
+    "scheme": "bearer"
+   }
+  },
   "schemas": {
+   "CatalogBuildingLineResource": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id",
+      "description": "Ідентифікатор лінійки; значення фільтра `building_line_id`.",
+      "examples": [
+       "01a19868-7736-74bd-8536-7e22bc056c09"
+      ]
+     },
+     "name": {
+      "type": "string",
+      "title": "Name",
+      "description": "Назва лінійки.",
+      "examples": [
+       "4+ / Learn to Build"
+      ]
+     },
+     "set_count": {
+      "type": "integer",
+      "title": "Set Count",
+      "description": "Кількість наборів стандартного каталогу в лінійці.",
+      "examples": [
+       42
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "name",
+     "set_count"
+    ],
+    "title": "CatalogBuildingLineResource",
+    "description": "Лінійка складання з кількістю наборів стандартного каталогу."
+   },
    "CatalogChoiceGroupResource": {
     "properties": {
      "id": {
@@ -2474,6 +2606,8 @@
      "affiliate_credentials_mismatch",
      "init_data_required",
      "invalid_init_data",
+     "invalid_telegram_login",
+     "invalid_session",
      "invalid_service_key",
      "user_not_found",
      "favourite_limit_reached",

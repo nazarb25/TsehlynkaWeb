@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
+import { countBucket, queryShape, track } from '@/lib/analytics'
 import type { SetItem, Theme } from '@/lib/api/types'
 import { type CatalogFilters, catalogHref, type CatalogMode, MAX_PAGE, MODE_LABELS, PAGE_SIZE, queryParams, SEARCH } from '@/lib/catalog/filters'
 import { plural } from '@/lib/format'
@@ -84,9 +85,14 @@ export function MiniSearch({ filters, initial, chips }: MiniSearchProps) {
           signal: controller.signal,
         })
         if (!response.ok) throw new Error(String(response.status))
-        setResult({ key, data: (await response.json()) as SearchResult })
+        const data = (await response.json()) as SearchResult
+        setResult({ key, data })
+        track('search_results_viewed', { ...queryShape(query), result_bucket: countBucket(data.total), mode, theme_found: Boolean(data.theme) })
       } catch {
-        if (!controller.signal.aborted) setResult({ key, data: null })
+        if (!controller.signal.aborted) {
+          setResult({ key, data: null })
+          track('error_shown', { error_code: 'search_unavailable', route_group: 'search' })
+        }
       } finally {
         if (!controller.signal.aborted) {
           setLoading(false)
@@ -118,6 +124,7 @@ export function MiniSearch({ filters, initial, chips }: MiniSearchProps) {
         role="search"
         onSubmit={(event) => {
           event.preventDefault()
+          if (query) track('search_submit', { ...queryShape(query), mode })
           inputRef.current?.blur()
         }}
       >

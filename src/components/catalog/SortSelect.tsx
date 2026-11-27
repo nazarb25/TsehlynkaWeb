@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 
 import { ChevronDown } from '@/components/icons'
+import { track } from '@/lib/analytics'
 import { type CatalogFilters, type CatalogSection, catalogHref, type SetSort } from '@/lib/catalog/filters'
 
 interface SortSelectProps {
@@ -22,9 +23,10 @@ export function SortSelect({ filters, section, value, options }: SortSelectProps
       <select
         aria-label="Сортування"
         value={value}
-        onChange={(event) =>
+        onChange={(event) => {
+          track('catalog_sort_change', { value: event.target.value, mode: filters.mode })
           router.push(catalogHref(filters, section, { sort: event.target.value as SetSort }), { scroll: false })
-        }
+        }}
       >
         {Object.entries(options).map(([key, label]) => (
           <option key={key} value={key}>

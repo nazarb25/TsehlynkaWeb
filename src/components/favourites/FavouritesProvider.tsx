@@ -3,10 +3,15 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 
 import { useAuth } from '@/components/auth/AuthProvider'
+import { useToast } from '@/components/personal/Toast'
+import { track } from '@/lib/analytics'
 
 /** Набір, який користувач хотів зберегти до входу; додається одразу після входу. */
 const PENDING_KEY = 'ts_pending_favourite'
 const BATCH = 100
+const LIMIT_STATUS = 409
+export const FAVOURITE_LIMIT_TEXT = 'Досягнуто ліміту обраного (1000 наборів). Приберіть один із наборів, щоб додати новий'
+const FAILED_TEXT = 'Не вдалося оновити обране. Спробуйте ще раз'
 
 interface Favourites {
   /** `undefined` — ще невідомо. */
@@ -48,6 +53,7 @@ export function FavouritesProvider({ children }: { children: React.ReactNode }) 
   /** Останній вибір користувача й набори, для яких запит ще йде: запити одного набору йдуть по черзі. */
   const wanted = useRef(new Map<string, boolean>())
   const sending = useRef(new Set<string>())
+  const [toast, showToast] = useToast()
 
   const flush = useCallback(async () => {
     timer.current = null
@@ -91,21 +97,24 @@ export function FavouritesProvider({ children }: { children: React.ReactNode }) 
           const status = await send(setId, target).catch(() => 0)
           if (status === 204) {
             saved = target
+            track('favorite_toggle', { action: target ? 'add' : 'remove', result: 'ok' })
             continue
           }
           wanted.current.set(setId, saved)
           setKnown((value) => ({ ...value, [setId]: saved }))
+          const result = status === 401 ? 'login' : status === LIMIT_STATUS ? 'limit' : 'failed'
+          track('favorite_toggle', { action: target ? 'add' : 'remove', result })
           if (status === 401) {
             if (target) writePending(setId)
             openLogin()
-          }
+          } else showToast(status === LIMIT_STATUS ? FAVOURITE_LIMIT_TEXT : FAILED_TEXT)
           return
         }
       } finally {
         sending.current.delete(setId)
       }
     },
-    [openLogin],
+    [openLogin, showToast],
   )
 
   const toggle = useCallback(
@@ -129,7 +138,12 @@ export function FavouritesProvider({ children }: { children: React.ReactNode }) 
   }, [account, change])
 
   const value = useMemo<Favourites>(() => ({ state: (setId) => known[setId], watch, toggle }), [known, watch, toggle])
-  return <FavouritesContext.Provider value={value}>{children}</FavouritesContext.Provider>
+  return (
+    <FavouritesContext.Provider value={value}>
+      {children}
+      <div className="c-desk c-toast-host">{toast}</div>
+    </FavouritesContext.Provider>
+  )
 }
 
 export function useFavourite(setId: string, initial?: boolean): { selected: boolean; toggle(): void } {

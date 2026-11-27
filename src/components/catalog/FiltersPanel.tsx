@@ -13,6 +13,7 @@ import {
   catalogHref,
   effectiveInStock,
   isSale,
+  MAX_PRICE,
   PIECES_RANGES,
   queryParams,
   resetHref,
@@ -31,6 +32,7 @@ interface FiltersPanelProps {
   section: CatalogSection
   themes: FilterOption[]
   shops: FilterOption[]
+  lines: FilterOption[]
   variant: 'live' | 'draft'
   onDone?: () => void
 }
@@ -72,13 +74,22 @@ function Radio({ name, checked, label, onChange }: { name: string; checked: bool
   )
 }
 
+function parsePrice(text: string): number | null {
+  const value = Number(text)
+  return /^\d{1,7}$/.test(text) && value <= MAX_PRICE ? value : null
+}
+
+function priceText(value: number | null): string {
+  return value === null ? '' : String(value)
+}
+
 function parseYear(text: string): number | null {
   const value = Number(text)
   return /^\d{4}$/.test(text) && value >= 1949 && value <= 2100 ? value : null
 }
 
 /** Фільтри каталогу: на комп'ютері застосовуються одразу, на телефоні — чернетка й кнопка з кількістю. */
-export function FiltersPanel({ filters, section, themes, shops, variant, onDone }: FiltersPanelProps) {
+export function FiltersPanel({ filters, section, themes, shops, lines, variant, onDone }: FiltersPanelProps) {
   const router = useRouter()
   const live = variant === 'live'
   const [draft, setDraft] = useState(filters)
@@ -89,6 +100,8 @@ export function FiltersPanel({ filters, section, themes, shops, variant, onDone 
   const [allShops, setAllShops] = useState(false)
   const [yearFrom, setYearFrom] = useState(current.yearFrom ? String(current.yearFrom) : '')
   const [yearTo, setYearTo] = useState(current.yearTo ? String(current.yearTo) : '')
+  const [priceFrom, setPriceFrom] = useState(priceText(current.priceFrom))
+  const [priceTo, setPriceTo] = useState(priceText(current.priceTo))
   const [count, setCountValue] = useState<number | null>(null)
 
   const [synced, setSynced] = useState(filters)
@@ -97,6 +110,8 @@ export function FiltersPanel({ filters, section, themes, shops, variant, onDone 
     setDraft(filters)
     setYearFrom(filters.yearFrom ? String(filters.yearFrom) : '')
     setYearTo(filters.yearTo ? String(filters.yearTo) : '')
+    setPriceFrom(priceText(filters.priceFrom))
+    setPriceTo(priceText(filters.priceTo))
   }
 
   const apply = (changes: Partial<CatalogFilters>) => {
@@ -130,7 +145,8 @@ export function FiltersPanel({ filters, section, themes, shops, variant, onDone 
 
   const themeName = themes.find((theme) => theme.slug === current.theme)?.name ?? null
   const shopName = shops.find((shop) => shop.slug === current.shop)?.name ?? null
-  const chips = live ? activeFilters(filters, section, { theme: themeName, shop: shopName }) : []
+  const lineName = lines.find((line) => line.slug === current.line)?.name ?? null
+  const chips = live ? activeFilters(filters, section, { theme: themeName, shop: shopName, line: lineName }) : []
 
   const visibleThemes = useMemo(() => {
     const needle = themeQuery.trim().toLocaleLowerCase('uk')
@@ -150,18 +166,28 @@ export function FiltersPanel({ filters, section, themes, shops, variant, onDone 
     if (from !== current.yearFrom || to !== current.yearTo) apply({ yearFrom: from, yearTo: to })
   }
 
+  const commitPrices = () => {
+    let from = parsePrice(priceFrom)
+    let to = parsePrice(priceTo)
+    if (from !== null && to !== null && from > to) [from, to] = [to, from]
+    if (from !== current.priceFrom || to !== current.priceTo) apply({ priceFrom: from, priceTo: to })
+  }
+
   const reset = () => {
     if (live) router.push(resetHref(filters, section), { scroll: false })
     else {
       setDraft({
         ...draft,
         theme: null,
+        line: null,
         shop: null,
         yearFrom: null,
         yearTo: null,
         age: null,
         piecesMin: null,
         piecesMax: null,
+        priceFrom: null,
+        priceTo: null,
         inStock: null,
         preorder: false,
         onSale: section.onSale ?? false,
@@ -171,6 +197,8 @@ export function FiltersPanel({ filters, section, themes, shops, variant, onDone 
       })
       setYearFrom('')
       setYearTo('')
+      setPriceFrom('')
+      setPriceTo('')
     }
   }
 
@@ -216,6 +244,38 @@ export function FiltersPanel({ filters, section, themes, shops, variant, onDone 
             <Check checked={current.onSale} label="Зі знижкою" onChange={(value) => apply(value ? { onSale: true, preorder: false } : { onSale: false })} />
           )}
           <Check checked={current.official} label="Офіційний продавець" onChange={(value) => apply(value ? { official: true, preorder: false } : { official: false })} />
+        </Group>
+      ) : null}
+
+      {sale ? (
+        <Group title="Ціна, ₴">
+          <div className="fyears">
+            {(
+              [
+                ['Від', priceFrom, setPriceFrom, 'priceFrom'],
+                ['До', priceTo, setPriceTo, 'priceTo'],
+              ] as const
+            ).map(([label, value, setValue, key]) => (
+              <label key={key} className="ffield ffield--plain">
+                <span className="visually-hidden">Ціна {label.toLocaleLowerCase('uk')}</span>
+                <input
+                  inputMode="numeric"
+                  maxLength={7}
+                  placeholder={label}
+                  value={value}
+                  onChange={(event) => {
+                    const text = event.target.value.replace(/\D/g, '')
+                    setValue(text)
+                    if (!live) setDraft((draftValue) => ({ ...draftValue, [key]: parsePrice(text) }))
+                  }}
+                  onBlur={live ? commitPrices : undefined}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' && live) commitPrices()
+                  }}
+                />
+              </label>
+            ))}
+          </div>
         </Group>
       ) : null}
 
@@ -354,6 +414,21 @@ export function FiltersPanel({ filters, section, themes, shops, variant, onDone 
           />
         ))}
       </Group>
+
+      {lines.length ? (
+        <Group title="Лінійка складання" open={Boolean(current.line)}>
+          <Radio name={`${variant}-line`} checked={!current.line} label="Будь-яка" onChange={() => apply({ line: null })} />
+          {lines.map((line) => (
+            <Radio
+              key={line.slug}
+              name={`${variant}-line`}
+              checked={current.line === line.slug}
+              label={line.name}
+              onChange={() => apply({ line: line.slug })}
+            />
+          ))}
+        </Group>
+      ) : null}
 
       <Group title="Інше">
         <Check

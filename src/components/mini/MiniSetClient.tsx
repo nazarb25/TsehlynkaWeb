@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { countBucket, track as trackEvent } from '@/lib/analytics'
+
 import { MiniSheet } from './MiniSheet'
 
 function galleryIndex(track: HTMLElement): number {
@@ -135,21 +137,38 @@ export function MiniSetBehaviour({ children }: { children: React.ReactNode }) {
 const NARROW_LAYOUT = '(max-width: 999.98px)'
 
 /** `?sheet=shops` з кнопки бота «Ціни в магазинах»: на телефоні відкриває шторку, на широкому екрані гортає до «Де купити». */
-export function MiniOffersCta({ label, openOnLoad = false, children }: { label: string; openOnLoad?: boolean; children: React.ReactNode }) {
+export function MiniOffersCta({
+  label,
+  openOnLoad = false,
+  offers,
+  children,
+}: {
+  label: string
+  openOnLoad?: boolean
+  offers: number
+  children: React.ReactNode
+}) {
   const [open, setOpen] = useState(false)
   const close = useCallback(() => setOpen(false), [])
+  const show = useCallback(
+    (source: 'button' | 'link') => {
+      setOpen(true)
+      trackEvent('offer_sheet_open', { offers_bucket: countBucket(offers), source })
+    },
+    [offers],
+  )
   useEffect(() => {
     if (!openOnLoad) return
     const frame = window.requestAnimationFrame(() => {
-      if (window.matchMedia(NARROW_LAYOUT).matches) setOpen(true)
+      if (window.matchMedia(NARROW_LAYOUT).matches) show('link')
       else document.getElementById('offers')?.scrollIntoView({ block: 'start' })
     })
     return () => window.cancelAnimationFrame(frame)
-  }, [openOnLoad])
+  }, [openOnLoad, show])
   return (
     <>
       <div className="c-set-cta">
-        <button type="button" className="c-set-cta__button" onClick={() => setOpen(true)}>
+        <button type="button" className="c-set-cta__button" onClick={() => show('button')}>
           {label}
         </button>
       </div>

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { RetailShop, Theme } from '@/lib/api/types'
 
-import { apiQuery, CATALOG, DEALS, effectiveSort, filterIds, MAX_PAGE, parseFilters, queryParams } from './filters'
+import { activeFilters, apiQuery, CATALOG, DEALS, effectiveSort, filterIds, MAX_PAGE, parseFilters, queryParams } from './filters'
 
 const parse = (query: string, section = CATALOG) => parseFilters(new URLSearchParams(query), section)
 
@@ -73,5 +73,31 @@ describe('filterIds', () => {
 
   it('ignores the shop outside sale mode', () => {
     expect(filterIds(parse('mode=all&shop=unknown'), themes, null)).toEqual({ themeId: null, shopId: null })
+  })
+})
+
+describe('building line and price filters', () => {
+  const line = '019a5a10-7736-74bd-8536-7e22bc056c40'
+
+  it('passes the building line in both modes and drops a malformed one', () => {
+    expect(apiQuery(parse(`line=${line}&mode=all`), CATALOG, {}).building_line_id).toBe(line)
+    expect(apiQuery(parse(`line=${line}`), CATALOG, {}).building_line_id).toBe(line)
+    expect(parse('line=4plus').line).toBeNull()
+  })
+
+  it('sends the price range only in sale mode, ordered', () => {
+    const sale = apiQuery(parse('price_from=3000&price_to=1000'), CATALOG, {})
+    expect([sale.price_min, sale.price_max]).toEqual([1000, 3000])
+    const all = apiQuery(parse('mode=all&price_from=1000'), CATALOG, {})
+    expect([all.price_min, all.price_max]).toEqual([null, null])
+    expect(queryParams(parse('mode=all&price_to=500'), CATALOG).has('price_to')).toBe(false)
+  })
+
+  it('removes the price chip without touching other filters', () => {
+    const filters = parse('price_to=2000&age=48')
+    const [age, price] = [...activeFilters(filters, CATALOG, {})].sort((a, b) => a.label.localeCompare(b.label))
+    expect(price?.label).toBe('До 2000 ₴')
+    expect(price?.href).toBe('/catalog?age=48')
+    expect(age?.label).toBe('4+')
   })
 })

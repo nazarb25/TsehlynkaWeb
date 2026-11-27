@@ -220,8 +220,12 @@ function OffersSheet({ details, offers, summary, now }: { details: SetDetails; o
                         target="_blank"
                         rel="noopener nofollow"
                         aria-label={`До магазину ${offer.shop_name}`}
-                        data-track="offer_clicked"
+                        data-track="shop_clicked"
+                        data-track-place="offers_sheet"
                         data-track-shop={offer.shop_name}
+                        data-track-set={details.official_number_display ?? undefined}
+                        data-track-price={offer.price ?? undefined}
+                        data-track-availability={offer.availability}
                       >
                         До магазину
                         <svg
@@ -624,7 +628,7 @@ export function MiniSet({ details, model, packaging, offers, offersFailed, summa
       </div>
 
       {state !== 'none' ? (
-        <MiniOffersCta openOnLoad={openOffers} label={state === 'in_stock' ? 'Порівняти ціни' : state === 'preorder' ? 'Переглянути передзамовлення' : 'Переглянути пропозиції'}>
+        <MiniOffersCta openOnLoad={openOffers} offers={offers.length} label={state === 'in_stock' ? 'Порівняти ціни' : state === 'preorder' ? 'Переглянути передзамовлення' : 'Переглянути пропозиції'}>
           <OffersSheet details={details} offers={offers} summary={summary} now={now} />
         </MiniOffersCta>
       ) : null}

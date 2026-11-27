@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { AlertIcon } from '@/components/icons'
 import { StateIcon } from '@/components/mini/icons'
 import { MiniThemes } from '@/components/mini/MiniThemes'
+import { TrackView } from '@/components/platform/Analytics'
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { listThemes } from '@/lib/api/catalog'
@@ -27,6 +28,7 @@ export async function ThemesPage({ archive }: { archive: boolean }) {
   }
   return (
     <>
+      {themes ? null : <TrackView event="error_shown" properties={{ error_code: 'themes_unavailable', route_group: 'themes' }} />}
       <div className="m-only">
         {themes ? (
           <MiniThemes themes={themes} archive={archive} year={year} />

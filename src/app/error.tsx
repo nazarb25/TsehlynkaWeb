@@ -4,6 +4,8 @@ import * as Sentry from '@sentry/nextjs'
 import Link from 'next/link'
 import { useEffect } from 'react'
 
+import { track } from '@/lib/analytics'
+
 import { AlertIcon } from '@/components/icons'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { FeedbackButton } from '@/components/ui/FeedbackButton'
@@ -11,6 +13,7 @@ import { FeedbackButton } from '@/components/ui/FeedbackButton'
 export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
     Sentry.captureException(error)
+    track('error_shown', { error_code: 'page_error', route_group: window.location.pathname.split('/')[1] || 'home' })
   }, [error])
 
   return (
