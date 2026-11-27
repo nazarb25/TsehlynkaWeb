@@ -275,13 +275,34 @@
 
 .gallery__thumbs {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-auto-columns: calc((100% - 50px) / 5.5);
+  grid-auto-flow: column;
   gap: 10px;
   margin-top: 10px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+
+.gallery__thumbs::-webkit-scrollbar {
+  display: none;
+}
+
+.gallery__thumbs--after {
+  mask-image: linear-gradient(to right, #000 calc(100% - 72px), transparent);
+}
+
+.gallery__thumbs--before {
+  mask-image: linear-gradient(to left, #000 calc(100% - 72px), transparent);
+}
+
+.gallery__thumbs--before.gallery__thumbs--after {
+  mask-image: linear-gradient(to right, transparent, #000 72px, #000 calc(100% - 72px), transparent);
 }
 
 .gallery__thumbs button {
   aspect-ratio: 3 / 2;
+  scroll-snap-align: start;
   padding: 0;
   border: 2px solid transparent;
   border-radius: var(--radius-m);
