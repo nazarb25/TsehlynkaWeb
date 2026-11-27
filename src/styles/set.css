@@ -194,8 +194,9 @@
   scroll-snap-align: start;
 }
 
-.gallery__slide img {
-  padding: 6%;
+.gallery__slide img,
+.gallery__thumbs img {
+  padding: 0;
 }
 
 .gallery__empty {
@@ -280,7 +281,7 @@
 }
 
 .gallery__thumbs button {
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 3 / 2;
   padding: 0;
   border: 2px solid transparent;
   border-radius: var(--radius-m);
