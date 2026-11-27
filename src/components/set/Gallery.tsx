@@ -16,6 +16,8 @@ export function Gallery({ images, name }: { images: GalleryImage[]; name: string
   const [index, setIndex] = useState(0)
   const [zoomed, setZoomed] = useState(false)
   const track = useRef<HTMLDivElement>(null)
+  const thumbs = useRef<HTMLDivElement>(null)
+  const [edges, setEdges] = useState({ before: false, after: false })
   const firstPackaging = images.findIndex((image) => image.packaging)
   const hasBoth = firstPackaging > 0
 
@@ -29,6 +31,33 @@ export function Gallery({ images, name }: { images: GalleryImage[]; name: string
     element.addEventListener('scroll', onScroll, { passive: true })
     return () => element.removeEventListener('scroll', onScroll)
   }, [])
+
+  useEffect(() => {
+    const strip = thumbs.current
+    if (!strip) return
+    const update = () => {
+      const before = strip.scrollLeft > 1
+      const after = strip.scrollLeft + strip.clientWidth < strip.scrollWidth - 1
+      setEdges((value) => (value.before === before && value.after === after ? value : { before, after }))
+    }
+    update()
+    strip.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update)
+    return () => {
+      strip.removeEventListener('scroll', update)
+      window.removeEventListener('resize', update)
+    }
+  }, [images.length])
+
+  useEffect(() => {
+    const strip = thumbs.current
+    const active = strip?.children[index] as HTMLElement | undefined
+    if (!strip || !active) return
+    const left = active.offsetLeft - strip.offsetLeft
+    if (left < strip.scrollLeft || left + active.offsetWidth > strip.scrollLeft + strip.clientWidth) {
+      strip.scrollTo({ left: left - (strip.clientWidth - active.offsetWidth) / 2, behavior: 'smooth' })
+    }
+  }, [index])
 
   const show = (next: number) => {
     const bounded = Math.max(0, Math.min(images.length - 1, next))
@@ -98,8 +127,11 @@ export function Gallery({ images, name }: { images: GalleryImage[]; name: string
         ) : null}
       </div>
       {images.length > 1 ? (
-        <div className="gallery__thumbs hide-mobile">
-          {images.slice(0, 6).map((image, position) => (
+        <div
+          className={`gallery__thumbs hide-mobile${edges.before ? ' gallery__thumbs--before' : ''}${edges.after ? ' gallery__thumbs--after' : ''}`}
+          ref={thumbs}
+        >
+          {images.map((image, position) => (
             <button
               key={image.src}
               type="button"
