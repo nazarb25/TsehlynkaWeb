@@ -34,19 +34,30 @@ export function HeaderSearch() {
   }
 
   useEffect(() => {
-    const hero = home ? document.querySelector('.hero__search') : null
-    if (!hero) return
-    const header = document.querySelector('.header')
-    const top = header?.getBoundingClientRect().height ?? 0
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry) setDocked(!entry.isIntersecting && entry.boundingClientRect.top < top)
-      },
-      { rootMargin: `-${top}px 0px 0px 0px` },
-    )
-    observer.observe(hero)
+    if (!home) return
+    let observer: IntersectionObserver | null = null
+    const attach = (hero: Element) => {
+      const top = document.querySelector('.header')?.getBoundingClientRect().height ?? 0
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry) setDocked(!entry.isIntersecting && entry.boundingClientRect.top < top)
+        },
+        { rootMargin: `-${top}px 0px 0px 0px` },
+      )
+      observer.observe(hero)
+    }
+    const waiting = new MutationObserver(() => {
+      const hero = document.querySelector('.hero__search')
+      if (!hero) return
+      waiting.disconnect()
+      attach(hero)
+    })
+    const hero = document.querySelector('.hero__search')
+    if (hero) attach(hero)
+    else waiting.observe(document.body, { childList: true, subtree: true })
     return () => {
-      observer.disconnect()
+      waiting.disconnect()
+      observer?.disconnect()
       setDocked(false)
     }
   }, [home])
