@@ -1,32 +1,24 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 
 import { useFavourites } from '@/components/favourites/FavouritesProvider'
 import { PersonalRow } from '@/components/mini/SetRows'
 import type { Page, SetItem } from '@/lib/api/types'
-import { useRestorableList } from '@/lib/platform/restorable-list'
 
 /**
  * «Показати ще» в «Обраному»: наступні сторінки дописуються в той самий список.
- * Прибрані з обраного набори зсувають список в API, тому зсув рахується без них, а повтори відкидаються,
- * зокрема відновлені після «Назад» набори, які тепер уже є на першій сторінці.
+ * Прибрані з обраного набори зсувають список в API, тому зсув рахується без них, а повтори відкидаються.
  */
 export function FavouritesMore({ shown, total, grid }: { shown: string[]; total: number; grid: boolean }) {
   const { state: favourite } = useFavourites()
-  const [{ items, remaining }, setList] = useRestorableList<{ items: SetItem[]; remaining: boolean }>('favourites', {
-    items: [],
-    remaining: total > shown.length,
-  })
+  const [items, setItems] = useState<SetItem[]>([])
+  const [remaining, setRemaining] = useState(total > shown.length)
   const [state, setState] = useState<'idle' | 'loading' | 'error'>('idle')
-  const extra = useMemo(() => {
-    const seen = new Set(shown)
-    return items.filter((item) => !seen.has(item.id) && seen.add(item.id))
-  }, [items, shown])
 
   const load = async () => {
     setState('loading')
-    const loaded = [...shown, ...extra.map((item) => item.id)]
+    const loaded = [...shown, ...items.map((item) => item.id)]
     const removed = loaded.filter((id) => favourite(id) === false).length
     try {
       const response = await fetch(`/api/me/favourites/page?offset=${Math.max(loaded.length - removed, 0)}`)
@@ -34,7 +26,8 @@ export function FavouritesMore({ shown, total, grid }: { shown: string[]; total:
       const page = (await response.json()) as Page<SetItem>
       const seen = new Set(loaded)
       const fresh = page.items.filter((item) => !seen.has(item.id))
-      setList((value) => ({ items: [...value.items, ...fresh], remaining: page.items.length > 0 && page.offset + page.items.length < page.total }))
+      setItems((value) => [...value, ...fresh])
+      setRemaining(page.items.length > 0 && page.offset + page.items.length < page.total)
       setState('idle')
     } catch {
       setState('error')
@@ -43,7 +36,7 @@ export function FavouritesMore({ shown, total, grid }: { shown: string[]; total:
 
   return (
     <>
-      {extra.map((item) => (
+      {items.map((item) => (
         <PersonalRow key={item.id} item={item} selected grid={grid} />
       ))}
       {remaining ? (
