@@ -122,7 +122,8 @@ export function TelegramBridge({ children }: { children: React.ReactNode }) {
     const onClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement | null
       const link = target?.closest<HTMLAnchorElement>('a[href]')
-      if (link && (link.target === '_blank' || link.origin !== window.location.origin)) {
+      const web = link?.protocol === 'https:' || link?.protocol === 'http:'
+      if (link && web && (link.target === '_blank' || link.origin !== window.location.origin)) {
         event.preventDefault()
         haptic()
         openExternal(link.href)
