@@ -24,6 +24,24 @@ const LONG_PRESS_MS = 450
 const ROW = '[data-set-row]'
 const HEART = '[data-favourite]'
 const BELL = '[data-row-bell]'
+/** Набір, за яким користувач хотів стежити зі списку до входу; стеження вмикається після входу. */
+const PENDING_WATCH_KEY = 'ts_pending_row_watch'
+
+function writePendingWatch(setId: string): void {
+  try {
+    window.sessionStorage.setItem(PENDING_WATCH_KEY, setId)
+  } catch {}
+}
+
+function takePendingWatch(): string | null {
+  try {
+    const value = window.sessionStorage.getItem(PENDING_WATCH_KEY)
+    window.sessionStorage.removeItem(PENDING_WATCH_KEY)
+    return value
+  } catch {
+    return null
+  }
+}
 
 /** `unwatch` і `rewatch` перемикають дзвіночок рядка в списку «Стежу за ціною». */
 export type SwipeAction = 'fav' | 'watch' | 'offers' | 'unwatch' | 'rewatch'
@@ -140,6 +158,7 @@ export function RowGesturesProvider({ children }: { children: React.ReactNode })
   const watch = useCallback(
     async (setId: string) => {
       if (!account) {
+        writePendingWatch(setId)
         openLogin()
         return
       }
@@ -150,8 +169,10 @@ export function RowGesturesProvider({ children }: { children: React.ReactNode })
         if (response.status === 204) {
           track('price_watch_started', { set_id: setId, source: 'row' })
           showToast('Готово, стежимо за ціною')
-        } else if (response.status === 401) openLogin()
-        else showToast(response.status === 409 ? WATCH_LIMIT_TEXT : 'Не вдалося увімкнути стеження. Спробуйте ще раз')
+        } else if (response.status === 401) {
+          writePendingWatch(setId)
+          openLogin()
+        } else showToast(response.status === 409 ? WATCH_LIMIT_TEXT : 'Не вдалося увімкнути стеження. Спробуйте ще раз')
       } catch {
         showToast('Не вдалося увімкнути стеження. Спробуйте ще раз')
       } finally {
@@ -160,6 +181,15 @@ export function RowGesturesProvider({ children }: { children: React.ReactNode })
     },
     [account, openLogin, showToast],
   )
+
+  useEffect(() => {
+    if (!account) return
+    const timer = window.setTimeout(() => {
+      const pending = takePendingWatch()
+      if (pending) void watch(pending)
+    }, 0)
+    return () => window.clearTimeout(timer)
+  }, [account, watch])
 
   /** «Поділитися»: у Telegram — вибір чату, у браузері — системне меню або копія посилання. */
   const share = useCallback(
