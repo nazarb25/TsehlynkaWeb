@@ -15,7 +15,7 @@ interface ThemeCardProps {
 export function ThemeCard({ theme, note, variant = 'card' }: ThemeCardProps) {
   return (
     <Link className={`theme theme--${variant}`} href={themePath(theme)}>
-      <Photo src={theme.image?.medium ?? theme.image?.thumb} className="theme__photo" iconSize={22} />
+      <Photo src={theme.image?.medium ?? theme.image?.thumb} className="theme__photo stage--cover" iconSize={22} />
       <span className="theme__text">
         <b>{theme.name}</b>
         <small className="num">{setCount(theme.set_count)}</small>

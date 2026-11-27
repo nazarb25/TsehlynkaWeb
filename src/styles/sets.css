@@ -155,11 +155,6 @@
   display: none;
 }
 
-.tile:hover .tile__name {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
 /* Сітка карток. */
 @media (min-width: 1000px) {
   .tiles--auto,
@@ -189,12 +184,12 @@
     padding: 8px;
     border-radius: var(--radius-l);
     background: var(--color-section);
-    transition: box-shadow 0.15s;
+    transition: background 0.15s;
   }
 
   .tiles--auto .tile:hover,
   .tiles--grid .tile:hover {
-    box-shadow: var(--shadow-hover), 0 0 0 1px var(--color-separator);
+    background: var(--color-section-hover);
   }
 
   .tiles--auto .tile__photo,
@@ -432,7 +427,7 @@
   }
 
   .tiles--list .tile:hover {
-    background: var(--color-fill);
+    background: var(--color-section-hover);
   }
 
   .tiles--list .tile__photo {
@@ -484,10 +479,18 @@
   }
 }
 
-.tiles--list .tile__fav,
-.tiles--auto .tile__fav {
+.tiles--list .tile__fav {
   top: 6px;
   left: 6px;
   width: 28px;
   height: 28px;
+}
+
+@media (max-width: 999.98px) {
+  .tiles--auto .tile__fav {
+    top: 6px;
+    left: 6px;
+    width: 28px;
+    height: 28px;
+  }
 }

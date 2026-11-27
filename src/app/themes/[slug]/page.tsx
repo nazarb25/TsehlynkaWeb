@@ -60,7 +60,7 @@ export default async function ThemePage({ params }: Props) {
       <div className="wrap d-only">
         <Breadcrumbs items={[{ name: 'Теми', path: theme.is_current ? '/themes' : '/themes/archive' }, ...themeCrumbs(parents), { name: theme.name }]} />
         <section className="theme-hero">
-          <Photo src={theme.image?.large ?? theme.image?.medium} className="theme-hero__photo" iconSize={56} eager />
+          <Photo src={theme.image?.large ?? theme.image?.medium} className="theme-hero__photo stage--cover" iconSize={56} eager />
           <div className="theme-hero__text">
             <h1>{theme.name}</h1>
             <p className="theme-hero__meta num">

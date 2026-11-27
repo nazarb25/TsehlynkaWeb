@@ -218,7 +218,7 @@ export async function CatalogView({ sectionKey, filters, title, hint, crumbs, mo
                 </Link>
                 <Link
                   href={catalogHref(filters, section, { view: 'grid', page: filters.page })}
-                  aria-current={view === 'grid' ? 'page' : undefined}
+                  aria-current={view === 'list' ? undefined : 'page'}
                   scroll={false}
                   aria-label="Сітка"
                 >
@@ -244,7 +244,7 @@ export async function CatalogView({ sectionKey, filters, title, hint, crumbs, mo
 
           {suggestedTheme ? (
             <Link className="theme-hit" href={themePath(suggestedTheme)}>
-              <Photo src={suggestedTheme.image?.thumb} className="theme-hit__photo" iconSize={20} />
+              <Photo src={suggestedTheme.image?.thumb} className="theme-hit__photo stage--cover" iconSize={20} />
               <span>
                 <small>Тема</small>
                 <b>{suggestedTheme.name}</b>

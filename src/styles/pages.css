@@ -124,19 +124,11 @@
   padding: 8px;
   border-radius: var(--radius-l);
   background: var(--color-section);
-  transition: box-shadow 0.15s;
+  transition: background 0.15s;
 }
 
 .theme--card:hover {
-  box-shadow: var(--shadow-hover), 0 0 0 1px var(--color-separator);
-}
-
-/* Зображення теми — банер із логотипом: заповнює плитку повністю, без полів сцени. */
-.theme__photo > img,
-.theme-hero__photo > img {
-  padding: 0;
-  object-fit: cover;
-  mix-blend-mode: normal;
+  background: var(--color-section-hover);
 }
 
 .theme--card .theme__photo {

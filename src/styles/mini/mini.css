@@ -435,7 +435,7 @@
     color: var(--color-chevron);
   }
 
-  /* Сцена під фото набору чи фігурки: фото вписане з відступом, його білий фон зливається з тоном сцени. */
+  /* Сцена під фото набору чи фігурки: фото заповнює її, його білий фон зливається з тоном сцени. */
   .c-photo-stage {
     position: relative;
     isolation: isolate;
@@ -446,9 +446,9 @@
 
   .c-photo-stage__photo {
     position: absolute;
-    inset: 8%;
-    width: 84%;
-    height: 84%;
+    inset: 0;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
     mix-blend-mode: multiply;
   }
@@ -3351,7 +3351,6 @@
   .c-offers-lead__thumb img {
     width: 100%;
     height: 100%;
-    padding: 6px;
     object-fit: contain;
     mix-blend-mode: multiply;
   }

@@ -194,11 +194,6 @@
   scroll-snap-align: start;
 }
 
-.gallery__slide img,
-.gallery__thumbs img {
-  padding: 0;
-}
-
 .gallery__empty {
   flex-direction: column;
   gap: 10px;
@@ -289,15 +284,15 @@
 }
 
 .gallery__thumbs--after {
-  mask-image: linear-gradient(to right, #000 calc(100% - 72px), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 48px), rgb(0 0 0 / 45%));
 }
 
 .gallery__thumbs--before {
-  mask-image: linear-gradient(to left, #000 calc(100% - 72px), transparent);
+  mask-image: linear-gradient(to left, #000 calc(100% - 48px), rgb(0 0 0 / 45%));
 }
 
 .gallery__thumbs--before.gallery__thumbs--after {
-  mask-image: linear-gradient(to right, transparent, #000 72px, #000 calc(100% - 72px), transparent);
+  mask-image: linear-gradient(to right, rgb(0 0 0 / 45%), #000 48px, #000 calc(100% - 48px), rgb(0 0 0 / 45%));
 }
 
 .gallery__thumbs button {
