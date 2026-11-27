@@ -21,6 +21,17 @@ if (typeof window !== 'undefined') {
     historyReturn = false
     pushState(...args)
   }
+  const replaceState = window.history.replaceState.bind(window.history)
+  window.history.replaceState = (...args: Parameters<History['replaceState']>) => {
+    if (changesAddress(args[2])) historyReturn = false
+    replaceState(...args)
+  }
+}
+
+function changesAddress(url: string | URL | null | undefined): boolean {
+  if (url === null || url === undefined) return false
+  const next = new URL(url, window.location.href)
+  return next.pathname !== window.location.pathname || next.search !== window.location.search
 }
 
 interface Snapshot<S> {
