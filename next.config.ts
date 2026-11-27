@@ -10,6 +10,9 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   serverExternalPackages: ['@sentry/profiling-node'],
   skipTrailingSlashRedirect: true,
+  async redirects() {
+    return [{ source: '/profile/privacy', destination: '/privacy', permanent: true }]
+  },
   async rewrites() {
     return [
       { source: '/ingest/static/:path*', destination: `${posthogAssets}/static/:path*` },

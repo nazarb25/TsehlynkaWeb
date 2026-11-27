@@ -5,7 +5,8 @@ import { Chevron } from '@/components/mini/icons'
 export const INFO_PAGES = [
   { href: '/profile/how-it-works', label: 'Як працюють ціни й сповіщення' },
   { href: '/profile/about', label: 'Про Цеглинку' },
-  { href: '/profile/privacy', label: 'Конфіденційність' },
+  { href: '/contacts', label: 'Контакти' },
+  { href: '/privacy', label: 'Політика конфіденційності' },
 ] as const
 
 /** Довідкові сторінки внизу «Моє», як у Mini App. */

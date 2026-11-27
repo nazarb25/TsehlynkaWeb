@@ -7,7 +7,7 @@ import { type SitemapEntry, urlset } from '@/lib/sitemap'
 
 export const dynamic = 'force-dynamic'
 
-const STATIC_PAGES = ['/', '/catalog', '/catalog?mode=all', '/new', '/deals', '/themes', '/themes/archive']
+const STATIC_PAGES = ['/', '/catalog', '/catalog?mode=all', '/new', '/deals', '/themes', '/themes/archive', '/contacts', '/privacy']
 const PAGE_LIMIT = 100
 const MAX_OFFSET = 10_000
 
