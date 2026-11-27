@@ -7,6 +7,7 @@ import { plural, price, release, releaseUpcoming, thousands } from '@/lib/format
 import { setPath } from '@/lib/routes'
 
 import { MetaIcon, MiniPhoto } from './icons'
+import { type SwipeAction, SwipeActions } from './RowGestures'
 
 export function shopsPhrase(count: number | null | undefined): string {
   const shops = count || 1
@@ -131,13 +132,32 @@ interface RowProps {
   selected?: boolean
   /** Дія замість сердечка, як дзвіночок у «Стежу за ціною». */
   action?: React.ReactNode
+  /** Дії свайпу ліворуч; без сердечка в рядку `fav` не додається. */
+  swipe?: SwipeAction[]
 }
 
+/** Позначки рядка для свайпу й меню довгого натиску. */
+function rowData(item: SetItem, path: string, swipe?: SwipeAction[]) {
+  return {
+    'data-set-row': '',
+    'data-set-id': item.id,
+    'data-set-name': item.name,
+    'data-set-path': path,
+    'data-set-number': item.official_number_display ?? undefined,
+    'data-swipe': swipe?.length ? swipe.join(',') : undefined,
+  }
+}
+
+export const SALE_SWIPE: SwipeAction[] = ['offers', 'fav']
+const DEFAULT_SWIPE: SwipeAction[] = ['fav', 'watch']
+
 /** Рядок набору: фото й назва, рядок ціни чи дати, лого магазину знижки праворуч угорі, параметри внизу. */
-export function SetRow({ item, price: amount, deal, note, name, eager, selected, action }: RowProps) {
+export function SetRow({ item, price: amount, deal, note, name, eager, selected, action, swipe }: RowProps) {
   const path = setPath(item)
+  const actions = (swipe ?? (action ? [] : deal ? SALE_SWIPE : DEFAULT_SWIPE)).filter((value) => !(value === 'fav' && action))
   return (
-    <div className={`c-urow${deal ? ' has-logo' : ''}`}>
+    <div className={`c-urow${deal ? ' has-logo' : ''}`} {...rowData(item, path, actions)}>
+      {actions.length ? <SwipeActions setId={item.id} actions={actions} selected={selected} /> : null}
       <div className="c-urow__body">
         <Link className="c-urow__open" draggable={false} href={path}>
           <MiniPhoto src={item.image?.thumb ?? item.image?.medium} alt={item.name} className="c-urow__photo" eager={eager} />
@@ -161,7 +181,7 @@ export function SetRow({ item, price: amount, deal, note, name, eager, selected,
 export function SetCard({ item, price: amount, deal, eager, selected }: RowProps) {
   const path = setPath(item)
   return (
-    <div className="c-ucard">
+    <div className="c-ucard" {...rowData(item, path)}>
       <Link className="c-ucard__open" draggable={false} href={path}>
         <MiniPhoto src={item.image?.medium ?? item.image?.thumb} alt={item.name} className="c-ucard__photo" eager={eager} />
         <span className="c-ucard__text">
@@ -192,12 +212,20 @@ export function CatalogRow({ item, context, grid, eager }: { item: SetItem; cont
   else if (context.sale && isOnSale(item)) amount = <SalePrice item={item} />
   else if (context.sale && item.has_preorder_offer) amount = <RetailPrice item={item} />
   else if (context.newest) amount = <ReleaseLine item={item} />
-  return grid ? <SetCard item={item} price={amount} deal={deal} eager={eager} /> : <SetRow item={item} price={amount} deal={deal} eager={eager} />
+  return grid ? (
+    <SetCard item={item} price={amount} deal={deal} eager={eager} />
+  ) : (
+    <SetRow item={item} price={amount} deal={deal} eager={eager} swipe={context.sale ? SALE_SWIPE : DEFAULT_SWIPE} />
+  )
 }
 
 /** Рядок особистих списків: найкраща знижка з лого магазину або ціна в продажу чи передзамовлення. */
 export function PersonalRow({ item, selected, grid }: { item: SetItem; selected?: boolean; grid?: boolean }) {
   const deal = item.best_deal ?? null
   const amount = <RetailPrice item={item} />
-  return grid ? <SetCard item={item} price={amount} deal={deal} selected={selected} /> : <SetRow item={item} price={amount} deal={deal} selected={selected} />
+  return grid ? (
+    <SetCard item={item} price={amount} deal={deal} selected={selected} />
+  ) : (
+    <SetRow item={item} price={amount} deal={deal} selected={selected} swipe={DEFAULT_SWIPE} />
+  )
 }

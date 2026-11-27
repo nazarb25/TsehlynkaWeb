@@ -125,10 +125,12 @@ export function AlertsList({ initial, total }: { initial: PriceAlert[]; total: n
               item={item}
               price={<AlertPrice item={item} />}
               note={on ? alertNote(item) : 'Стеження вимкнено'}
+              swipe={[on ? 'unwatch' : 'rewatch', 'offers']}
               action={
                 <button
                   type="button"
                   className={`c-uact${on ? ' is-on' : ''}`}
+                  data-row-bell=""
                   aria-pressed={on}
                   aria-label={on ? `Не стежити за «${item.name}»` : `Стежити за «${item.name}»`}
                   disabled={busy.has(item.id) || loading === 'loading'}

@@ -32,7 +32,7 @@ export function HeartButton({ setId, name, initial, variant = 'row' }: HeartButt
   const { selected, toggle } = useFavourite(setId, initial)
   const base = variant === 'media' ? 'c-set-media__fav' : variant === 'tile' ? 'tile__fav' : 'c-uact'
   return (
-    <button type="button" className={`${base}${selected ? ' is-selected' : ''}`} aria-pressed={selected} aria-label={`Обране: ${name}`} onClick={toggle}>
+    <button type="button" className={`${base}${selected ? ' is-selected' : ''}`} data-favourite="" aria-pressed={selected} aria-label={`Обране: ${name}`} onClick={toggle}>
       {variant === 'media' ? (
         <HeartIcon size={20} width={2} filled={false} />
       ) : variant === 'tile' ? (

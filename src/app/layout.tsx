@@ -5,6 +5,7 @@ import { FavouritesProvider } from '@/components/favourites/FavouritesProvider'
 import { MiniAppLogin } from '@/components/auth/MiniAppLogin'
 import { AnalyticsClicks, EntryTracker } from '@/components/platform/Analytics'
 import { MobileDock } from '@/components/layout/MobileDock'
+import { RowGesturesProvider } from '@/components/mini/RowGestures'
 import { SiteFooter } from '@/components/layout/SiteFooter'
 import { SiteHeader } from '@/components/layout/SiteHeader'
 import { TelegramBridge } from '@/components/platform/TelegramBridge'
@@ -70,13 +71,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <TelegramBridge>
           <AuthProvider account={account ? { ...account, initial: initial(account.name) } : null}>
             <FavouritesProvider>
-              <SiteHeader themes={popularThemes(themes, 12)} />
-              <main className="main">{children}</main>
-              <SiteFooter themes={popularThemes(themes, 4)} botUrl={telegram} />
-              <MobileDock />
-              <MiniAppLogin />
-              <AnalyticsClicks />
-              <EntryTracker />
+              <RowGesturesProvider>
+                <SiteHeader themes={popularThemes(themes, 12)} />
+                <main className="main">{children}</main>
+                <SiteFooter themes={popularThemes(themes, 4)} botUrl={telegram} />
+                <MobileDock />
+                <MiniAppLogin />
+                <AnalyticsClicks />
+                <EntryTracker />
+              </RowGesturesProvider>
             </FavouritesProvider>
           </AuthProvider>
         </TelegramBridge>
