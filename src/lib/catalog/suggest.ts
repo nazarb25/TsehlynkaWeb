@@ -16,4 +16,5 @@ export interface SuggestedSet {
 export interface Suggestions {
   theme: SuggestedTheme | null
   sets: SuggestedSet[]
+  total: number
 }
