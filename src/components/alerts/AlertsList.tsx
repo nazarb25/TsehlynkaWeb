@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 
 import { useAuth } from '@/components/auth/AuthProvider'
 import { isOnSale, SetRow } from '@/components/mini/SetRows'
@@ -8,7 +8,6 @@ import { useToast } from '@/components/personal/Toast'
 import type { PriceAlert } from '@/lib/api/account'
 import type { Page } from '@/lib/api/types'
 import { price } from '@/lib/format'
-import { useRestorableList } from '@/lib/platform/restorable-list'
 
 import { WATCH_LIMIT_TEXT } from './WatchProvider'
 
@@ -66,43 +65,36 @@ function alertNote(item: PriceAlert): string {
  */
 export function AlertsList({ initial, total }: { initial: PriceAlert[]; total: number }) {
   const { openLogin } = useAuth()
-  const [list, setList] = useRestorableList<{ items: PriceAlert[]; remaining: boolean; off: string[] }>('price-alerts', {
-    items: initial,
-    remaining: total > initial.length,
-    off: [],
-  })
-  const { items, remaining } = list
-  const off = useMemo<ReadonlySet<string>>(() => new Set(list.off), [list.off])
+  const [items, setItems] = useState(initial)
+  const [off, setOff] = useState<ReadonlySet<string>>(new Set())
   const [busy, setBusy] = useState<ReadonlySet<string>>(new Set())
+  const [remaining, setRemaining] = useState(total > initial.length)
   const [loading, setLoading] = useState<'idle' | 'loading' | 'error'>('idle')
   const [toast, showToast] = useToast()
 
-  const markBusy = (id: string, present: boolean) =>
-    setBusy((value) => {
+  const mark = (setter: typeof setOff, id: string, present: boolean) =>
+    setter((value) => {
       const next = new Set(value)
       if (present) next.add(id)
       else next.delete(id)
       return next
     })
 
-  const markOff = (id: string, present: boolean) =>
-    setList((value) => ({ ...value, off: present ? [...value.off.filter((item) => item !== id), id] : value.off.filter((item) => item !== id) }))
-
   const toggle = async (item: PriceAlert) => {
     if (busy.has(item.id) || loading === 'loading') return
     const watching = off.has(item.id)
-    markBusy(item.id, true)
+    mark(setBusy, item.id, true)
     try {
       const response = await fetch(`/api/me/price-alerts/${item.id}`, { method: watching ? 'PUT' : 'DELETE' })
       if (response.status === 204) {
-        markOff(item.id, !watching)
+        mark(setOff, item.id, !watching)
         showToast(watching ? 'Стеження повернуто' : 'Більше не стежимо за ціною')
       } else if (response.status === 401) openLogin()
       else showToast(response.status === 409 ? WATCH_LIMIT_TEXT : 'Не вдалося змінити стеження. Спробуйте ще раз')
     } catch {
       showToast('Не вдалося змінити стеження. Спробуйте ще раз')
     } finally {
-      markBusy(item.id, false)
+      mark(setBusy, item.id, false)
     }
   }
 
@@ -114,11 +106,8 @@ export function AlertsList({ initial, total }: { initial: PriceAlert[]; total: n
       if (!response.ok) throw new Error(String(response.status))
       const page = (await response.json()) as Page<PriceAlert>
       const seen = new Set(items.map((item) => item.id))
-      setList((value) => ({
-        ...value,
-        items: [...value.items, ...page.items.filter((item) => !seen.has(item.id))],
-        remaining: page.items.length > 0 && page.offset + page.items.length < page.total,
-      }))
+      setItems((value) => [...value, ...page.items.filter((item) => !seen.has(item.id))])
+      setRemaining(page.items.length > 0 && page.offset + page.items.length < page.total)
       setLoading('idle')
     } catch {
       setLoading('error')

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { useFavourites } from '@/components/favourites/FavouritesProvider'
 import { PersonalRow } from '@/components/mini/SetRows'
@@ -9,7 +9,8 @@ import { useRestorableList } from '@/lib/platform/restorable-list'
 
 /**
  * «Показати ще» в «Обраному»: наступні сторінки дописуються в той самий список.
- * Прибрані з обраного набори зсувають список в API, тому зсув рахується без них, а повтори відкидаються.
+ * Прибрані з обраного набори зсувають список в API, тому зсув рахується без них, а повтори відкидаються,
+ * зокрема відновлені після «Назад» набори, які тепер уже є на першій сторінці.
  */
 export function FavouritesMore({ shown, total, grid }: { shown: string[]; total: number; grid: boolean }) {
   const { state: favourite } = useFavourites()
@@ -18,10 +19,14 @@ export function FavouritesMore({ shown, total, grid }: { shown: string[]; total:
     remaining: total > shown.length,
   })
   const [state, setState] = useState<'idle' | 'loading' | 'error'>('idle')
+  const extra = useMemo(() => {
+    const seen = new Set(shown)
+    return items.filter((item) => !seen.has(item.id) && seen.add(item.id))
+  }, [items, shown])
 
   const load = async () => {
     setState('loading')
-    const loaded = [...shown, ...items.map((item) => item.id)]
+    const loaded = [...shown, ...extra.map((item) => item.id)]
     const removed = loaded.filter((id) => favourite(id) === false).length
     try {
       const response = await fetch(`/api/me/favourites/page?offset=${Math.max(loaded.length - removed, 0)}`)
@@ -38,7 +43,7 @@ export function FavouritesMore({ shown, total, grid }: { shown: string[]; total:
 
   return (
     <>
-      {items.map((item) => (
+      {extra.map((item) => (
         <PersonalRow key={item.id} item={item} selected grid={grid} />
       ))}
       {remaining ? (
