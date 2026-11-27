@@ -3,18 +3,24 @@
 import { type Dispatch, type SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 
 const PREFIX = 'tsehlynka:list:'
-const POP_WINDOW_MS = 5000
 const LEAVE_FREEZE_MS = 1500
 
-let poppedAt = -Infinity
+let historyReturn = false
 if (typeof window !== 'undefined') {
+  const entry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined
+  historyReturn = entry?.type === 'back_forward'
   window.addEventListener(
     'popstate',
     () => {
-      poppedAt = performance.now()
+      historyReturn = true
     },
     { capture: true },
   )
+  const pushState = window.history.pushState.bind(window.history)
+  window.history.pushState = (...args: Parameters<History['pushState']>) => {
+    historyReturn = false
+    pushState(...args)
+  }
 }
 
 interface Snapshot<S> {
@@ -62,7 +68,7 @@ export function useRestorableList<S>(id: string, initial: S): [S, Dispatch<SetSt
   useEffect(() => {
     const current = storageKey(id)
     const frame = window.requestAnimationFrame(() => {
-      const saved = performance.now() - poppedAt < POP_WINDOW_MS ? read<S>(current) : null
+      const saved = historyReturn ? read<S>(current) : null
       if (!saved) remove(current)
       if (saved) {
         touched.current = true
