@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 
+import { useRestorableList } from '@/lib/platform/restorable-list'
+
 import type { SetItem } from '@/lib/api/types'
 import type { SectionKey } from '@/lib/catalog/filters'
 
@@ -19,8 +21,7 @@ interface MiniLoadMoreProps {
 
 /** «Показати ще» мобільного вигляду: наступні сторінки дописуються в той самий список. */
 export function MiniLoadMore({ sectionKey, query, page, pages, context, grid, end }: MiniLoadMoreProps) {
-  const [items, setItems] = useState<SetItem[]>([])
-  const [next, setNext] = useState(page + 1)
+  const [{ items, next }, setList] = useRestorableList<{ items: SetItem[]; next: number }>('sets-mobile', { items: [], next: page + 1 })
   const [state, setState] = useState<'idle' | 'loading' | 'error'>('idle')
 
   const load = async () => {
@@ -32,8 +33,7 @@ export function MiniLoadMore({ sectionKey, query, page, pages, context, grid, en
       const response = await fetch(`/api/sets?${params}`)
       if (!response.ok) throw new Error(String(response.status))
       const body = (await response.json()) as { items: SetItem[] }
-      setItems((value) => [...value, ...body.items])
-      setNext((value) => value + 1)
+      setList((value) => ({ items: [...value.items, ...body.items], next: value.next + 1 }))
       setState('idle')
     } catch {
       setState('error')

@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { useFavourites } from '@/components/favourites/FavouritesProvider'
 import { PersonalRow } from '@/components/mini/SetRows'
 import type { Page, SetItem } from '@/lib/api/types'
+import { useRestorableList } from '@/lib/platform/restorable-list'
 
 /**
  * «Показати ще» в «Обраному»: наступні сторінки дописуються в той самий список.
@@ -12,8 +13,10 @@ import type { Page, SetItem } from '@/lib/api/types'
  */
 export function FavouritesMore({ shown, total, grid }: { shown: string[]; total: number; grid: boolean }) {
   const { state: favourite } = useFavourites()
-  const [items, setItems] = useState<SetItem[]>([])
-  const [remaining, setRemaining] = useState(total > shown.length)
+  const [{ items, remaining }, setList] = useRestorableList<{ items: SetItem[]; remaining: boolean }>('favourites', {
+    items: [],
+    remaining: total > shown.length,
+  })
   const [state, setState] = useState<'idle' | 'loading' | 'error'>('idle')
 
   const load = async () => {
@@ -26,8 +29,7 @@ export function FavouritesMore({ shown, total, grid }: { shown: string[]; total:
       const page = (await response.json()) as Page<SetItem>
       const seen = new Set(loaded)
       const fresh = page.items.filter((item) => !seen.has(item.id))
-      setItems((value) => [...value, ...fresh])
-      setRemaining(page.items.length > 0 && page.offset + page.items.length < page.total)
+      setList((value) => ({ items: [...value.items, ...fresh], remaining: page.items.length > 0 && page.offset + page.items.length < page.total }))
       setState('idle')
     } catch {
       setState('error')

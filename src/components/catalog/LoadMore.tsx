@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 
+import { useRestorableList } from '@/lib/platform/restorable-list'
+
 import type { SetItem } from '@/lib/api/types'
 import type { SectionKey } from '@/lib/catalog/filters'
 
@@ -19,8 +21,7 @@ interface LoadMoreProps {
 
 /** «Показати ще»: наступні сторінки дописуються під поточною, адреса не змінюється; `end` — під останньою сторінкою. */
 export function LoadMore({ sectionKey, query, page, pages, context, view, end }: LoadMoreProps) {
-  const [items, setItems] = useState<SetItem[]>([])
-  const [next, setNext] = useState(page + 1)
+  const [{ items, next }, setList] = useRestorableList<{ items: SetItem[]; next: number }>('sets-desktop', { items: [], next: page + 1 })
   const [state, setState] = useState<'idle' | 'loading' | 'error'>('idle')
 
   if (next > pages && !items.length) return end ?? null
@@ -34,8 +35,7 @@ export function LoadMore({ sectionKey, query, page, pages, context, view, end }:
       const response = await fetch(`/api/sets?${params}`)
       if (!response.ok) throw new Error(String(response.status))
       const body = (await response.json()) as { items: SetItem[] }
-      setItems((value) => [...value, ...body.items])
-      setNext((value) => value + 1)
+      setList((value) => ({ items: [...value.items, ...body.items], next: value.next + 1 }))
       setState('idle')
     } catch {
       setState('error')
