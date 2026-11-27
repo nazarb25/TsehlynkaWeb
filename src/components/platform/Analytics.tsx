@@ -1,8 +1,11 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-import { type AnalyticsEvent, entrySource, track } from '@/lib/analytics'
+import { type AnalyticsEvent, type EntrySource, entrySource, track } from '@/lib/analytics'
+import { launchedFromTelegram } from '@/lib/platform/telegram'
+
+import { usePlatform } from './TelegramBridge'
 
 /**
  * Кліки по елементах з `data-track="подія"`: властивості беруться з атрибутів `data-track-*`.
@@ -40,6 +43,8 @@ export function TrackView({ event, properties }: { event: AnalyticsEvent; proper
 }
 
 const OPENED_KEY = 'ts_app_opened'
+/** Скільки чекати Telegram SDK, перш ніж записати відкриття без його теми. */
+const TELEGRAM_WAIT_MS = 3000
 
 function resourceType(path: string): string {
   if (path.startsWith('/sets/')) return 'set'
@@ -49,38 +54,57 @@ function resourceType(path: string): string {
   return path === '/' ? 'home' : 'other'
 }
 
-function themeMode(): 'dark' | 'light' {
-  const telegram = window.Telegram?.WebApp?.colorScheme
-  if (telegram === 'dark' || telegram === 'light') return telegram
+function browserTheme(): 'dark' | 'light' {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
 
 /**
  * Відкриття сайту раз за сесію вкладки й перехід з бота за параметром `src`.
- * Параметр прибирається з адреси, щоб не потрапити в поширене посилання.
+ * У Telegram подія чекає SDK, щоб записати його тему. Параметр прибирається з адреси,
+ * щоб не потрапити в поширене посилання.
  */
 export function EntryTracker() {
+  const { telegram } = usePlatform()
+  const entry = useRef<{ source: EntrySource | null; path: string; resolved: boolean; telegram: boolean } | null>(null)
+  const sent = useRef(false)
+  const [timedOut, setTimedOut] = useState(false)
+
   useEffect(() => {
     const url = new URL(window.location.href)
     const source = entrySource(url.searchParams.get('src'))
-    const resolved = !document.querySelector('[data-not-found]')
     let opened = false
     try {
       opened = window.sessionStorage.getItem(OPENED_KEY) === '1'
       window.sessionStorage.setItem(OPENED_KEY, '1')
     } catch {}
-    if (!opened || source) {
-      track('app_open', {
-        entry_source: source ?? (document.referrer ? 'referrer' : 'direct'),
-        client_platform: window.Telegram?.WebApp?.initData ? 'telegram' : 'web',
-        theme_mode: themeMode(),
-      })
+    if (opened && !source) return
+    entry.current = {
+      source,
+      path: url.pathname,
+      resolved: !document.querySelector('[data-not-found]'),
+      telegram: launchedFromTelegram(),
     }
     if (source) {
-      track('deep_link_open', { source, resource_type: resourceType(url.pathname), resolved })
       url.searchParams.delete('src')
       window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`)
     }
+    const timer = window.setTimeout(() => setTimedOut(true), TELEGRAM_WAIT_MS)
+    return () => window.clearTimeout(timer)
   }, [])
+
+  useEffect(() => {
+    const current = entry.current
+    if (!current || sent.current) return
+    if (current.telegram && !telegram && !timedOut) return
+    sent.current = true
+    track('app_open', {
+      entry_source: current.source ?? (document.referrer ? 'referrer' : 'direct'),
+      client_platform: current.telegram ? 'telegram' : 'web',
+      theme_mode: telegram ? telegram.colorScheme : browserTheme(),
+    })
+    if (current.source) {
+      track('deep_link_open', { source: current.source, resource_type: resourceType(current.path), resolved: current.resolved })
+    }
+  }, [telegram, timedOut])
   return null
 }

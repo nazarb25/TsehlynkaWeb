@@ -14,7 +14,7 @@ export function listMetadata(
   const params = queryParams(filters, section, { page: filters.page })
   const extra = [...params.keys()].filter((key) => key !== 'mode' && key !== 'page')
   const canonical = catalogHref(
-    { ...filters, theme: null, shop: null, sort: null, view: null, yearFrom: null, yearTo: null, age: null, piecesMin: null, piecesMax: null, inStock: null, preorder: false, official: false, specialized: false, q: null, newest: section.newest ?? false, onSale: section.onSale ?? false },
+    { ...filters, theme: null, line: null, shop: null, sort: null, view: null, yearFrom: null, yearTo: null, age: null, piecesMin: null, piecesMax: null, priceFrom: null, priceTo: null, inStock: null, preorder: false, official: false, specialized: false, q: null, newest: section.newest ?? false, onSale: section.onSale ?? false },
     section,
     { page: filters.page },
   )

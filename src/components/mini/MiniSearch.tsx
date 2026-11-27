@@ -297,12 +297,15 @@ export function MiniSearch({ filters, initial, chips }: MiniSearchProps) {
                       className="c-state__action"
                       href={catalogHref({ ...filters, q: query, mode }, SEARCH, {
                         theme: null,
+                        line: null,
                         shop: null,
                         yearFrom: null,
                         yearTo: null,
                         age: null,
                         piecesMin: null,
                         piecesMax: null,
+                        priceFrom: null,
+                        priceTo: null,
                         inStock: null,
                         preorder: false,
                         onSale: false,
