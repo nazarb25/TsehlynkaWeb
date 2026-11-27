@@ -12,7 +12,7 @@ import { themePath } from '@/lib/routes'
 
 import { Chevron, ModeIcon, StateIcon, XIcon } from './icons'
 import { MiniLoadMore } from './MiniLoadMore'
-import { isOnSale, SalePrice, SetRow } from './SetRows'
+import { isOnSale, SALE_SWIPE, SalePrice, SetRow } from './SetRows'
 import { useMobile } from './useMobile'
 
 interface SearchResult {
@@ -262,6 +262,7 @@ export function MiniSearch({ filters, initial, chips }: MiniSearchProps) {
                       item={item}
                       name={<Highlight text={item.name} query={query} />}
                       price={sale && isOnSale(item) ? <SalePrice item={item} /> : null}
+                      swipe={sale ? SALE_SWIPE : undefined}
                     />
                   ))}
                   <MiniLoadMore
