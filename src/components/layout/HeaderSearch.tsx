@@ -142,6 +142,7 @@ export function HeaderSearch() {
           aria-label="Підказки"
           onMouseDown={(event) => event.preventDefault()}
         >
+          {result.theme ? <p className="sugg__cap" role="presentation">Тема</p> : null}
           {result.theme ? (
             <Link
               href={result.theme.href}
@@ -151,17 +152,21 @@ export function HeaderSearch() {
               data-track-query-length-bucket={queryShape(text).query_length_bucket}
               role="option"
               aria-selected={active === ++index}
-              className={`sugg sugg--theme${active === index ? ' is-active' : ''}`}
+              className={`sugg${active === index ? ' is-active' : ''}`}
             >
               <span className="stage sugg__photo">
                 {result.theme.image ? <img src={result.theme.image} alt="" /> : <BrickIcon size={16} />}
               </span>
               <span className="sugg__text">
-                <small>Тема</small>
                 <b>{result.theme.name}</b>
+                <small className="num">{setCount(result.theme.setCount)}</small>
               </span>
-              <small className="sugg__count num">{setCount(result.theme.setCount)}</small>
             </Link>
+          ) : null}
+          {result.sets.length ? (
+            <p className="sugg__cap" role="presentation">
+              {result.theme ? `Набори · ${result.total}` : setCount(result.total)}
+            </p>
           ) : null}
           {result.sets.map((set) => (
             <Link

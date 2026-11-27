@@ -10,7 +10,7 @@ const LIMIT = 4
 
 export async function GET(request: NextRequest) {
   const text = (request.nextUrl.searchParams.get('q') ?? '').trim().slice(0, 100)
-  if (text.length < 2) return NextResponse.json({ theme: null, sets: [] } satisfies Suggestions)
+  if (text.length < 2) return NextResponse.json({ theme: null, sets: [], total: 0 } satisfies Suggestions)
   const number = setNumberFromText(text)
   try {
     const [page, themes] = await Promise.all([
@@ -29,6 +29,7 @@ export async function GET(request: NextRequest) {
         number: item.official_number_display ?? null,
         year: item.intro_year ?? null,
       })),
+      total: page.total,
     }
     return NextResponse.json(body, { headers: { 'Cache-Control': 'private, max-age=60' } })
   } catch {

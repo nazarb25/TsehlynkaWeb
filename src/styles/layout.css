@@ -315,6 +315,23 @@
   border-radius: 8px;
 }
 
+.sugg__photo > img {
+  padding: 0;
+}
+
+.sugg__cap {
+  padding: 6px 8px 4px;
+  color: var(--color-hint);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.sugg + .sugg__cap {
+  margin-top: 6px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-separator);
+}
+
 .sugg__text {
   display: flex;
   flex-direction: column;
@@ -329,20 +346,9 @@
   text-overflow: ellipsis;
 }
 
-.sugg__text small,
-.sugg__count {
+.sugg__text small {
   color: var(--color-hint);
   font-size: 13px;
-}
-
-.sugg__count {
-  margin-left: auto;
-}
-
-.sugg--theme {
-  margin-bottom: 4px;
-  border-bottom: 1px solid var(--color-separator);
-  border-radius: 10px 10px 0 0;
 }
 
 .sugg__all {
