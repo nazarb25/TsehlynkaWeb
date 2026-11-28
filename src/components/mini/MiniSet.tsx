@@ -15,8 +15,7 @@ import {
   linkedInstructions,
   originalName,
   otherNumbers,
-  PACKAGING_LABELS,
-  packagingType,
+  packaging as packagingOf,
 } from '@/lib/catalog/set'
 import { ageMark, checkedAgo, plural, price, thousands } from '@/lib/format'
 import { setPath, themePath } from '@/lib/routes'
@@ -277,13 +276,13 @@ export function MiniSet({ details, model, packaging, offers, offersFailed, summa
   const checked = summary.lastCheckedAt ? `Перевірено ${checkedAgo(summary.lastCheckedAt, now)}` : ''
   const from = summary.leadShopsCount > 1 ? 'від ' : ''
   const lifecycle = LIFECYCLE_LABELS[details.lifecycle_status]
-  const pack = packagingType(details)
-  const packLabel = pack ? PACKAGING_LABELS[pack] : undefined
+  const pack = packagingOf(details)
+  const packLabel = pack?.label
   const numbers = otherNumbers(details)
   const original = originalName(details)
   const instructions = linkedInstructions(details)
   const place = state === 'none' && !offersFailed ? 'appear' : 'price'
-  const randomPlace = pack && ['polybag', 'foil_pack', 'bag'].includes(pack) ? 'в пакеті' : 'в наборі'
+  const randomPlace = pack && ['polybag', 'foil_pack', 'bag'].includes(pack.code) ? 'в пакеті' : 'в наборі'
   const figuresText = figureCount ? `${figureCount} ${plural(figureCount, 'фігурка', 'фігурки', 'фігурок')}` : ''
   const figureIcon = (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden="true">

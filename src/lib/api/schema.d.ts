@@ -378,10 +378,17 @@ export interface components {
              */
             region_scope: string | null;
             /**
-             * @description Тип упаковки.
+             * Packaging Type
+             * @description Код паковання з довідника; `unknown` — паковання невідоме.
              * @example box
              */
-            packaging_type: components["schemas"]["PackagingType"];
+            packaging_type: string;
+            /**
+             * Packaging Name
+             * @description Назва паковання українською; `null`, якщо паковання невідоме чи ще не перекладене редакцією.
+             * @example Коробка
+             */
+            packaging_name: string | null;
             /**
              * Is Default
              * @description Типове видання набору.
@@ -939,12 +946,6 @@ export interface components {
          */
         OfferAvailability: "in_stock" | "out_of_stock" | "preorder" | "unknown";
         /**
-         * PackagingType
-         * @description Форма упаковки; не SetType.
-         * @enum {string}
-         */
-        PackagingType: "box" | "polybag" | "foil_pack" | "mystery_box" | "blister" | "tube" | "tin" | "bag" | "loose" | "booklet_package" | "other" | "unknown";
-        /**
          * RetailSetDealResource
          * @description Свіжа пропозиція набору в наявності з найбільшою знижкою.
          */
@@ -1349,6 +1350,7 @@ export interface components {
              *         "edition_type": "standard",
              *         "is_default": true,
              *         "packaging_type": "box",
+             *         "packaging_name": "Коробка",
              *         "release_date": "2024-01-01",
              *         "release_date_precision": "month"
              *       }

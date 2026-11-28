@@ -9,19 +9,6 @@ export const LIFECYCLE_LABELS: Record<string, string> = {
   discontinued: 'Випуск припинено',
 }
 
-export const PACKAGING_LABELS: Record<string, string> = {
-  box: 'Коробка',
-  polybag: 'Пакет',
-  foil_pack: 'Фольгований пакет',
-  mystery_box: 'Коробка-сюрприз',
-  blister: 'Блістер',
-  tube: 'Туба',
-  tin: 'Металева коробка',
-  bag: 'Пакет',
-  loose: 'Без упаковки',
-  booklet_package: 'Упаковка з книжкою',
-}
-
 export const INSTRUCTION_LABELS: Record<string, string> = {
   pdf: 'PDF',
   paper: 'Паперова',
@@ -52,7 +39,6 @@ const CAPTIONS: Record<string, string> = {
   promotional: 'Промо',
 }
 const NUMBER_TYPES = new Set(['official_set_number', 'catalog_set_id', 'lego_item_number'])
-const UNKNOWN_PACKAGING = new Set(['other', 'unknown'])
 
 function isHttpsImage(url: string | null | undefined): url is string {
   return Boolean(url && url.startsWith('https://'))
@@ -97,10 +83,20 @@ export function otherNumbers(details: SetDetails): string[] {
   return [...numbers]
 }
 
-export function packagingType(details: SetDetails): string | null {
+export interface Packaging {
+  code: string
+  /** Назва з довідника; `null`, якщо паковання невідоме, «інше» чи ще не перекладене. */
+  label: string | null
+}
+
+/** Паковання типового видання. */
+export function packaging(details: SetDetails): Packaging | null {
   const edition = details.editions.find((item) => item.is_default) ?? details.editions[0]
-  if (!edition || UNKNOWN_PACKAGING.has(edition.packaging_type)) return null
-  return edition.packaging_type
+  if (!edition) return null
+  return {
+    code: edition.packaging_type,
+    label: edition.packaging_type === 'other' ? null : edition.packaging_name,
+  }
 }
 
 export function linkedInstructions(details: SetDetails): SetInstruction[] {

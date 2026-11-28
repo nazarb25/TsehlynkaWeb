@@ -271,6 +271,7 @@ function details(set) {
         release_date_precision: 'day',
         region_scope: null,
         packaging_type: 'box',
+        packaging_name: 'Коробка',
         is_default: true,
       },
     ],

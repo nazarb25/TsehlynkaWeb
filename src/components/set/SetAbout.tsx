@@ -11,8 +11,7 @@ import {
   linkedInstructions,
   originalName,
   otherNumbers,
-  PACKAGING_LABELS,
-  packagingType,
+  packaging as packagingOf,
 } from '@/lib/catalog/set'
 import { ageMark, release, thousands } from '@/lib/format'
 import { themePath } from '@/lib/routes'
@@ -30,7 +29,7 @@ interface SetAboutProps {
 export function SetAbout({ details, figureCount, edition, now }: SetAboutProps) {
   const age = ageMark(details.age_label, details.age_min_months)
   const instructions = linkedInstructions(details)
-  const packaging = packagingType(details)
+  const packaging = packagingOf(details)?.label
   const numbers = otherNumbers(details)
   const original = originalName(details)
 
@@ -59,7 +58,7 @@ export function SetAbout({ details, figureCount, edition, now }: SetAboutProps) 
     ...(figureCount ? [['Фігурок', String(figureCount)] as [string, React.ReactNode]] : []),
     ['Тип продукту', details.set_type.name],
     ...(LIFECYCLE_LABELS[details.lifecycle_status] ? [['Випуск', LIFECYCLE_LABELS[details.lifecycle_status]] as [string, React.ReactNode]] : []),
-    ...(packaging && PACKAGING_LABELS[packaging] ? [['Паковання', PACKAGING_LABELS[packaging]] as [string, React.ReactNode]] : []),
+    ...(packaging ? [['Паковання', packaging] as [string, React.ReactNode]] : []),
     ...(numbers.length ? [['Інші номери', numbers.join(', ')] as [string, React.ReactNode]] : []),
     ...(original ? [['Оригінальна назва', original] as [string, React.ReactNode]] : []),
   ]
