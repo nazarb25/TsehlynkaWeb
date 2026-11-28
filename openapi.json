@@ -1692,10 +1692,26 @@
       ]
      },
      "packaging_type": {
-      "$ref": "#/components/schemas/PackagingType",
-      "description": "Тип упаковки.",
+      "type": "string",
+      "title": "Packaging Type",
+      "description": "Код паковання з довідника; `unknown` — паковання невідоме.",
       "examples": [
        "box"
+      ]
+     },
+     "packaging_name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Packaging Name",
+      "description": "Назва паковання українською; `null`, якщо паковання невідоме чи ще не перекладене редакцією.",
+      "examples": [
+       "Коробка"
       ]
      },
      "is_default": {
@@ -1715,6 +1731,7 @@
      "release_date_precision",
      "region_scope",
      "packaging_type",
+     "packaging_name",
      "is_default"
     ],
     "title": "CatalogEditionResource",
@@ -2916,25 +2933,6 @@
     "title": "OfferAvailability",
     "description": "Наявність за даними магазину."
    },
-   "PackagingType": {
-    "type": "string",
-    "enum": [
-     "box",
-     "polybag",
-     "foil_pack",
-     "mystery_box",
-     "blister",
-     "tube",
-     "tin",
-     "bag",
-     "loose",
-     "booklet_package",
-     "other",
-     "unknown"
-    ],
-    "title": "PackagingType",
-    "description": "Форма упаковки; не SetType."
-   },
    "RetailSetDealResource": {
     "properties": {
      "price": {
@@ -3722,6 +3720,7 @@
          "edition_type": "standard",
          "is_default": true,
          "packaging_type": "box",
+         "packaging_name": "Коробка",
          "release_date": "2024-01-01",
          "release_date_precision": "month"
         }
