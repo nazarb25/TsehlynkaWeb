@@ -1,6 +1,7 @@
 type Schema = Record<string, unknown>
 
-export function JsonLd({ data }: { data: Schema | Schema[] }) {
-  const json = JSON.stringify(Array.isArray(data) ? data : data).replace(/</g, '\\u003c')
+/** Одна схема в окремому блоці: кожен блок JSON-LD — об'єкт із власним `@context`. */
+export function JsonLd({ data }: { data: Schema }) {
+  const json = JSON.stringify(data).replace(/</g, '\\u003c')
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: json }} />
 }
