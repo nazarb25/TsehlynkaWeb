@@ -83,7 +83,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </FavouritesProvider>
           </AuthProvider>
         </TelegramBridge>
-        <JsonLd data={[websiteSchema(), organizationSchema()]} />
+        <JsonLd data={websiteSchema()} />
+        <JsonLd data={organizationSchema()} />
       </body>
     </html>
   )
