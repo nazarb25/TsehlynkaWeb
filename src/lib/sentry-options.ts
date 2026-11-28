@@ -13,4 +13,5 @@ export const IGNORED_ERRORS: (string | RegExp)[] = [
   /^AbortError/,
   /Load failed$/,
   /^NEXT_(NOT_FOUND|REDIRECT)/,
+  /TelegramGameProxy/,
 ]
